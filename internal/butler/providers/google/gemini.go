@@ -43,26 +43,17 @@ func WithApiKey(key string) *genai.ClientConfig {
 
 type GeminiLLM struct {
 	modelID string
-	history []common.History
 	client  *genai.Client
 }
 
-func (l *GeminiLLM) History() []common.History {
-	return l.history
-}
-
-func (l *GeminiLLM) AddHistory(entry common.History) {
-	l.history = append(l.history, entry)
-}
-
-func (l GeminiLLM) Stream(ctx context.Context) error {
+func (l GeminiLLM) Stream(ctx context.Context, memory []common.MemoryEntry) error {
 	config := &genai.GenerateContentConfig{
 		ThinkingConfig: &genai.ThinkingConfig{
 			IncludeThoughts: true,
 		},
 	}
 	history := []*genai.Content{}
-	for _, entry := range l.history {
+	for _, entry := range memory {
 		genAIEntry := genai.Content{
 			Role: entry.Role,
 			Parts: []*genai.Part{
@@ -141,9 +132,9 @@ func (l GeminiLLM) Stream(ctx context.Context) error {
 	return nil
 }
 
-func (l GeminiLLM) Generate(ctx context.Context) error {
+func (l GeminiLLM) Generate(ctx context.Context, memory []common.MemoryEntry) error {
 	history := []*genai.Content{}
-	for _, entry := range l.history {
+	for _, entry := range memory {
 		genAIEntry := genai.Content{
 			Role: entry.Role,
 			Parts: []*genai.Part{
@@ -165,5 +156,5 @@ func (l GeminiLLM) Generate(ctx context.Context) error {
 
 // returns an llm that can generate and stream
 func (p *GeminiProvider) Model(ctx context.Context, modelID string) butler.LLM {
-	return &GeminiLLM{modelID: modelID, history: []common.History{}, client: p.client}
+	return &GeminiLLM{modelID: modelID, client: p.client}
 }

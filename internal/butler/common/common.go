@@ -1,6 +1,6 @@
 package common
 
-type History struct {
+type MemoryEntry struct {
 	Message string
 	Role    string
 }
