@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"reflect"
 
 	"github.com/fatih/color"
@@ -91,6 +92,7 @@ func (a *Agent) Run(ctx context.Context, prompt string) error {
 	for {
 		result, err := a.llm.Stream(ctx, a.memory, a.tools)
 		if err != nil {
+			log.Fatal("Error calling LLM Stream: ", err)
 			return err
 		}
 		a.AddMemoryEntry(memory.MemoryEntry{Role: "model", Message: result.Text, ToolCalls: result.ToolCalls})

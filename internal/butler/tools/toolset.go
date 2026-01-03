@@ -29,6 +29,9 @@ func readFolderContentFn(args readFolderContentArgs) (string, error) {
 		if err != nil {
 			return err
 		}
+		if info.IsDir() && info.Name() == ".git" {
+			return filepath.SkipDir
+		}
 		if !info.IsDir() {
 			relativePath, _ := filepath.Rel(args.FolderPath, path)
 			builder.WriteString(fmt.Sprintf("File: %s\n", relativePath))
@@ -58,6 +61,9 @@ func listFolderContents(args listFolderContentsArgs) (string, error) {
 	err := filepath.Walk(args.FolderPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
+		}
+		if info.IsDir() && info.Name() == ".git" {
+			return filepath.SkipDir
 		}
 		relativePath, _ := filepath.Rel(args.FolderPath, path)
 		if info.IsDir() {
