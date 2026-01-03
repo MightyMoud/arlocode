@@ -1,0 +1,71 @@
+=== RUN   TestNewAgent
+--- PASS: TestNewAgent (0.00s)
+=== RUN   TestAgent_WithMemory
+--- PASS: TestAgent_WithMemory (0.00s)
+=== RUN   TestAgent_WitTools
+--- PASS: TestAgent_WitTools (0.00s)
+=== RUN   TestAgent_WithNoTools
+--- PASS: TestAgent_WithNoTools (0.00s)
+=== RUN   TestAgent_AddMemoryEntry
+--- PASS: TestAgent_AddMemoryEntry (0.00s)
+=== RUN   TestAgent_GetMemory
+--- PASS: TestAgent_GetMemory (0.00s)
+=== RUN   TestAgent_HandleToolCall
+--- PASS: TestAgent_HandleToolCall (0.00s)
+=== RUN   TestAgent_Run
+--- PASS: TestAgent_Run (0.00s)
+=== RUN   TestAgent_Run_WithToolCall
+--- PASS: TestAgent_Run_WithToolCall (0.00s)
+PASS
+coverage: 91.4% of statements
+ok  	github.com/mightymoud/sidekick-agent/internal/butler	(cached)	coverage: 91.4% of statements
+?   	github.com/mightymoud/sidekick-agent/internal/butler/memory	[no test files]
+?   	github.com/mightymoud/sidekick-agent/internal/butler/providers	[no test files]
+=== RUN   TestWithApiKey
+--- PASS: TestWithApiKey (0.00s)
+=== RUN   TestGeminiProvider_Model
+--- PASS: TestGeminiProvider_Model (0.00s)
+=== RUN   TestGenerateGenAISchema
+=== RUN   TestGenerateGenAISchema/String
+=== RUN   TestGenerateGenAISchema/Int
+=== RUN   TestGenerateGenAISchema/Float
+=== RUN   TestGenerateGenAISchema/Bool
+=== RUN   TestGenerateGenAISchema/Slice
+--- PASS: TestGenerateGenAISchema (0.00s)
+    --- PASS: TestGenerateGenAISchema/String (0.00s)
+    --- PASS: TestGenerateGenAISchema/Int (0.00s)
+    --- PASS: TestGenerateGenAISchema/Float (0.00s)
+    --- PASS: TestGenerateGenAISchema/Bool (0.00s)
+    --- PASS: TestGenerateGenAISchema/Slice (0.00s)
+=== RUN   TestGenerateGenAISchema_Struct
+--- PASS: TestGenerateGenAISchema_Struct (0.00s)
+=== RUN   TestMakeGeminiTools
+--- PASS: TestMakeGeminiTools (0.00s)
+=== RUN   TestConvertMemoryToGeminiHistory
+--- PASS: TestConvertMemoryToGeminiHistory (0.00s)
+=== RUN   TestGenerateGenAISchema_Map
+--- PASS: TestGenerateGenAISchema_Map (0.00s)
+=== RUN   TestGenerateGenAISchema_StructTags
+--- PASS: TestGenerateGenAISchema_StructTags (0.00s)
+=== RUN   TestGenerateGenAISchema_Ptr
+--- PASS: TestGenerateGenAISchema_Ptr (0.00s)
+=== RUN   TestGenerateGenAISchema_MoreTypes
+=== RUN   TestGenerateGenAISchema_MoreTypes/Int8
+=== RUN   TestGenerateGenAISchema_MoreTypes/Uint
+=== RUN   TestGenerateGenAISchema_MoreTypes/Float32
+--- PASS: TestGenerateGenAISchema_MoreTypes (0.00s)
+    --- PASS: TestGenerateGenAISchema_MoreTypes/Int8 (0.00s)
+    --- PASS: TestGenerateGenAISchema_MoreTypes/Uint (0.00s)
+    --- PASS: TestGenerateGenAISchema_MoreTypes/Float32 (0.00s)
+PASS
+coverage: 60.5% of statements
+ok  	github.com/mightymoud/sidekick-agent/internal/butler/providers/gemini	(cached)	coverage: 60.5% of statements
+=== RUN   TestNewButlerTool
+--- PASS: TestNewButlerTool (0.00s)
+=== RUN   TestAppendLines
+--- PASS: TestAppendLines (0.00s)
+=== RUN   TestReadFileFn
+--- PASS: TestReadFileFn (0.00s)
+PASS
+coverage: 84.6% of statements
+ok  	github.com/mightymoud/sidekick-agent/internal/butler/tools	(cached)	coverage: 84.6% of statements
