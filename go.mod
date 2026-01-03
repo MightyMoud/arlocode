@@ -2,7 +2,11 @@ module github.com/mightymoud/sidekick-agent
 
 go 1.24.5
 
-require google.golang.org/genai v1.40.0
+require (
+	github.com/iamwavecut/gopenrouter v0.0.0-20250819194515-3428c8a33343
+	github.com/openai/openai-go/v3 v3.15.0
+	google.golang.org/genai v1.40.0
+)
 
 require (
 	cloud.google.com/go v0.116.0 // indirect
@@ -13,7 +17,6 @@ require (
 	github.com/google/s2a-go v0.1.8 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.4 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
-	github.com/openai/openai-go/v3 v3.15.0 // indirect
 	github.com/tidwall/gjson v1.18.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
