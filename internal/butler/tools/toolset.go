@@ -87,6 +87,9 @@ func searchCode(args searchCodeArgs) (string, error) {
 		if err != nil {
 			return err
 		}
+		if info.IsDir() && info.Name() == ".git" {
+			return filepath.SkipDir
+		}
 		if !info.IsDir() {
 			relativePath, _ := filepath.Rel(args.FolderPath, path)
 			files = append(files, relativePath)
@@ -147,11 +150,11 @@ type applyEditArgs struct {
 	NewText string `json:"new_text" jsonschema:"The block text to replace it with"`
 }
 
-func applyEdit(req applyEditArgs) error {
+func applyEdit(req applyEditArgs) (string, error) {
 	// 1. Read the file
 	content, err := os.ReadFile(req.Path)
 	if err != nil {
-		return fmt.Errorf("failed to read file: %w", err)
+		return "", fmt.Errorf("failed to read file: %w", err)
 	}
 
 	fileString := string(content)
@@ -159,10 +162,10 @@ func applyEdit(req applyEditArgs) error {
 	// 2. Safety Check: Does the old text exist?
 	count := strings.Count(fileString, req.OldText)
 	if count == 0 {
-		return fmt.Errorf("could not find the 'old_text' block in %s. Ensure formatting and whitespace match exactly", req.Path)
+		return "", fmt.Errorf("could not find the 'old_text' block in %s. Ensure formatting and whitespace match exactly", req.Path)
 	}
 	if count > 1 {
-		return fmt.Errorf("the 'old_text' block is ambiguous (found %d occurrences). Please provide more context", count)
+		return "", fmt.Errorf("the 'old_text' block is ambiguous (found %d occurrences). Please provide more context", count)
 	}
 
 	// 3. Perform the replacement
@@ -171,10 +174,10 @@ func applyEdit(req applyEditArgs) error {
 	// 4. Write back to disk
 	err = os.WriteFile(req.Path, []byte(newContent), 0644)
 	if err != nil {
-		return fmt.Errorf("failed to write to file: %w", err)
+		return "", fmt.Errorf("failed to write to file: %w", err)
 	}
 
-	return nil
+	return "Edit applied successfully.", nil
 }
 
 var readFileTool = NewButlerTool("read_file", "Reads a file from the user pc", readFileFn)
