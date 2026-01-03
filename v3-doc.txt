@@ -1,0 +1,1155 @@
+package openai // import "github.com/openai/openai-go/v3"
+
+const ChatModelChatgpt4oLatest = shared.ChatModelChatgpt4oLatest
+const ChatModelCodexMiniLatest = shared.ChatModelCodexMiniLatest
+const ChatModelGPT3_5Turbo = shared.ChatModelGPT3_5Turbo
+const ChatModelGPT3_5Turbo0125 = shared.ChatModelGPT3_5Turbo0125
+const ChatModelGPT3_5Turbo0301 = shared.ChatModelGPT3_5Turbo0301
+const ChatModelGPT3_5Turbo0613 = shared.ChatModelGPT3_5Turbo0613
+const ChatModelGPT3_5Turbo1106 = shared.ChatModelGPT3_5Turbo1106
+const ChatModelGPT3_5Turbo16k = shared.ChatModelGPT3_5Turbo16k
+const ChatModelGPT3_5Turbo16k0613 = shared.ChatModelGPT3_5Turbo16k0613
+const ChatModelGPT4 = shared.ChatModelGPT4
+const ChatModelGPT4Turbo = shared.ChatModelGPT4Turbo
+const ChatModelGPT4Turbo2024_04_09 = shared.ChatModelGPT4Turbo2024_04_09
+const ChatModelGPT4TurboPreview = shared.ChatModelGPT4TurboPreview
+const ChatModelGPT4VisionPreview = shared.ChatModelGPT4VisionPreview
+const ChatModelGPT4_0125Preview = shared.ChatModelGPT4_0125Preview
+const ChatModelGPT4_0314 = shared.ChatModelGPT4_0314
+const ChatModelGPT4_0613 = shared.ChatModelGPT4_0613
+const ChatModelGPT4_1 = shared.ChatModelGPT4_1
+const ChatModelGPT4_1106Preview = shared.ChatModelGPT4_1106Preview
+const ChatModelGPT4_1Mini = shared.ChatModelGPT4_1Mini
+const ChatModelGPT4_1Mini2025_04_14 = shared.ChatModelGPT4_1Mini2025_04_14
+const ChatModelGPT4_1Nano = shared.ChatModelGPT4_1Nano
+const ChatModelGPT4_1Nano2025_04_14 = shared.ChatModelGPT4_1Nano2025_04_14
+const ChatModelGPT4_1_2025_04_14 = shared.ChatModelGPT4_1_2025_04_14
+const ChatModelGPT4_32k = shared.ChatModelGPT4_32k
+const ChatModelGPT4_32k0314 = shared.ChatModelGPT4_32k0314
+const ChatModelGPT4_32k0613 = shared.ChatModelGPT4_32k0613
+const ChatModelGPT4o = shared.ChatModelGPT4o
+const ChatModelGPT4o2024_05_13 = shared.ChatModelGPT4o2024_05_13
+const ChatModelGPT4o2024_08_06 = shared.ChatModelGPT4o2024_08_06
+const ChatModelGPT4o2024_11_20 = shared.ChatModelGPT4o2024_11_20
+const ChatModelGPT4oAudioPreview = shared.ChatModelGPT4oAudioPreview
+const ChatModelGPT4oAudioPreview2024_10_01 = shared.ChatModelGPT4oAudioPreview2024_10_01
+const ChatModelGPT4oAudioPreview2024_12_17 = shared.ChatModelGPT4oAudioPreview2024_12_17
+const ChatModelGPT4oAudioPreview2025_06_03 = shared.ChatModelGPT4oAudioPreview2025_06_03
+const ChatModelGPT4oMini = shared.ChatModelGPT4oMini
+const ChatModelGPT4oMini2024_07_18 = shared.ChatModelGPT4oMini2024_07_18
+const ChatModelGPT4oMiniAudioPreview = shared.ChatModelGPT4oMiniAudioPreview
+const ChatModelGPT4oMiniAudioPreview2024_12_17 = shared.ChatModelGPT4oMiniAudioPreview2024_12_17
+const ChatModelGPT4oMiniSearchPreview = shared.ChatModelGPT4oMiniSearchPreview
+const ChatModelGPT4oMiniSearchPreview2025_03_11 = shared.ChatModelGPT4oMiniSearchPreview2025_03_11
+const ChatModelGPT4oSearchPreview = shared.ChatModelGPT4oSearchPreview
+const ChatModelGPT4oSearchPreview2025_03_11 = shared.ChatModelGPT4oSearchPreview2025_03_11
+const ChatModelGPT5 = shared.ChatModelGPT5
+const ChatModelGPT5ChatLatest = shared.ChatModelGPT5ChatLatest
+const ChatModelGPT5Mini = shared.ChatModelGPT5Mini
+const ChatModelGPT5Mini2025_08_07 = shared.ChatModelGPT5Mini2025_08_07
+const ChatModelGPT5Nano = shared.ChatModelGPT5Nano
+const ChatModelGPT5Nano2025_08_07 = shared.ChatModelGPT5Nano2025_08_07
+const ChatModelGPT5_1 = shared.ChatModelGPT5_1
+const ChatModelGPT5_1ChatLatest = shared.ChatModelGPT5_1ChatLatest
+const ChatModelGPT5_1Codex = shared.ChatModelGPT5_1Codex
+const ChatModelGPT5_1Mini = shared.ChatModelGPT5_1Mini
+const ChatModelGPT5_1_2025_11_13 = shared.ChatModelGPT5_1_2025_11_13
+const ChatModelGPT5_2 = shared.ChatModelGPT5_2
+const ChatModelGPT5_2025_08_07 = shared.ChatModelGPT5_2025_08_07
+const ChatModelGPT5_2ChatLatest = shared.ChatModelGPT5_2ChatLatest
+const ChatModelGPT5_2Pro = shared.ChatModelGPT5_2Pro
+const ChatModelGPT5_2Pro2025_12_11 = shared.ChatModelGPT5_2Pro2025_12_11
+const ChatModelGPT5_2_2025_12_11 = shared.ChatModelGPT5_2_2025_12_11
+const ChatModelO1 = shared.ChatModelO1
+const ChatModelO1Mini = shared.ChatModelO1Mini
+const ChatModelO1Mini2024_09_12 = shared.ChatModelO1Mini2024_09_12
+const ChatModelO1Preview = shared.ChatModelO1Preview
+const ChatModelO1Preview2024_09_12 = shared.ChatModelO1Preview2024_09_12
+const ChatModelO1_2024_12_17 = shared.ChatModelO1_2024_12_17
+const ChatModelO3 = shared.ChatModelO3
+const ChatModelO3Mini = shared.ChatModelO3Mini
+const ChatModelO3Mini2025_01_31 = shared.ChatModelO3Mini2025_01_31
+const ChatModelO3_2025_04_16 = shared.ChatModelO3_2025_04_16
+const ChatModelO4Mini = shared.ChatModelO4Mini
+const ChatModelO4Mini2025_04_16 = shared.ChatModelO4Mini2025_04_16
+const ComparisonFilterTypeEq = shared.ComparisonFilterTypeEq
+const ComparisonFilterTypeGt = shared.ComparisonFilterTypeGt
+const ComparisonFilterTypeGte = shared.ComparisonFilterTypeGte
+const ComparisonFilterTypeLt = shared.ComparisonFilterTypeLt
+const ComparisonFilterTypeLte = shared.ComparisonFilterTypeLte
+const ComparisonFilterTypeNe = shared.ComparisonFilterTypeNe
+const CompoundFilterTypeAnd = shared.CompoundFilterTypeAnd
+const CompoundFilterTypeOr = shared.CompoundFilterTypeOr
+const ReasoningEffortHigh = shared.ReasoningEffortHigh
+const ReasoningEffortLow = shared.ReasoningEffortLow
+const ReasoningEffortMedium = shared.ReasoningEffortMedium
+const ReasoningEffortMinimal = shared.ReasoningEffortMinimal
+const ReasoningEffortNone = shared.ReasoningEffortNone
+const ReasoningEffortXhigh = shared.ReasoningEffortXhigh
+const ReasoningGenerateSummaryAuto = shared.ReasoningGenerateSummaryAuto
+const ReasoningGenerateSummaryConcise = shared.ReasoningGenerateSummaryConcise
+const ReasoningGenerateSummaryDetailed = shared.ReasoningGenerateSummaryDetailed
+const ReasoningSummaryAuto = shared.ReasoningSummaryAuto
+const ReasoningSummaryConcise = shared.ReasoningSummaryConcise
+const ReasoningSummaryDetailed = shared.ReasoningSummaryDetailed
+const ResponsesModelComputerUsePreview = shared.ResponsesModelComputerUsePreview
+const ResponsesModelComputerUsePreview2025_03_11 = shared.ResponsesModelComputerUsePreview2025_03_11
+const ResponsesModelGPT5Codex = shared.ResponsesModelGPT5Codex
+const ResponsesModelGPT5Pro = shared.ResponsesModelGPT5Pro
+const ResponsesModelGPT5Pro2025_10_06 = shared.ResponsesModelGPT5Pro2025_10_06
+const ResponsesModelGPT5_1CodexMax = shared.ResponsesModelGPT5_1CodexMax
+const ResponsesModelO1Pro = shared.ResponsesModelO1Pro
+const ResponsesModelO1Pro2025_03_19 = shared.ResponsesModelO1Pro2025_03_19
+const ResponsesModelO3DeepResearch = shared.ResponsesModelO3DeepResearch
+const ResponsesModelO3DeepResearch2025_06_26 = shared.ResponsesModelO3DeepResearch2025_06_26
+const ResponsesModelO3Pro = shared.ResponsesModelO3Pro
+const ResponsesModelO3Pro2025_06_10 = shared.ResponsesModelO3Pro2025_06_10
+const ResponsesModelO4MiniDeepResearch = shared.ResponsesModelO4MiniDeepResearch
+const ResponsesModelO4MiniDeepResearch2025_06_26 = shared.ResponsesModelO4MiniDeepResearch2025_06_26
+func Bool(b bool) param.Opt[bool]
+func BoolPtr(v bool) *bool
+func DefaultClientOptions() []option.RequestOption
+func Float(f float64) param.Opt[float64]
+func FloatPtr(v float64) *float64
+func Int(i int64) param.Opt[int64]
+func IntPtr(v int64) *int64
+func Opt[T comparable](v T) param.Opt[T]
+func Ptr[T any](v T) *T
+func String(s string) param.Opt[string]
+func StringPtr(v string) *string
+func Time(t time.Time) param.Opt[time.Time]
+func TimePtr(v time.Time) *time.Time
+func File(rdr io.Reader, filename string, contentType string) file
+type AnnotationDeltaUnion struct{ ... }
+type AnnotationUnion struct{ ... }
+type Assistant struct{ ... }
+type AssistantDeleted struct{ ... }
+type AssistantResponseFormatOptionUnion struct{ ... }
+type AssistantResponseFormatOptionUnionParam struct{ ... }
+    func AssistantResponseFormatOptionParamOfAuto() AssistantResponseFormatOptionUnionParam
+    func AssistantResponseFormatOptionParamOfJSONSchema(jsonSchema shared.ResponseFormatJSONSchemaJSONSchemaParam) AssistantResponseFormatOptionUnionParam
+type AssistantStreamEventErrorEvent struct{ ... }
+type AssistantStreamEventThreadCreated struct{ ... }
+type AssistantStreamEventThreadMessageCompleted struct{ ... }
+type AssistantStreamEventThreadMessageCreated struct{ ... }
+type AssistantStreamEventThreadMessageDelta struct{ ... }
+type AssistantStreamEventThreadMessageInProgress struct{ ... }
+type AssistantStreamEventThreadMessageIncomplete struct{ ... }
+type AssistantStreamEventThreadRunCancelled struct{ ... }
+type AssistantStreamEventThreadRunCancelling struct{ ... }
+type AssistantStreamEventThreadRunCompleted struct{ ... }
+type AssistantStreamEventThreadRunCreated struct{ ... }
+type AssistantStreamEventThreadRunExpired struct{ ... }
+type AssistantStreamEventThreadRunFailed struct{ ... }
+type AssistantStreamEventThreadRunInProgress struct{ ... }
+type AssistantStreamEventThreadRunIncomplete struct{ ... }
+type AssistantStreamEventThreadRunQueued struct{ ... }
+type AssistantStreamEventThreadRunRequiresAction struct{ ... }
+type AssistantStreamEventThreadRunStepCancelled struct{ ... }
+type AssistantStreamEventThreadRunStepCompleted struct{ ... }
+type AssistantStreamEventThreadRunStepCreated struct{ ... }
+type AssistantStreamEventThreadRunStepDelta struct{ ... }
+type AssistantStreamEventThreadRunStepExpired struct{ ... }
+type AssistantStreamEventThreadRunStepFailed struct{ ... }
+type AssistantStreamEventThreadRunStepInProgress struct{ ... }
+type AssistantStreamEventUnion struct{ ... }
+type AssistantStreamEventUnionData struct{ ... }
+type AssistantStreamEventUnionDataDelta struct{ ... }
+type AssistantStreamEventUnionDataIncompleteDetails struct{ ... }
+type AssistantStreamEventUnionDataLastError struct{ ... }
+type AssistantStreamEventUnionDataUsage struct{ ... }
+type AssistantToolChoice struct{ ... }
+type AssistantToolChoiceFunction struct{ ... }
+type AssistantToolChoiceFunctionParam struct{ ... }
+type AssistantToolChoiceOptionAuto string
+    const AssistantToolChoiceOptionAutoNone AssistantToolChoiceOptionAuto = "none" ...
+type AssistantToolChoiceOptionUnion struct{ ... }
+type AssistantToolChoiceOptionUnionParam struct{ ... }
+    func AssistantToolChoiceOptionParamOfAssistantToolChoice(type_ AssistantToolChoiceType) AssistantToolChoiceOptionUnionParam
+type AssistantToolChoiceParam struct{ ... }
+type AssistantToolChoiceType string
+    const AssistantToolChoiceTypeFunction AssistantToolChoiceType = "function" ...
+type AssistantToolResources struct{ ... }
+type AssistantToolResourcesCodeInterpreter struct{ ... }
+type AssistantToolResourcesFileSearch struct{ ... }
+type AssistantToolUnion struct{ ... }
+type AssistantToolUnionParam struct{ ... }
+    func AssistantToolParamOfFunction(function shared.FunctionDefinitionParam) AssistantToolUnionParam
+type AudioModel = string
+    const AudioModelWhisper1 AudioModel = "whisper-1" ...
+type AudioResponseFormat string
+    const AudioResponseFormatJSON AudioResponseFormat = "json" ...
+type AudioService struct{ ... }
+    func NewAudioService(opts ...option.RequestOption) (r AudioService)
+type AudioSpeechNewParams struct{ ... }
+type AudioSpeechNewParamsResponseFormat string
+    const AudioSpeechNewParamsResponseFormatMP3 AudioSpeechNewParamsResponseFormat = "mp3" ...
+type AudioSpeechNewParamsStreamFormat string
+    const AudioSpeechNewParamsStreamFormatSSE AudioSpeechNewParamsStreamFormat = "sse" ...
+type AudioSpeechNewParamsVoice string
+    const AudioSpeechNewParamsVoiceAlloy AudioSpeechNewParamsVoice = "alloy" ...
+type AudioSpeechService struct{ ... }
+    func NewAudioSpeechService(opts ...option.RequestOption) (r AudioSpeechService)
+type AudioTranscriptionNewParams struct{ ... }
+type AudioTranscriptionNewParamsChunkingStrategyUnion struct{ ... }
+type AudioTranscriptionNewParamsChunkingStrategyVadConfig struct{ ... }
+type AudioTranscriptionNewResponseUnion struct{ ... }
+type AudioTranscriptionNewResponseUnionUsage struct{ ... }
+type AudioTranscriptionService struct{ ... }
+    func NewAudioTranscriptionService(opts ...option.RequestOption) (r AudioTranscriptionService)
+type AudioTranslationNewParams struct{ ... }
+type AudioTranslationNewParamsResponseFormat string
+    const AudioTranslationNewParamsResponseFormatJSON AudioTranslationNewParamsResponseFormat = "json" ...
+type AudioTranslationService struct{ ... }
+    func NewAudioTranslationService(opts ...option.RequestOption) (r AudioTranslationService)
+type AutoFileChunkingStrategyParam struct{ ... }
+    func NewAutoFileChunkingStrategyParam() AutoFileChunkingStrategyParam
+type Batch struct{ ... }
+type BatchError struct{ ... }
+type BatchErrors struct{ ... }
+type BatchListParams struct{ ... }
+type BatchNewParams struct{ ... }
+type BatchNewParamsCompletionWindow string
+    const BatchNewParamsCompletionWindow24h BatchNewParamsCompletionWindow = "24h"
+type BatchNewParamsEndpoint string
+    const BatchNewParamsEndpointV1Responses BatchNewParamsEndpoint = "/v1/responses" ...
+type BatchNewParamsOutputExpiresAfter struct{ ... }
+type BatchRequestCounts struct{ ... }
+type BatchService struct{ ... }
+    func NewBatchService(opts ...option.RequestOption) (r BatchService)
+type BatchStatus string
+    const BatchStatusValidating BatchStatus = "validating" ...
+type BatchUsage struct{ ... }
+type BatchUsageInputTokensDetails struct{ ... }
+type BatchUsageOutputTokensDetails struct{ ... }
+type BetaAssistantListParams struct{ ... }
+type BetaAssistantListParamsOrder string
+    const BetaAssistantListParamsOrderAsc BetaAssistantListParamsOrder = "asc" ...
+type BetaAssistantNewParams struct{ ... }
+type BetaAssistantNewParamsToolResources struct{ ... }
+type BetaAssistantNewParamsToolResourcesCodeInterpreter struct{ ... }
+type BetaAssistantNewParamsToolResourcesFileSearch struct{ ... }
+type BetaAssistantNewParamsToolResourcesFileSearchVectorStore struct{ ... }
+type BetaAssistantNewParamsToolResourcesFileSearchVectorStoreChunkingStrategyAuto struct{ ... }
+    func NewBetaAssistantNewParamsToolResourcesFileSearchVectorStoreChunkingStrategyAuto() BetaAssistantNewParamsToolResourcesFileSearchVectorStoreChunkingStrategyAuto
+type BetaAssistantNewParamsToolResourcesFileSearchVectorStoreChunkingStrategyStatic struct{ ... }
+type BetaAssistantNewParamsToolResourcesFileSearchVectorStoreChunkingStrategyStaticStatic struct{ ... }
+type BetaAssistantNewParamsToolResourcesFileSearchVectorStoreChunkingStrategyUnion struct{ ... }
+type BetaAssistantService struct{ ... }
+    func NewBetaAssistantService(opts ...option.RequestOption) (r BetaAssistantService)
+type BetaAssistantUpdateParams struct{ ... }
+type BetaAssistantUpdateParamsModel string
+    const BetaAssistantUpdateParamsModelGPT5 BetaAssistantUpdateParamsModel = "gpt-5" ...
+type BetaAssistantUpdateParamsToolResources struct{ ... }
+type BetaAssistantUpdateParamsToolResourcesCodeInterpreter struct{ ... }
+type BetaAssistantUpdateParamsToolResourcesFileSearch struct{ ... }
+type BetaChatKitService struct{ ... }
+    func NewBetaChatKitService(opts ...option.RequestOption) (r BetaChatKitService)
+type BetaChatKitSessionNewParams struct{ ... }
+type BetaChatKitSessionService struct{ ... }
+    func NewBetaChatKitSessionService(opts ...option.RequestOption) (r BetaChatKitSessionService)
+type BetaChatKitThreadDeleteResponse struct{ ... }
+type BetaChatKitThreadListItemsParams struct{ ... }
+type BetaChatKitThreadListItemsParamsOrder string
+    const BetaChatKitThreadListItemsParamsOrderAsc BetaChatKitThreadListItemsParamsOrder = "asc" ...
+type BetaChatKitThreadListParams struct{ ... }
+type BetaChatKitThreadListParamsOrder string
+    const BetaChatKitThreadListParamsOrderAsc BetaChatKitThreadListParamsOrder = "asc" ...
+type BetaChatKitThreadService struct{ ... }
+    func NewBetaChatKitThreadService(opts ...option.RequestOption) (r BetaChatKitThreadService)
+type BetaService struct{ ... }
+    func NewBetaService(opts ...option.RequestOption) (r BetaService)
+type BetaThreadMessageListParams struct{ ... }
+type BetaThreadMessageListParamsOrder string
+    const BetaThreadMessageListParamsOrderAsc BetaThreadMessageListParamsOrder = "asc" ...
+type BetaThreadMessageNewParams struct{ ... }
+type BetaThreadMessageNewParamsAttachment struct{ ... }
+type BetaThreadMessageNewParamsAttachmentToolFileSearch struct{ ... }
+    func NewBetaThreadMessageNewParamsAttachmentToolFileSearch() BetaThreadMessageNewParamsAttachmentToolFileSearch
+type BetaThreadMessageNewParamsAttachmentToolUnion struct{ ... }
+type BetaThreadMessageNewParamsContentUnion struct{ ... }
+type BetaThreadMessageNewParamsRole string
+    const BetaThreadMessageNewParamsRoleUser BetaThreadMessageNewParamsRole = "user" ...
+type BetaThreadMessageService struct{ ... }
+    func NewBetaThreadMessageService(opts ...option.RequestOption) (r BetaThreadMessageService)
+type BetaThreadMessageUpdateParams struct{ ... }
+type BetaThreadNewAndRunParams struct{ ... }
+type BetaThreadNewAndRunParamsThread struct{ ... }
+type BetaThreadNewAndRunParamsThreadMessage struct{ ... }
+type BetaThreadNewAndRunParamsThreadMessageAttachment struct{ ... }
+type BetaThreadNewAndRunParamsThreadMessageAttachmentToolFileSearch struct{ ... }
+    func NewBetaThreadNewAndRunParamsThreadMessageAttachmentToolFileSearch() BetaThreadNewAndRunParamsThreadMessageAttachmentToolFileSearch
+type BetaThreadNewAndRunParamsThreadMessageAttachmentToolUnion struct{ ... }
+type BetaThreadNewAndRunParamsThreadMessageContentUnion struct{ ... }
+type BetaThreadNewAndRunParamsThreadToolResources struct{ ... }
+type BetaThreadNewAndRunParamsThreadToolResourcesCodeInterpreter struct{ ... }
+type BetaThreadNewAndRunParamsThreadToolResourcesFileSearch struct{ ... }
+type BetaThreadNewAndRunParamsThreadToolResourcesFileSearchVectorStore struct{ ... }
+type BetaThreadNewAndRunParamsThreadToolResourcesFileSearchVectorStoreChunkingStrategyAuto struct{ ... }
+    func NewBetaThreadNewAndRunParamsThreadToolResourcesFileSearchVectorStoreChunkingStrategyAuto() ...
+type BetaThreadNewAndRunParamsThreadToolResourcesFileSearchVectorStoreChunkingStrategyStatic struct{ ... }
+type BetaThreadNewAndRunParamsThreadToolResourcesFileSearchVectorStoreChunkingStrategyStaticStatic struct{ ... }
+type BetaThreadNewAndRunParamsThreadToolResourcesFileSearchVectorStoreChunkingStrategyUnion struct{ ... }
+type BetaThreadNewAndRunParamsToolResources struct{ ... }
+type BetaThreadNewAndRunParamsToolResourcesCodeInterpreter struct{ ... }
+type BetaThreadNewAndRunParamsToolResourcesFileSearch struct{ ... }
+type BetaThreadNewAndRunParamsTruncationStrategy struct{ ... }
+type BetaThreadNewParams struct{ ... }
+type BetaThreadNewParamsMessage struct{ ... }
+type BetaThreadNewParamsMessageAttachment struct{ ... }
+type BetaThreadNewParamsMessageAttachmentToolFileSearch struct{ ... }
+    func NewBetaThreadNewParamsMessageAttachmentToolFileSearch() BetaThreadNewParamsMessageAttachmentToolFileSearch
+type BetaThreadNewParamsMessageAttachmentToolUnion struct{ ... }
+type BetaThreadNewParamsMessageContentUnion struct{ ... }
+type BetaThreadNewParamsToolResources struct{ ... }
+type BetaThreadNewParamsToolResourcesCodeInterpreter struct{ ... }
+type BetaThreadNewParamsToolResourcesFileSearch struct{ ... }
+type BetaThreadNewParamsToolResourcesFileSearchVectorStore struct{ ... }
+type BetaThreadNewParamsToolResourcesFileSearchVectorStoreChunkingStrategyAuto struct{ ... }
+    func NewBetaThreadNewParamsToolResourcesFileSearchVectorStoreChunkingStrategyAuto() BetaThreadNewParamsToolResourcesFileSearchVectorStoreChunkingStrategyAuto
+type BetaThreadNewParamsToolResourcesFileSearchVectorStoreChunkingStrategyStatic struct{ ... }
+type BetaThreadNewParamsToolResourcesFileSearchVectorStoreChunkingStrategyStaticStatic struct{ ... }
+type BetaThreadNewParamsToolResourcesFileSearchVectorStoreChunkingStrategyUnion struct{ ... }
+type BetaThreadRunListParams struct{ ... }
+type BetaThreadRunListParamsOrder string
+    const BetaThreadRunListParamsOrderAsc BetaThreadRunListParamsOrder = "asc" ...
+type BetaThreadRunNewParams struct{ ... }
+type BetaThreadRunNewParamsAdditionalMessage struct{ ... }
+type BetaThreadRunNewParamsAdditionalMessageAttachment struct{ ... }
+type BetaThreadRunNewParamsAdditionalMessageAttachmentToolFileSearch struct{ ... }
+    func NewBetaThreadRunNewParamsAdditionalMessageAttachmentToolFileSearch() BetaThreadRunNewParamsAdditionalMessageAttachmentToolFileSearch
+type BetaThreadRunNewParamsAdditionalMessageAttachmentToolUnion struct{ ... }
+type BetaThreadRunNewParamsAdditionalMessageContentUnion struct{ ... }
+type BetaThreadRunNewParamsTruncationStrategy struct{ ... }
+type BetaThreadRunService struct{ ... }
+    func NewBetaThreadRunService(opts ...option.RequestOption) (r BetaThreadRunService)
+type BetaThreadRunStepGetParams struct{ ... }
+type BetaThreadRunStepListParams struct{ ... }
+type BetaThreadRunStepListParamsOrder string
+    const BetaThreadRunStepListParamsOrderAsc BetaThreadRunStepListParamsOrder = "asc" ...
+type BetaThreadRunStepService struct{ ... }
+    func NewBetaThreadRunStepService(opts ...option.RequestOption) (r BetaThreadRunStepService)
+type BetaThreadRunSubmitToolOutputsParams struct{ ... }
+type BetaThreadRunSubmitToolOutputsParamsToolOutput struct{ ... }
+type BetaThreadRunUpdateParams struct{ ... }
+type BetaThreadService struct{ ... }
+    func NewBetaThreadService(opts ...option.RequestOption) (r BetaThreadService)
+type BetaThreadUpdateParams struct{ ... }
+type BetaThreadUpdateParamsToolResources struct{ ... }
+type BetaThreadUpdateParamsToolResourcesCodeInterpreter struct{ ... }
+type BetaThreadUpdateParamsToolResourcesFileSearch struct{ ... }
+type ChatCompletion struct{ ... }
+type ChatCompletionAccumulator struct{ ... }
+type ChatCompletionAllowedToolChoiceParam struct{ ... }
+type ChatCompletionAllowedToolsMode string
+    const ChatCompletionAllowedToolsModeAuto ChatCompletionAllowedToolsMode = "auto" ...
+type ChatCompletionAllowedToolsParam struct{ ... }
+type ChatCompletionAssistantMessageParam struct{ ... }
+type ChatCompletionAssistantMessageParamAudio struct{ ... }
+type ChatCompletionAssistantMessageParamContentArrayOfContentPartUnion struct{ ... }
+type ChatCompletionAssistantMessageParamContentUnion struct{ ... }
+type ChatCompletionAssistantMessageParamFunctionCall struct{ ... }
+type ChatCompletionAudio struct{ ... }
+type ChatCompletionAudioParam struct{ ... }
+type ChatCompletionAudioParamFormat string
+    const ChatCompletionAudioParamFormatWAV ChatCompletionAudioParamFormat = "wav" ...
+type ChatCompletionAudioParamVoice string
+    const ChatCompletionAudioParamVoiceAlloy ChatCompletionAudioParamVoice = "alloy" ...
+type ChatCompletionChoice struct{ ... }
+type ChatCompletionChoiceLogprobs struct{ ... }
+type ChatCompletionChunk struct{ ... }
+type ChatCompletionChunkChoice struct{ ... }
+type ChatCompletionChunkChoiceDelta struct{ ... }
+type ChatCompletionChunkChoiceDeltaFunctionCall struct{ ... }
+type ChatCompletionChunkChoiceDeltaToolCall struct{ ... }
+type ChatCompletionChunkChoiceDeltaToolCallFunction struct{ ... }
+type ChatCompletionChunkChoiceLogprobs struct{ ... }
+type ChatCompletionChunkServiceTier string
+    const ChatCompletionChunkServiceTierAuto ChatCompletionChunkServiceTier = "auto" ...
+type ChatCompletionContentPartFileFileParam struct{ ... }
+type ChatCompletionContentPartFileParam struct{ ... }
+type ChatCompletionContentPartImage struct{ ... }
+type ChatCompletionContentPartImageImageURL struct{ ... }
+type ChatCompletionContentPartImageImageURLParam struct{ ... }
+type ChatCompletionContentPartImageParam struct{ ... }
+type ChatCompletionContentPartInputAudioInputAudioParam struct{ ... }
+type ChatCompletionContentPartInputAudioParam struct{ ... }
+type ChatCompletionContentPartRefusalParam struct{ ... }
+type ChatCompletionContentPartText struct{ ... }
+type ChatCompletionContentPartTextParam struct{ ... }
+type ChatCompletionContentPartUnionParam struct{ ... }
+    func FileContentPart(file ChatCompletionContentPartFileFileParam) ChatCompletionContentPartUnionParam
+    func ImageContentPart(imageURL ChatCompletionContentPartImageImageURLParam) ChatCompletionContentPartUnionParam
+    func InputAudioContentPart(inputAudio ChatCompletionContentPartInputAudioInputAudioParam) ChatCompletionContentPartUnionParam
+    func TextContentPart(text string) ChatCompletionContentPartUnionParam
+type ChatCompletionCustomToolCustomFormatGrammarGrammarParam struct{ ... }
+type ChatCompletionCustomToolCustomFormatGrammarParam struct{ ... }
+type ChatCompletionCustomToolCustomFormatTextParam struct{ ... }
+    func NewChatCompletionCustomToolCustomFormatTextParam() ChatCompletionCustomToolCustomFormatTextParam
+type ChatCompletionCustomToolCustomFormatUnionParam struct{ ... }
+type ChatCompletionCustomToolCustomParam struct{ ... }
+type ChatCompletionCustomToolParam struct{ ... }
+type ChatCompletionDeleted struct{ ... }
+type ChatCompletionDeveloperMessageParam struct{ ... }
+type ChatCompletionDeveloperMessageParamContentUnion struct{ ... }
+type ChatCompletionFunctionCallOptionParam struct{ ... }
+type ChatCompletionFunctionMessageParam struct{ ... }
+type ChatCompletionFunctionToolParam struct{ ... }
+type ChatCompletionListParams struct{ ... }
+type ChatCompletionListParamsOrder string
+    const ChatCompletionListParamsOrderAsc ChatCompletionListParamsOrder = "asc" ...
+type ChatCompletionMessage struct{ ... }
+type ChatCompletionMessageAnnotation struct{ ... }
+type ChatCompletionMessageAnnotationURLCitation struct{ ... }
+type ChatCompletionMessageCustomToolCall struct{ ... }
+type ChatCompletionMessageCustomToolCallCustom struct{ ... }
+type ChatCompletionMessageCustomToolCallCustomParam struct{ ... }
+type ChatCompletionMessageCustomToolCallParam struct{ ... }
+type ChatCompletionMessageFunctionCall struct{ ... }
+type ChatCompletionMessageFunctionToolCall struct{ ... }
+type ChatCompletionMessageFunctionToolCallFunction struct{ ... }
+type ChatCompletionMessageFunctionToolCallFunctionParam struct{ ... }
+type ChatCompletionMessageFunctionToolCallParam struct{ ... }
+type ChatCompletionMessageListParams struct{ ... }
+type ChatCompletionMessageListParamsOrder string
+    const ChatCompletionMessageListParamsOrderAsc ChatCompletionMessageListParamsOrder = "asc" ...
+type ChatCompletionMessageParamUnion struct{ ... }
+    func AssistantMessage[T string | []ChatCompletionAssistantMessageParamContentArrayOfContentPartUnion](content T) ChatCompletionMessageParamUnion
+    func ChatCompletionMessageParamOfAssistant[T string | []ChatCompletionAssistantMessageParamContentArrayOfContentPartUnion](content T) ChatCompletionMessageParamUnion
+    func ChatCompletionMessageParamOfFunction(content string, name string) ChatCompletionMessageParamUnion
+    func DeveloperMessage[T string | []ChatCompletionContentPartTextParam](content T) ChatCompletionMessageParamUnion
+    func SystemMessage[T string | []ChatCompletionContentPartTextParam](content T) ChatCompletionMessageParamUnion
+    func ToolMessage[T string | []ChatCompletionContentPartTextParam](content T, toolCallID string) ChatCompletionMessageParamUnion
+    func UserMessage[T string | []ChatCompletionContentPartUnionParam](content T) ChatCompletionMessageParamUnion
+type ChatCompletionMessageService struct{ ... }
+    func NewChatCompletionMessageService(opts ...option.RequestOption) (r ChatCompletionMessageService)
+type ChatCompletionMessageToolCallUnion struct{ ... }
+type ChatCompletionMessageToolCallUnionParam struct{ ... }
+type ChatCompletionNamedToolChoiceCustomCustomParam struct{ ... }
+type ChatCompletionNamedToolChoiceCustomParam struct{ ... }
+type ChatCompletionNamedToolChoiceFunctionParam struct{ ... }
+type ChatCompletionNamedToolChoiceParam struct{ ... }
+type ChatCompletionNewParams struct{ ... }
+type ChatCompletionNewParamsFunction struct{ ... }
+type ChatCompletionNewParamsFunctionCallFunctionCallMode string
+    const ChatCompletionNewParamsFunctionCallFunctionCallModeNone ChatCompletionNewParamsFunctionCallFunctionCallMode = "none" ...
+type ChatCompletionNewParamsFunctionCallUnion struct{ ... }
+type ChatCompletionNewParamsPromptCacheRetention string
+    const ChatCompletionNewParamsPromptCacheRetentionInMemory ChatCompletionNewParamsPromptCacheRetention = "in-memory" ...
+type ChatCompletionNewParamsResponseFormatUnion struct{ ... }
+type ChatCompletionNewParamsServiceTier string
+    const ChatCompletionNewParamsServiceTierAuto ChatCompletionNewParamsServiceTier = "auto" ...
+type ChatCompletionNewParamsStopUnion struct{ ... }
+type ChatCompletionNewParamsVerbosity string
+    const ChatCompletionNewParamsVerbosityLow ChatCompletionNewParamsVerbosity = "low" ...
+type ChatCompletionNewParamsWebSearchOptions struct{ ... }
+type ChatCompletionNewParamsWebSearchOptionsUserLocation struct{ ... }
+type ChatCompletionNewParamsWebSearchOptionsUserLocationApproximate struct{ ... }
+type ChatCompletionPredictionContentContentUnionParam struct{ ... }
+type ChatCompletionPredictionContentParam struct{ ... }
+type ChatCompletionService struct{ ... }
+    func NewChatCompletionService(opts ...option.RequestOption) (r ChatCompletionService)
+type ChatCompletionServiceTier string
+    const ChatCompletionServiceTierAuto ChatCompletionServiceTier = "auto" ...
+type ChatCompletionStoreMessage struct{ ... }
+type ChatCompletionStoreMessageContentPartUnion struct{ ... }
+type ChatCompletionStreamOptionsParam struct{ ... }
+type ChatCompletionSystemMessageParam struct{ ... }
+type ChatCompletionSystemMessageParamContentUnion struct{ ... }
+type ChatCompletionTokenLogprob struct{ ... }
+type ChatCompletionTokenLogprobTopLogprob struct{ ... }
+type ChatCompletionToolChoiceOptionAuto string
+    const ChatCompletionToolChoiceOptionAutoNone ChatCompletionToolChoiceOptionAuto = "none" ...
+type ChatCompletionToolChoiceOptionUnionParam struct{ ... }
+    func ToolChoiceOptionAllowedTools(allowedTools ChatCompletionAllowedToolsParam) ChatCompletionToolChoiceOptionUnionParam
+    func ToolChoiceOptionCustomToolChoice(custom ChatCompletionNamedToolChoiceCustomCustomParam) ChatCompletionToolChoiceOptionUnionParam
+    func ToolChoiceOptionFunctionToolChoice(function ChatCompletionNamedToolChoiceFunctionParam) ChatCompletionToolChoiceOptionUnionParam
+type ChatCompletionToolMessageParam struct{ ... }
+type ChatCompletionToolMessageParamContentUnion struct{ ... }
+type ChatCompletionToolUnionParam struct{ ... }
+    func ChatCompletionCustomTool(custom ChatCompletionCustomToolCustomParam) ChatCompletionToolUnionParam
+    func ChatCompletionFunctionTool(function shared.FunctionDefinitionParam) ChatCompletionToolUnionParam
+type ChatCompletionUpdateParams struct{ ... }
+type ChatCompletionUserMessageParam struct{ ... }
+type ChatCompletionUserMessageParamContentUnion struct{ ... }
+type ChatKitAttachment struct{ ... }
+type ChatKitAttachmentType string
+    const ChatKitAttachmentTypeImage ChatKitAttachmentType = "image" ...
+type ChatKitResponseOutputText struct{ ... }
+type ChatKitResponseOutputTextAnnotationFile struct{ ... }
+type ChatKitResponseOutputTextAnnotationFileSource struct{ ... }
+type ChatKitResponseOutputTextAnnotationURL struct{ ... }
+type ChatKitResponseOutputTextAnnotationURLSource struct{ ... }
+type ChatKitResponseOutputTextAnnotationUnion struct{ ... }
+type ChatKitResponseOutputTextAnnotationUnionSource struct{ ... }
+type ChatKitThread struct{ ... }
+type ChatKitThreadAssistantMessageItem struct{ ... }
+type ChatKitThreadItemList struct{ ... }
+type ChatKitThreadItemListDataChatKitClientToolCall struct{ ... }
+type ChatKitThreadItemListDataChatKitTask struct{ ... }
+type ChatKitThreadItemListDataChatKitTaskGroup struct{ ... }
+type ChatKitThreadItemListDataChatKitTaskGroupTask struct{ ... }
+type ChatKitThreadItemListDataUnion struct{ ... }
+type ChatKitThreadItemListDataUnionContent struct{ ... }
+type ChatKitThreadStatusActive struct{ ... }
+type ChatKitThreadStatusClosed struct{ ... }
+type ChatKitThreadStatusLocked struct{ ... }
+type ChatKitThreadStatusUnion struct{ ... }
+type ChatKitThreadUserMessageItem struct{ ... }
+type ChatKitThreadUserMessageItemContentInputText struct{ ... }
+type ChatKitThreadUserMessageItemContentQuotedText struct{ ... }
+type ChatKitThreadUserMessageItemContentUnion struct{ ... }
+type ChatKitThreadUserMessageItemInferenceOptions struct{ ... }
+type ChatKitThreadUserMessageItemInferenceOptionsToolChoice struct{ ... }
+type ChatKitWidgetItem struct{ ... }
+type ChatKitWorkflow struct{ ... }
+type ChatKitWorkflowStateVariableUnion struct{ ... }
+type ChatKitWorkflowTracing struct{ ... }
+type ChatModel = shared.ChatModel
+type ChatService struct{ ... }
+    func NewChatService(opts ...option.RequestOption) (r ChatService)
+type ChatSession struct{ ... }
+type ChatSessionAutomaticThreadTitling struct{ ... }
+type ChatSessionChatKitConfiguration struct{ ... }
+type ChatSessionChatKitConfigurationParam struct{ ... }
+type ChatSessionChatKitConfigurationParamAutomaticThreadTitling struct{ ... }
+type ChatSessionChatKitConfigurationParamFileUpload struct{ ... }
+type ChatSessionChatKitConfigurationParamHistory struct{ ... }
+type ChatSessionExpiresAfterParam struct{ ... }
+type ChatSessionFileUpload struct{ ... }
+type ChatSessionHistory struct{ ... }
+type ChatSessionRateLimits struct{ ... }
+type ChatSessionRateLimitsParam struct{ ... }
+type ChatSessionStatus string
+    const ChatSessionStatusActive ChatSessionStatus = "active" ...
+type ChatSessionWorkflowParam struct{ ... }
+type ChatSessionWorkflowParamStateVariableUnion struct{ ... }
+type ChatSessionWorkflowParamTracing struct{ ... }
+type Client struct{ ... }
+    func NewClient(opts ...option.RequestOption) (r Client)
+type CodeInterpreterLogs struct{ ... }
+type CodeInterpreterOutputImage struct{ ... }
+type CodeInterpreterOutputImageImage struct{ ... }
+type CodeInterpreterTool struct{ ... }
+type CodeInterpreterToolCall struct{ ... }
+type CodeInterpreterToolCallCodeInterpreter struct{ ... }
+type CodeInterpreterToolCallCodeInterpreterOutputImage struct{ ... }
+type CodeInterpreterToolCallCodeInterpreterOutputImageImage struct{ ... }
+type CodeInterpreterToolCallCodeInterpreterOutputLogs struct{ ... }
+type CodeInterpreterToolCallCodeInterpreterOutputUnion struct{ ... }
+type CodeInterpreterToolCallDelta struct{ ... }
+type CodeInterpreterToolCallDeltaCodeInterpreter struct{ ... }
+type CodeInterpreterToolCallDeltaCodeInterpreterOutputUnion struct{ ... }
+type CodeInterpreterToolParam struct{ ... }
+    func NewCodeInterpreterToolParam() CodeInterpreterToolParam
+type ComparisonFilter = shared.ComparisonFilter
+type ComparisonFilterParam = shared.ComparisonFilterParam
+type ComparisonFilterType = shared.ComparisonFilterType
+type ComparisonFilterValueArrayItemUnion = shared.ComparisonFilterValueArrayItemUnion
+type ComparisonFilterValueArrayItemUnionParam = shared.ComparisonFilterValueArrayItemUnionParam
+type ComparisonFilterValueUnion = shared.ComparisonFilterValueUnion
+type ComparisonFilterValueUnionParam = shared.ComparisonFilterValueUnionParam
+type Completion struct{ ... }
+type CompletionChoice struct{ ... }
+type CompletionChoiceFinishReason string
+    const CompletionChoiceFinishReasonStop CompletionChoiceFinishReason = "stop" ...
+type CompletionChoiceLogprobs struct{ ... }
+type CompletionNewParams struct{ ... }
+type CompletionNewParamsModel string
+    const CompletionNewParamsModelGPT3_5TurboInstruct CompletionNewParamsModel = "gpt-3.5-turbo-instruct" ...
+type CompletionNewParamsPromptUnion struct{ ... }
+type CompletionNewParamsStopUnion struct{ ... }
+type CompletionService struct{ ... }
+    func NewCompletionService(opts ...option.RequestOption) (r CompletionService)
+type CompletionUsage struct{ ... }
+type CompletionUsageCompletionTokensDetails struct{ ... }
+type CompletionUsagePromptTokensDetails struct{ ... }
+type CompoundFilter = shared.CompoundFilter
+type CompoundFilterParam = shared.CompoundFilterParam
+type CompoundFilterType = shared.CompoundFilterType
+type ContainerFileContentService struct{ ... }
+    func NewContainerFileContentService(opts ...option.RequestOption) (r ContainerFileContentService)
+type ContainerFileGetResponse struct{ ... }
+type ContainerFileListParams struct{ ... }
+type ContainerFileListParamsOrder string
+    const ContainerFileListParamsOrderAsc ContainerFileListParamsOrder = "asc" ...
+type ContainerFileListResponse struct{ ... }
+type ContainerFileNewParams struct{ ... }
+type ContainerFileNewResponse struct{ ... }
+type ContainerFileService struct{ ... }
+    func NewContainerFileService(opts ...option.RequestOption) (r ContainerFileService)
+type ContainerGetResponse struct{ ... }
+type ContainerGetResponseExpiresAfter struct{ ... }
+type ContainerGetResponseMemoryLimit string
+    const ContainerGetResponseMemoryLimit1g ContainerGetResponseMemoryLimit = "1g" ...
+type ContainerListParams struct{ ... }
+type ContainerListParamsOrder string
+    const ContainerListParamsOrderAsc ContainerListParamsOrder = "asc" ...
+type ContainerListResponse struct{ ... }
+type ContainerListResponseExpiresAfter struct{ ... }
+type ContainerListResponseMemoryLimit string
+    const ContainerListResponseMemoryLimit1g ContainerListResponseMemoryLimit = "1g" ...
+type ContainerNewParams struct{ ... }
+type ContainerNewParamsExpiresAfter struct{ ... }
+type ContainerNewParamsMemoryLimit string
+    const ContainerNewParamsMemoryLimit1g ContainerNewParamsMemoryLimit = "1g" ...
+type ContainerNewResponse struct{ ... }
+type ContainerNewResponseExpiresAfter struct{ ... }
+type ContainerNewResponseMemoryLimit string
+    const ContainerNewResponseMemoryLimit1g ContainerNewResponseMemoryLimit = "1g" ...
+type ContainerService struct{ ... }
+    func NewContainerService(opts ...option.RequestOption) (r ContainerService)
+type CreateEmbeddingResponse struct{ ... }
+type CreateEmbeddingResponseUsage struct{ ... }
+type CustomToolInputFormatGrammar = shared.CustomToolInputFormatGrammar
+type CustomToolInputFormatGrammarParam = shared.CustomToolInputFormatGrammarParam
+type CustomToolInputFormatText = shared.CustomToolInputFormatText
+type CustomToolInputFormatTextParam = shared.CustomToolInputFormatTextParam
+type CustomToolInputFormatUnion = shared.CustomToolInputFormatUnion
+type CustomToolInputFormatUnionParam = shared.CustomToolInputFormatUnionParam
+type DpoHyperparameters struct{ ... }
+type DpoHyperparametersBatchSizeUnion struct{ ... }
+type DpoHyperparametersBatchSizeUnionResp struct{ ... }
+type DpoHyperparametersBetaUnion struct{ ... }
+type DpoHyperparametersBetaUnionResp struct{ ... }
+type DpoHyperparametersLearningRateMultiplierUnion struct{ ... }
+type DpoHyperparametersLearningRateMultiplierUnionResp struct{ ... }
+type DpoHyperparametersNEpochsUnion struct{ ... }
+type DpoHyperparametersNEpochsUnionResp struct{ ... }
+type DpoHyperparametersResp struct{ ... }
+type DpoMethod struct{ ... }
+type DpoMethodParam struct{ ... }
+type Embedding struct{ ... }
+type EmbeddingModel = string
+    const EmbeddingModelTextEmbeddingAda002 EmbeddingModel = "text-embedding-ada-002" ...
+type EmbeddingNewParams struct{ ... }
+type EmbeddingNewParamsEncodingFormat string
+    const EmbeddingNewParamsEncodingFormatFloat EmbeddingNewParamsEncodingFormat = "float" ...
+type EmbeddingNewParamsInputUnion struct{ ... }
+type EmbeddingService struct{ ... }
+    func NewEmbeddingService(opts ...option.RequestOption) (r EmbeddingService)
+type Error = apierror.Error
+type ErrorObject = shared.ErrorObject
+type FileChunkingStrategyParamUnion struct{ ... }
+    func FileChunkingStrategyParamOfStatic(static StaticFileChunkingStrategyParam) FileChunkingStrategyParamUnion
+type FileChunkingStrategyUnion struct{ ... }
+type FileCitationAnnotation struct{ ... }
+type FileCitationAnnotationFileCitation struct{ ... }
+type FileCitationDeltaAnnotation struct{ ... }
+type FileCitationDeltaAnnotationFileCitation struct{ ... }
+type FileDeleted struct{ ... }
+type FileListParams struct{ ... }
+type FileListParamsOrder string
+    const FileListParamsOrderAsc FileListParamsOrder = "asc" ...
+type FileNewParams struct{ ... }
+type FileNewParamsExpiresAfter struct{ ... }
+type FileObject struct{ ... }
+type FileObjectPurpose string
+    const FileObjectPurposeAssistants FileObjectPurpose = "assistants" ...
+type FileObjectStatus string
+    const FileObjectStatusUploaded FileObjectStatus = "uploaded" ...
+type FilePathAnnotation struct{ ... }
+type FilePathAnnotationFilePath struct{ ... }
+type FilePathDeltaAnnotation struct{ ... }
+type FilePathDeltaAnnotationFilePath struct{ ... }
+type FilePurpose string
+    const FilePurposeAssistants FilePurpose = "assistants" ...
+type FileSearchTool struct{ ... }
+type FileSearchToolCall struct{ ... }
+type FileSearchToolCallDelta struct{ ... }
+type FileSearchToolCallFileSearch struct{ ... }
+type FileSearchToolCallFileSearchRankingOptions struct{ ... }
+type FileSearchToolCallFileSearchResult struct{ ... }
+type FileSearchToolCallFileSearchResultContent struct{ ... }
+type FileSearchToolFileSearch struct{ ... }
+type FileSearchToolFileSearchParam struct{ ... }
+type FileSearchToolFileSearchRankingOptions struct{ ... }
+type FileSearchToolFileSearchRankingOptionsParam struct{ ... }
+type FileSearchToolParam struct{ ... }
+type FileService struct{ ... }
+    func NewFileService(opts ...option.RequestOption) (r FileService)
+type FineTuningAlphaGraderRunParams struct{ ... }
+type FineTuningAlphaGraderRunParamsGraderUnion struct{ ... }
+type FineTuningAlphaGraderRunResponse struct{ ... }
+type FineTuningAlphaGraderRunResponseMetadata struct{ ... }
+type FineTuningAlphaGraderRunResponseMetadataErrors struct{ ... }
+type FineTuningAlphaGraderService struct{ ... }
+    func NewFineTuningAlphaGraderService(opts ...option.RequestOption) (r FineTuningAlphaGraderService)
+type FineTuningAlphaGraderValidateParams struct{ ... }
+type FineTuningAlphaGraderValidateParamsGraderUnion struct{ ... }
+type FineTuningAlphaGraderValidateResponse struct{ ... }
+type FineTuningAlphaGraderValidateResponseGraderUnion struct{ ... }
+type FineTuningAlphaGraderValidateResponseGraderUnionInput struct{ ... }
+type FineTuningAlphaService struct{ ... }
+    func NewFineTuningAlphaService(opts ...option.RequestOption) (r FineTuningAlphaService)
+type FineTuningCheckpointPermissionDeleteResponse struct{ ... }
+type FineTuningCheckpointPermissionGetParams struct{ ... }
+type FineTuningCheckpointPermissionGetParamsOrder string
+    const FineTuningCheckpointPermissionGetParamsOrderAscending FineTuningCheckpointPermissionGetParamsOrder = "ascending" ...
+type FineTuningCheckpointPermissionGetResponse struct{ ... }
+type FineTuningCheckpointPermissionGetResponseData struct{ ... }
+type FineTuningCheckpointPermissionNewParams struct{ ... }
+type FineTuningCheckpointPermissionNewResponse struct{ ... }
+type FineTuningCheckpointPermissionService struct{ ... }
+    func NewFineTuningCheckpointPermissionService(opts ...option.RequestOption) (r FineTuningCheckpointPermissionService)
+type FineTuningCheckpointService struct{ ... }
+    func NewFineTuningCheckpointService(opts ...option.RequestOption) (r FineTuningCheckpointService)
+type FineTuningJob struct{ ... }
+type FineTuningJobCheckpoint struct{ ... }
+type FineTuningJobCheckpointListParams struct{ ... }
+type FineTuningJobCheckpointMetrics struct{ ... }
+type FineTuningJobCheckpointService struct{ ... }
+    func NewFineTuningJobCheckpointService(opts ...option.RequestOption) (r FineTuningJobCheckpointService)
+type FineTuningJobError struct{ ... }
+type FineTuningJobEvent struct{ ... }
+type FineTuningJobEventLevel string
+    const FineTuningJobEventLevelInfo FineTuningJobEventLevel = "info" ...
+type FineTuningJobEventType string
+    const FineTuningJobEventTypeMessage FineTuningJobEventType = "message" ...
+type FineTuningJobHyperparameters struct{ ... }
+type FineTuningJobHyperparametersBatchSizeUnion struct{ ... }
+type FineTuningJobHyperparametersLearningRateMultiplierUnion struct{ ... }
+type FineTuningJobHyperparametersNEpochsUnion struct{ ... }
+type FineTuningJobListEventsParams struct{ ... }
+type FineTuningJobListParams struct{ ... }
+type FineTuningJobMethod struct{ ... }
+type FineTuningJobNewParams struct{ ... }
+type FineTuningJobNewParamsHyperparameters struct{ ... }
+type FineTuningJobNewParamsHyperparametersBatchSizeUnion struct{ ... }
+type FineTuningJobNewParamsHyperparametersLearningRateMultiplierUnion struct{ ... }
+type FineTuningJobNewParamsHyperparametersNEpochsUnion struct{ ... }
+type FineTuningJobNewParamsIntegration struct{ ... }
+type FineTuningJobNewParamsIntegrationWandb struct{ ... }
+type FineTuningJobNewParamsMethod struct{ ... }
+type FineTuningJobNewParamsModel string
+    const FineTuningJobNewParamsModelBabbage002 FineTuningJobNewParamsModel = "babbage-002" ...
+type FineTuningJobService struct{ ... }
+    func NewFineTuningJobService(opts ...option.RequestOption) (r FineTuningJobService)
+type FineTuningJobStatus string
+    const FineTuningJobStatusValidatingFiles FineTuningJobStatus = "validating_files" ...
+type FineTuningJobWandbIntegration struct{ ... }
+type FineTuningJobWandbIntegrationObject struct{ ... }
+type FineTuningMethodService struct{ ... }
+    func NewFineTuningMethodService(opts ...option.RequestOption) (r FineTuningMethodService)
+type FineTuningService struct{ ... }
+    func NewFineTuningService(opts ...option.RequestOption) (r FineTuningService)
+type FinishedChatCompletionToolCall struct{ ... }
+type FunctionDefinition = shared.FunctionDefinition
+type FunctionDefinitionParam = shared.FunctionDefinitionParam
+type FunctionParameters = shared.FunctionParameters
+type FunctionTool struct{ ... }
+type FunctionToolCall struct{ ... }
+type FunctionToolCallDelta struct{ ... }
+type FunctionToolCallDeltaFunction struct{ ... }
+type FunctionToolCallFunction struct{ ... }
+type FunctionToolParam struct{ ... }
+type GraderGraderModelService struct{ ... }
+    func NewGraderGraderModelService(opts ...option.RequestOption) (r GraderGraderModelService)
+type GraderInputInputImage struct{ ... }
+type GraderInputInputImageParam struct{ ... }
+type GraderInputOutputText struct{ ... }
+type GraderInputOutputTextParam struct{ ... }
+type GraderInputUnion struct{ ... }
+type GraderInputUnionParam struct{ ... }
+type GraderInputs []GraderInputUnion
+type GraderInputsParam []GraderInputUnionParam
+type GraderService struct{ ... }
+    func NewGraderService(opts ...option.RequestOption) (r GraderService)
+type Image struct{ ... }
+type ImageEditCompletedEvent struct{ ... }
+type ImageEditCompletedEventBackground string
+    const ImageEditCompletedEventBackgroundTransparent ImageEditCompletedEventBackground = "transparent" ...
+type ImageEditCompletedEventOutputFormat string
+    const ImageEditCompletedEventOutputFormatPNG ImageEditCompletedEventOutputFormat = "png" ...
+type ImageEditCompletedEventQuality string
+    const ImageEditCompletedEventQualityLow ImageEditCompletedEventQuality = "low" ...
+type ImageEditCompletedEventSize string
+    const ImageEditCompletedEventSize1024x1024 ImageEditCompletedEventSize = "1024x1024" ...
+type ImageEditCompletedEventUsage struct{ ... }
+type ImageEditCompletedEventUsageInputTokensDetails struct{ ... }
+type ImageEditParams struct{ ... }
+type ImageEditParamsBackground string
+    const ImageEditParamsBackgroundTransparent ImageEditParamsBackground = "transparent" ...
+type ImageEditParamsImageUnion struct{ ... }
+type ImageEditParamsInputFidelity string
+    const ImageEditParamsInputFidelityHigh ImageEditParamsInputFidelity = "high" ...
+type ImageEditParamsOutputFormat string
+    const ImageEditParamsOutputFormatPNG ImageEditParamsOutputFormat = "png" ...
+type ImageEditParamsQuality string
+    const ImageEditParamsQualityStandard ImageEditParamsQuality = "standard" ...
+type ImageEditParamsResponseFormat string
+    const ImageEditParamsResponseFormatURL ImageEditParamsResponseFormat = "url" ...
+type ImageEditParamsSize string
+    const ImageEditParamsSize256x256 ImageEditParamsSize = "256x256" ...
+type ImageEditPartialImageEvent struct{ ... }
+type ImageEditPartialImageEventBackground string
+    const ImageEditPartialImageEventBackgroundTransparent ImageEditPartialImageEventBackground = "transparent" ...
+type ImageEditPartialImageEventOutputFormat string
+    const ImageEditPartialImageEventOutputFormatPNG ImageEditPartialImageEventOutputFormat = "png" ...
+type ImageEditPartialImageEventQuality string
+    const ImageEditPartialImageEventQualityLow ImageEditPartialImageEventQuality = "low" ...
+type ImageEditPartialImageEventSize string
+    const ImageEditPartialImageEventSize1024x1024 ImageEditPartialImageEventSize = "1024x1024" ...
+type ImageEditStreamEventUnion struct{ ... }
+type ImageFile struct{ ... }
+type ImageFileContentBlock struct{ ... }
+type ImageFileContentBlockParam struct{ ... }
+type ImageFileDelta struct{ ... }
+type ImageFileDeltaBlock struct{ ... }
+type ImageFileDeltaDetail string
+    const ImageFileDeltaDetailAuto ImageFileDeltaDetail = "auto" ...
+type ImageFileDetail string
+    const ImageFileDetailAuto ImageFileDetail = "auto" ...
+type ImageFileParam struct{ ... }
+type ImageGenCompletedEvent struct{ ... }
+type ImageGenCompletedEventBackground string
+    const ImageGenCompletedEventBackgroundTransparent ImageGenCompletedEventBackground = "transparent" ...
+type ImageGenCompletedEventOutputFormat string
+    const ImageGenCompletedEventOutputFormatPNG ImageGenCompletedEventOutputFormat = "png" ...
+type ImageGenCompletedEventQuality string
+    const ImageGenCompletedEventQualityLow ImageGenCompletedEventQuality = "low" ...
+type ImageGenCompletedEventSize string
+    const ImageGenCompletedEventSize1024x1024 ImageGenCompletedEventSize = "1024x1024" ...
+type ImageGenCompletedEventUsage struct{ ... }
+type ImageGenCompletedEventUsageInputTokensDetails struct{ ... }
+type ImageGenPartialImageEvent struct{ ... }
+type ImageGenPartialImageEventBackground string
+    const ImageGenPartialImageEventBackgroundTransparent ImageGenPartialImageEventBackground = "transparent" ...
+type ImageGenPartialImageEventOutputFormat string
+    const ImageGenPartialImageEventOutputFormatPNG ImageGenPartialImageEventOutputFormat = "png" ...
+type ImageGenPartialImageEventQuality string
+    const ImageGenPartialImageEventQualityLow ImageGenPartialImageEventQuality = "low" ...
+type ImageGenPartialImageEventSize string
+    const ImageGenPartialImageEventSize1024x1024 ImageGenPartialImageEventSize = "1024x1024" ...
+type ImageGenStreamEventUnion struct{ ... }
+type ImageGenerateParams struct{ ... }
+type ImageGenerateParamsBackground string
+    const ImageGenerateParamsBackgroundTransparent ImageGenerateParamsBackground = "transparent" ...
+type ImageGenerateParamsModeration string
+    const ImageGenerateParamsModerationLow ImageGenerateParamsModeration = "low" ...
+type ImageGenerateParamsOutputFormat string
+    const ImageGenerateParamsOutputFormatPNG ImageGenerateParamsOutputFormat = "png" ...
+type ImageGenerateParamsQuality string
+    const ImageGenerateParamsQualityStandard ImageGenerateParamsQuality = "standard" ...
+type ImageGenerateParamsResponseFormat string
+    const ImageGenerateParamsResponseFormatURL ImageGenerateParamsResponseFormat = "url" ...
+type ImageGenerateParamsSize string
+    const ImageGenerateParamsSizeAuto ImageGenerateParamsSize = "auto" ...
+type ImageGenerateParamsStyle string
+    const ImageGenerateParamsStyleVivid ImageGenerateParamsStyle = "vivid" ...
+type ImageModel = string
+    const ImageModelGPTImage1_5 ImageModel = "gpt-image-1.5" ...
+type ImageNewVariationParams struct{ ... }
+type ImageNewVariationParamsResponseFormat string
+    const ImageNewVariationParamsResponseFormatURL ImageNewVariationParamsResponseFormat = "url" ...
+type ImageNewVariationParamsSize string
+    const ImageNewVariationParamsSize256x256 ImageNewVariationParamsSize = "256x256" ...
+type ImageService struct{ ... }
+    func NewImageService(opts ...option.RequestOption) (r ImageService)
+type ImageURL struct{ ... }
+type ImageURLContentBlock struct{ ... }
+type ImageURLContentBlockParam struct{ ... }
+type ImageURLDelta struct{ ... }
+type ImageURLDeltaBlock struct{ ... }
+type ImageURLDeltaDetail string
+    const ImageURLDeltaDetailAuto ImageURLDeltaDetail = "auto" ...
+type ImageURLDetail string
+    const ImageURLDetailAuto ImageURLDetail = "auto" ...
+type ImageURLParam struct{ ... }
+type ImagesResponse struct{ ... }
+type ImagesResponseBackground string
+    const ImagesResponseBackgroundTransparent ImagesResponseBackground = "transparent" ...
+type ImagesResponseOutputFormat string
+    const ImagesResponseOutputFormatPNG ImagesResponseOutputFormat = "png" ...
+type ImagesResponseQuality string
+    const ImagesResponseQualityLow ImagesResponseQuality = "low" ...
+type ImagesResponseSize string
+    const ImagesResponseSize1024x1024 ImagesResponseSize = "1024x1024" ...
+type ImagesResponseUsage struct{ ... }
+type ImagesResponseUsageInputTokensDetails struct{ ... }
+type ImagesResponseUsageOutputTokensDetails struct{ ... }
+type LabelModelGrader struct{ ... }
+type LabelModelGraderInput struct{ ... }
+type LabelModelGraderInputContentInputImage struct{ ... }
+type LabelModelGraderInputContentInputImageParam struct{ ... }
+type LabelModelGraderInputContentOutputText struct{ ... }
+type LabelModelGraderInputContentOutputTextParam struct{ ... }
+type LabelModelGraderInputContentUnion struct{ ... }
+type LabelModelGraderInputContentUnionParam struct{ ... }
+type LabelModelGraderInputParam struct{ ... }
+type LabelModelGraderParam struct{ ... }
+type Message struct{ ... }
+type MessageAttachment struct{ ... }
+type MessageAttachmentToolFileSearchTool struct{ ... }
+type MessageAttachmentToolUnion struct{ ... }
+type MessageContentDeltaUnion struct{ ... }
+type MessageContentPartParamUnion struct{ ... }
+    func MessageContentPartParamOfImageFile(imageFile ImageFileParam) MessageContentPartParamUnion
+    func MessageContentPartParamOfImageURL(imageURL ImageURLParam) MessageContentPartParamUnion
+    func MessageContentPartParamOfText(text string) MessageContentPartParamUnion
+type MessageContentUnion struct{ ... }
+type MessageCreationStepDetails struct{ ... }
+type MessageCreationStepDetailsMessageCreation struct{ ... }
+type MessageDeleted struct{ ... }
+type MessageDelta struct{ ... }
+type MessageDeltaEvent struct{ ... }
+type MessageDeltaRole string
+    const MessageDeltaRoleUser MessageDeltaRole = "user" ...
+type MessageIncompleteDetails struct{ ... }
+type MessageRole string
+    const MessageRoleUser MessageRole = "user" ...
+type MessageStatus string
+    const MessageStatusInProgress MessageStatus = "in_progress" ...
+type Metadata = shared.Metadata
+type Model struct{ ... }
+type ModelDeleted struct{ ... }
+type ModelService struct{ ... }
+    func NewModelService(opts ...option.RequestOption) (r ModelService)
+type Moderation struct{ ... }
+type ModerationCategories struct{ ... }
+type ModerationCategoryAppliedInputTypes struct{ ... }
+type ModerationCategoryScores struct{ ... }
+type ModerationImageURLInputImageURLParam struct{ ... }
+type ModerationImageURLInputParam struct{ ... }
+type ModerationModel = string
+    const ModerationModelOmniModerationLatest ModerationModel = "omni-moderation-latest" ...
+type ModerationMultiModalInputUnionParam struct{ ... }
+    func ModerationMultiModalInputParamOfImageURL(imageURL ModerationImageURLInputImageURLParam) ModerationMultiModalInputUnionParam
+    func ModerationMultiModalInputParamOfText(text string) ModerationMultiModalInputUnionParam
+type ModerationNewParams struct{ ... }
+type ModerationNewParamsInputUnion struct{ ... }
+type ModerationNewResponse struct{ ... }
+type ModerationService struct{ ... }
+    func NewModerationService(opts ...option.RequestOption) (r ModerationService)
+type ModerationTextInputParam struct{ ... }
+type MultiGrader struct{ ... }
+type MultiGraderGradersUnion struct{ ... }
+type MultiGraderGradersUnionInput struct{ ... }
+type MultiGraderGradersUnionParam struct{ ... }
+type MultiGraderParam struct{ ... }
+type OtherFileChunkingStrategyObject struct{ ... }
+type PythonGrader struct{ ... }
+type PythonGraderParam struct{ ... }
+type Reasoning = shared.Reasoning
+type ReasoningEffort = shared.ReasoningEffort
+type ReasoningGenerateSummary = shared.ReasoningGenerateSummary
+type ReasoningParam = shared.ReasoningParam
+type ReasoningSummary = shared.ReasoningSummary
+type RefusalContentBlock struct{ ... }
+type RefusalDeltaBlock struct{ ... }
+type ReinforcementHyperparameters struct{ ... }
+type ReinforcementHyperparametersBatchSizeUnion struct{ ... }
+type ReinforcementHyperparametersBatchSizeUnionResp struct{ ... }
+type ReinforcementHyperparametersComputeMultiplierUnion struct{ ... }
+type ReinforcementHyperparametersComputeMultiplierUnionResp struct{ ... }
+type ReinforcementHyperparametersEvalIntervalUnion struct{ ... }
+type ReinforcementHyperparametersEvalIntervalUnionResp struct{ ... }
+type ReinforcementHyperparametersEvalSamplesUnion struct{ ... }
+type ReinforcementHyperparametersEvalSamplesUnionResp struct{ ... }
+type ReinforcementHyperparametersLearningRateMultiplierUnion struct{ ... }
+type ReinforcementHyperparametersLearningRateMultiplierUnionResp struct{ ... }
+type ReinforcementHyperparametersNEpochsUnion struct{ ... }
+type ReinforcementHyperparametersNEpochsUnionResp struct{ ... }
+type ReinforcementHyperparametersReasoningEffort string
+    const ReinforcementHyperparametersReasoningEffortDefault ReinforcementHyperparametersReasoningEffort = "default" ...
+type ReinforcementHyperparametersResp struct{ ... }
+type ReinforcementMethod struct{ ... }
+type ReinforcementMethodGraderUnion struct{ ... }
+type ReinforcementMethodGraderUnionInput struct{ ... }
+type ReinforcementMethodGraderUnionParam struct{ ... }
+type ReinforcementMethodParam struct{ ... }
+type RequiredActionFunctionToolCall struct{ ... }
+type RequiredActionFunctionToolCallFunction struct{ ... }
+type ResponseFormatJSONObject = shared.ResponseFormatJSONObject
+type ResponseFormatJSONObjectParam = shared.ResponseFormatJSONObjectParam
+type ResponseFormatJSONSchema = shared.ResponseFormatJSONSchema
+type ResponseFormatJSONSchemaJSONSchema = shared.ResponseFormatJSONSchemaJSONSchema
+type ResponseFormatJSONSchemaJSONSchemaParam = shared.ResponseFormatJSONSchemaJSONSchemaParam
+type ResponseFormatJSONSchemaParam = shared.ResponseFormatJSONSchemaParam
+type ResponseFormatText = shared.ResponseFormatText
+type ResponseFormatTextParam = shared.ResponseFormatTextParam
+type ResponsesModel = shared.ResponsesModel
+type Run struct{ ... }
+type RunIncompleteDetails struct{ ... }
+type RunLastError struct{ ... }
+type RunRequiredAction struct{ ... }
+type RunRequiredActionSubmitToolOutputs struct{ ... }
+type RunStatus string
+    const RunStatusQueued RunStatus = "queued" ...
+type RunStep struct{ ... }
+type RunStepDelta struct{ ... }
+type RunStepDeltaEvent struct{ ... }
+type RunStepDeltaMessageDelta struct{ ... }
+type RunStepDeltaMessageDeltaMessageCreation struct{ ... }
+type RunStepDeltaStepDetailsUnion struct{ ... }
+type RunStepInclude string
+    const RunStepIncludeStepDetailsToolCallsFileSearchResultsContent RunStepInclude = "step_details.tool_calls[*].file_search.results[*].content"
+type RunStepLastError struct{ ... }
+type RunStepStatus string
+    const RunStepStatusInProgress RunStepStatus = "in_progress" ...
+type RunStepStepDetailsUnion struct{ ... }
+type RunStepType string
+    const RunStepTypeMessageCreation RunStepType = "message_creation" ...
+type RunStepUsage struct{ ... }
+type RunTruncationStrategy struct{ ... }
+type RunUsage struct{ ... }
+type ScoreModelGrader struct{ ... }
+type ScoreModelGraderInput struct{ ... }
+type ScoreModelGraderInputContentInputImage struct{ ... }
+type ScoreModelGraderInputContentInputImageParam struct{ ... }
+type ScoreModelGraderInputContentOutputText struct{ ... }
+type ScoreModelGraderInputContentOutputTextParam struct{ ... }
+type ScoreModelGraderInputContentUnion struct{ ... }
+type ScoreModelGraderInputContentUnionParam struct{ ... }
+type ScoreModelGraderInputParam struct{ ... }
+type ScoreModelGraderParam struct{ ... }
+type ScoreModelGraderSamplingParams struct{ ... }
+type ScoreModelGraderSamplingParamsParam struct{ ... }
+type SpeechModel = string
+    const SpeechModelTTS1 SpeechModel = "tts-1" ...
+type StaticFileChunkingStrategy struct{ ... }
+type StaticFileChunkingStrategyObject struct{ ... }
+type StaticFileChunkingStrategyObjectParam struct{ ... }
+type StaticFileChunkingStrategyParam struct{ ... }
+type StringCheckGrader struct{ ... }
+type StringCheckGraderOperation string
+    const StringCheckGraderOperationEq StringCheckGraderOperation = "eq" ...
+type StringCheckGraderParam struct{ ... }
+type SupervisedHyperparameters struct{ ... }
+type SupervisedHyperparametersBatchSizeUnion struct{ ... }
+type SupervisedHyperparametersBatchSizeUnionResp struct{ ... }
+type SupervisedHyperparametersLearningRateMultiplierUnion struct{ ... }
+type SupervisedHyperparametersLearningRateMultiplierUnionResp struct{ ... }
+type SupervisedHyperparametersNEpochsUnion struct{ ... }
+type SupervisedHyperparametersNEpochsUnionResp struct{ ... }
+type SupervisedHyperparametersResp struct{ ... }
+type SupervisedMethod struct{ ... }
+type SupervisedMethodParam struct{ ... }
+type Text struct{ ... }
+type TextContentBlock struct{ ... }
+type TextContentBlockParam struct{ ... }
+type TextDelta struct{ ... }
+type TextDeltaBlock struct{ ... }
+type TextSimilarityGrader struct{ ... }
+type TextSimilarityGraderEvaluationMetric string
+    const TextSimilarityGraderEvaluationMetricCosine TextSimilarityGraderEvaluationMetric = "cosine" ...
+type TextSimilarityGraderParam struct{ ... }
+type Thread struct{ ... }
+type ThreadDeleted struct{ ... }
+type ThreadToolResources struct{ ... }
+type ThreadToolResourcesCodeInterpreter struct{ ... }
+type ThreadToolResourcesFileSearch struct{ ... }
+type ToolCallDeltaObject struct{ ... }
+type ToolCallDeltaUnion struct{ ... }
+type ToolCallUnion struct{ ... }
+type ToolCallsStepDetails struct{ ... }
+type Transcription struct{ ... }
+type TranscriptionInclude string
+    const TranscriptionIncludeLogprobs TranscriptionInclude = "logprobs"
+type TranscriptionLogprob struct{ ... }
+type TranscriptionSegment struct{ ... }
+type TranscriptionStreamEventUnion struct{ ... }
+type TranscriptionStreamEventUnionLogprobs struct{ ... }
+type TranscriptionTextDeltaEvent struct{ ... }
+type TranscriptionTextDeltaEventLogprob struct{ ... }
+type TranscriptionTextDoneEvent struct{ ... }
+type TranscriptionTextDoneEventLogprob struct{ ... }
+type TranscriptionTextDoneEventUsage struct{ ... }
+type TranscriptionTextDoneEventUsageInputTokenDetails struct{ ... }
+type TranscriptionTextSegmentEvent struct{ ... }
+type TranscriptionUsageDuration struct{ ... }
+type TranscriptionUsageTokens struct{ ... }
+type TranscriptionUsageTokensInputTokenDetails struct{ ... }
+type TranscriptionUsageUnion struct{ ... }
+type TranscriptionVerbose struct{ ... }
+type TranscriptionVerboseUsage struct{ ... }
+type TranscriptionWord struct{ ... }
+type Translation struct{ ... }
+type Upload struct{ ... }
+type UploadCompleteParams struct{ ... }
+type UploadNewParams struct{ ... }
+type UploadNewParamsExpiresAfter struct{ ... }
+type UploadPart struct{ ... }
+type UploadPartNewParams struct{ ... }
+type UploadPartService struct{ ... }
+    func NewUploadPartService(opts ...option.RequestOption) (r UploadPartService)
+type UploadService struct{ ... }
+    func NewUploadService(opts ...option.RequestOption) (r UploadService)
+type UploadStatus string
+    const UploadStatusPending UploadStatus = "pending" ...
+type VectorStore struct{ ... }
+type VectorStoreDeleted struct{ ... }
+type VectorStoreExpiresAfter struct{ ... }
+type VectorStoreFile struct{ ... }
+type VectorStoreFileAttributeUnion struct{ ... }
+type VectorStoreFileBatch struct{ ... }
+type VectorStoreFileBatchFileCounts struct{ ... }
+type VectorStoreFileBatchListFilesParams struct{ ... }
+type VectorStoreFileBatchListFilesParamsFilter string
+    const VectorStoreFileBatchListFilesParamsFilterInProgress VectorStoreFileBatchListFilesParamsFilter = "in_progress" ...
+type VectorStoreFileBatchListFilesParamsOrder string
+    const VectorStoreFileBatchListFilesParamsOrderAsc VectorStoreFileBatchListFilesParamsOrder = "asc" ...
+type VectorStoreFileBatchNewParams struct{ ... }
+type VectorStoreFileBatchNewParamsAttributeUnion struct{ ... }
+type VectorStoreFileBatchNewParamsFile struct{ ... }
+type VectorStoreFileBatchNewParamsFileAttributeUnion struct{ ... }
+type VectorStoreFileBatchService struct{ ... }
+    func NewVectorStoreFileBatchService(opts ...option.RequestOption) (r VectorStoreFileBatchService)
+type VectorStoreFileBatchStatus string
+    const VectorStoreFileBatchStatusInProgress VectorStoreFileBatchStatus = "in_progress" ...
+type VectorStoreFileContentResponse struct{ ... }
+type VectorStoreFileCounts struct{ ... }
+type VectorStoreFileDeleted struct{ ... }
+type VectorStoreFileLastError struct{ ... }
+type VectorStoreFileListParams struct{ ... }
+type VectorStoreFileListParamsFilter string
+    const VectorStoreFileListParamsFilterInProgress VectorStoreFileListParamsFilter = "in_progress" ...
+type VectorStoreFileListParamsOrder string
+    const VectorStoreFileListParamsOrderAsc VectorStoreFileListParamsOrder = "asc" ...
+type VectorStoreFileNewParams struct{ ... }
+type VectorStoreFileNewParamsAttributeUnion struct{ ... }
+type VectorStoreFileService struct{ ... }
+    func NewVectorStoreFileService(opts ...option.RequestOption) (r VectorStoreFileService)
+type VectorStoreFileStatus string
+    const VectorStoreFileStatusInProgress VectorStoreFileStatus = "in_progress" ...
+type VectorStoreFileUpdateParams struct{ ... }
+type VectorStoreFileUpdateParamsAttributeUnion struct{ ... }
+type VectorStoreListParams struct{ ... }
+type VectorStoreListParamsOrder string
+    const VectorStoreListParamsOrderAsc VectorStoreListParamsOrder = "asc" ...
+type VectorStoreNewParams struct{ ... }
+type VectorStoreNewParamsExpiresAfter struct{ ... }
+type VectorStoreSearchParams struct{ ... }
+type VectorStoreSearchParamsFiltersUnion struct{ ... }
+type VectorStoreSearchParamsQueryUnion struct{ ... }
+type VectorStoreSearchParamsRankingOptions struct{ ... }
+type VectorStoreSearchResponse struct{ ... }
+type VectorStoreSearchResponseAttributeUnion struct{ ... }
+type VectorStoreSearchResponseContent struct{ ... }
+type VectorStoreService struct{ ... }
+    func NewVectorStoreService(opts ...option.RequestOption) (r VectorStoreService)
+type VectorStoreStatus string
+    const VectorStoreStatusExpired VectorStoreStatus = "expired" ...
+type VectorStoreUpdateParams struct{ ... }
+type VectorStoreUpdateParamsExpiresAfter struct{ ... }
+type Video struct{ ... }
+type VideoCreateError struct{ ... }
+type VideoDeleteResponse struct{ ... }
+type VideoDownloadContentParams struct{ ... }
+type VideoDownloadContentParamsVariant string
+    const VideoDownloadContentParamsVariantVideo VideoDownloadContentParamsVariant = "video" ...
+type VideoListParams struct{ ... }
+type VideoListParamsOrder string
+    const VideoListParamsOrderAsc VideoListParamsOrder = "asc" ...
+type VideoModel string
+    const VideoModelSora2 VideoModel = "sora-2" ...
+type VideoNewParams struct{ ... }
+type VideoRemixParams struct{ ... }
+type VideoSeconds string
+    const VideoSeconds4 VideoSeconds = "4" ...
+type VideoService struct{ ... }
+    func NewVideoService(opts ...option.RequestOption) (r VideoService)
+type VideoSize string
+    const VideoSize720x1280 VideoSize = "720x1280" ...
+type VideoStatus string
+    const VideoStatusQueued VideoStatus = "queued" ...

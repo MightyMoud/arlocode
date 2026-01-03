@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/mightymoud/sidekick-agent/internal/butler"
-	"github.com/mightymoud/sidekick-agent/internal/butler/providers/gemini"
+	openai_provider "github.com/mightymoud/sidekick-agent/internal/butler/providers/openai"
 )
 
 func main() {
@@ -12,8 +12,8 @@ func main() {
 
 	prompt := "Read the file 'gemini.go' in folder of internal/butler/providers/gemini/ and tell me what is it missing?"
 
-	geminiProvider := gemini.New(ctx)
-	model := geminiProvider.Model(ctx, "gemini-2.5-flash")
+	openaiProvider := openai_provider.New(ctx)
+	model := openaiProvider.Model(ctx, "gpt-5.1")
 	runnableAgent := butler.NewAgent(model)
 	runnableAgent.Run(ctx, prompt)
 }
