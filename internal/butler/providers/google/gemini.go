@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 	"strings"
 
 	"github.com/mightymoud/sidekick-agent/internal/butler"
@@ -13,14 +12,6 @@ import (
 	"github.com/mightymoud/sidekick-agent/internal/butler/tools"
 	"google.golang.org/genai"
 )
-
-func readFile(path string) (string, error) {
-	b, err := os.ReadFile(path)
-	if err != nil {
-		return "", err
-	}
-	return string(b), nil
-}
 
 type GeminiProvider struct {
 	client *genai.Client

@@ -50,24 +50,19 @@ func (a *Agent) HandleToolCall(ctx context.Context, call tools.ToolCall) (string
 		}
 	}
 
-	// 2. Create a fresh instance of the specific Arg struct (e.g., ReadFileArgs)
-	// reflect.New returns a pointer to the type
 	argsPtr := reflect.New(tool.ArgType).Interface()
 
-	// 3. Convert the map[string]any into the concrete struct.
+	// Convert the map[string]any into the concrete struct.
 	// This works for ANY provider because we go through JSON bytes first.
 	bytes, _ := json.Marshal(call.Arguments)
 	if err := json.Unmarshal(bytes, argsPtr); err != nil {
 		return "", fmt.Errorf("failed to unmarshal tool args: %w", err)
 	}
 
-	// 4. Execute the function.
-	// .Elem() dereferences the pointer so we pass the struct value.
 	results := tool.Handler.Call([]reflect.Value{
 		reflect.ValueOf(argsPtr).Elem(),
 	})
 
-	// 5. Handle potential errors from the tool itself
 	if len(results) > 1 && !results[1].IsNil() {
 		return "", results[1].Interface().(error)
 	}
