@@ -9,13 +9,13 @@ type Tool struct {
 	ArgType     reflect.Type
 }
 
-func NewButlerTool(name, desc string, fn interface{}) *Tool {
+func NewButlerTool(name, desc string, fn interface{}) Tool {
 	// Reflect to get the function and its signature
 	fnValue := reflect.ValueOf(fn)
 	fnType := fnValue.Type()
 
 	// Simplify -> tools take one arg as struct
-	return &Tool{
+	return Tool{
 		Name:        name,
 		Description: desc,
 		Handler:     fnValue,

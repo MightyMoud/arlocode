@@ -17,17 +17,7 @@ type Agent struct {
 }
 
 func NewAgent(l LLM) *Agent {
-	return &Agent{llm: l, memory: []memory.MemoryEntry{}, tools: []tools.Tool{}}
-}
-
-// Mock for Memory stuff later this is where Agent will use it
-func (a *Agent) AddMemoryEntry(entry memory.MemoryEntry) {
-	a.memory = append(a.memory, entry)
-}
-
-// Memory stuff later
-func (a *Agent) GetMemory() []memory.MemoryEntry {
-	return a.memory
+	return &Agent{llm: l, memory: []memory.MemoryEntry{}, tools: tools.StdToolset}
 }
 
 // Mods
@@ -39,6 +29,21 @@ func (a *Agent) WithMemory(memory []memory.MemoryEntry) *Agent {
 func (a *Agent) WitTools(tools []tools.Tool) *Agent {
 	a.tools = tools
 	return a
+}
+
+func (a *Agent) WithNoTools() *Agent {
+	a.tools = []tools.Tool{}
+	return a
+}
+
+// Mock for Memory stuff later this is where Agent will use it
+func (a *Agent) AddMemoryEntry(entry memory.MemoryEntry) {
+	a.memory = append(a.memory, entry)
+}
+
+// Memory stuff later
+func (a *Agent) GetMemory() []memory.MemoryEntry {
+	return a.memory
 }
 
 func (a *Agent) HandleToolCall(ctx context.Context, call tools.ToolCall) (string, error) {
