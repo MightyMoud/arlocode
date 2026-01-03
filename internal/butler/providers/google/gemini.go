@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/mightymoud/sidekick-agent/internal/butler"
-	"github.com/mightymoud/sidekick-agent/internal/butler/common"
+	"github.com/mightymoud/sidekick-agent/internal/butler/memory"
+	"github.com/mightymoud/sidekick-agent/internal/butler/providers"
+	"github.com/mightymoud/sidekick-agent/internal/butler/tools"
 	"google.golang.org/genai"
 )
 
@@ -46,93 +49,57 @@ type GeminiLLM struct {
 	client  *genai.Client
 }
 
-func (l GeminiLLM) Stream(ctx context.Context, memory []common.MemoryEntry) error {
+func (l GeminiLLM) Stream(ctx context.Context, memory []memory.MemoryEntry, agentTools []tools.Tool) (providers.ProviderResponse, error) {
+	geminiTools := makeGeminiTools(agentTools)
+
 	config := &genai.GenerateContentConfig{
+		Tools: geminiTools,
 		ThinkingConfig: &genai.ThinkingConfig{
 			IncludeThoughts: true,
 		},
 	}
-	history := []*genai.Content{}
-	for _, entry := range memory {
-		genAIEntry := genai.Content{
-			Role: entry.Role,
-			Parts: []*genai.Part{
-				{Text: entry.Message},
-			},
-		}
-		history = append(history, &genAIEntry)
-	}
-	fmt.Println(history)
 
-	for {
-		resp := l.client.Models.GenerateContentStream(ctx, l.modelID, history, config)
+	history := convertMemoryToGeminiHistory(memory)
+	resp := l.client.Models.GenerateContentStream(ctx, l.modelID, history, config)
 
-		var currentResponseParts []*genai.Part
-		var functionCalls []*genai.FunctionCall
+	var currentResponseText []string
+	var functionCalls []tools.ToolCall
 
-		for chunk, err := range resp {
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			for _, part := range chunk.Candidates[0].Content.Parts {
-				currentResponseParts = append(currentResponseParts, part)
-
-				if part.FunctionCall != nil {
-					// Ignore function calls for now
-				} else if part.Thought {
-					fmt.Printf("\n[Thinking]: %s", part.Text)
-				} else {
-					fmt.Printf("%s", part.Text)
-				}
-			}
-		}
-		modelResponseHistory := &genai.Content{
-			Role:  "model",
-			Parts: currentResponseParts,
-		}
-		history = append(history, modelResponseHistory)
-
-		if len(functionCalls) == 0 {
-			// No more functions to call, we are done!
-			break
+	for chunk, err := range resp {
+		if err != nil {
+			log.Fatal(err)
 		}
 
-		for _, fn := range functionCalls {
-			fmt.Printf("Calling tool: %s\n", fn.Name)
+		for _, part := range chunk.Candidates[0].Content.Parts {
 
-			var content string
-			if fn.Name == "readFile" {
-				path, ok := fn.Args["path"].(string)
-				if !ok {
-					content = "Error: invalid argument 'path'"
-				} else {
-					c, err := readFile(path)
-					if err != nil {
-						content = fmt.Sprintf("Error: %v", err)
-					} else {
-						content = c
-					}
-				}
+			if part.FunctionCall != nil {
+				functionCalls = append(functionCalls, tools.ToolCall{
+					ID:           part.FunctionCall.ID,
+					FunctionName: part.FunctionCall.Name,
+					Arguments:    part.FunctionCall.Args,
+				})
+			} else if part.Thought {
+				// will be replaced with TUI integration or hooks
+				fmt.Printf("\n[Thinking]: %s", part.Text)
 			} else {
-				content = fmt.Sprintf("Error: unknown tool %s", fn.Name)
+				// wil be replaced with TUI integration or hooks
+				fmt.Printf("%s", part.Text)
+				currentResponseText = append(currentResponseText, part.Text)
 			}
-			functionResponseHistory := &genai.Content{
-				Role: "user",
-				Parts: []*genai.Part{{
-					FunctionResponse: &genai.FunctionResponse{
-						Name:     fn.Name,
-						Response: map[string]any{"content": content},
-					},
-				}},
-			}
-			history = append(history, functionResponseHistory)
 		}
 	}
-	return nil
+
+	var textResponse strings.Builder
+	for _, part := range currentResponseText {
+		textResponse.WriteString(part)
+	}
+	return providers.ProviderResponse{
+		Text:      textResponse.String(),
+		ToolCalls: functionCalls,
+	}, nil
 }
 
-func (l GeminiLLM) Generate(ctx context.Context, memory []common.MemoryEntry) error {
+func (l GeminiLLM) Generate(ctx context.Context, memory []memory.MemoryEntry, tools []tools.Tool) error {
 	history := []*genai.Content{}
 	for _, entry := range memory {
 		genAIEntry := genai.Content{
