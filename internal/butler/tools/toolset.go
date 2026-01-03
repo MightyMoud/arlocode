@@ -3,42 +3,189 @@ package tools
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
+	"sync"
 )
 
-type AppendLinesArgs struct {
-	Path  string   `json:"path" jsonschema:"The absolute or relative path to the file"`
-	Lines []string `json:"lines" jsonschema:"A list of strings to append as new lines"`
-}
-
-func AppendLines(args AppendLinesArgs) (string, error) {
-	f, err := os.OpenFile(args.Path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return "", fmt.Errorf("failed to open file: %w", err)
-	}
-	defer f.Close()
-
-	content := strings.Join(args.Lines, "\n") + "\n"
-	if _, err := f.WriteString(content); err != nil {
-		return "", fmt.Errorf("failed to write to file: %w", err)
-	}
-
-	return fmt.Sprintf("Successfully added %d lines to %s", len(args.Lines), args.Path), nil
-}
-
-type ReadFileArgs struct {
+type readFileArgs struct {
 	Path string `json:"path" jsonschema:"The file path to read"`
 }
 
 // Then pass this wrapper function to NewButlerTool
-func ReadFileFn(args ReadFileArgs) (string, error) {
+func readFileFn(args readFileArgs) (string, error) {
 	bytesData, _ := os.ReadFile(args.Path)
 	return string(bytesData), nil
 }
 
-var appendLinesTool = NewButlerTool("append_lines", "Adds multiple lines to the end of a file", AppendLines)
-var readFileTool = NewButlerTool("read_file", "Reads a file from the user pc", ReadFileFn)
+type readFolderContentArgs struct {
+	FolderPath string `json:"folder_path" jsonschema:"The folder path to read all files from"`
+}
+
+func readFolderContentFn(args readFolderContentArgs) (string, error) {
+	var builder strings.Builder
+
+	err := filepath.Walk(args.FolderPath, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			relativePath, _ := filepath.Rel(args.FolderPath, path)
+			builder.WriteString(fmt.Sprintf("File: %s\n", relativePath))
+			data, readErr := os.ReadFile(path)
+			if readErr != nil {
+				return readErr
+			}
+			builder.WriteString(string(data) + "\n\n")
+		}
+		return nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	return builder.String(), nil
+}
+
+type listFolderContentsArgs struct {
+	FolderPath string `json:"folder_path" jsonschema:"The folder path to list contents of"`
+}
+
+func listFolderContents(args listFolderContentsArgs) (string, error) {
+	var builder strings.Builder
+
+	err := filepath.Walk(args.FolderPath, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		relativePath, _ := filepath.Rel(args.FolderPath, path)
+		if info.IsDir() {
+			builder.WriteString(fmt.Sprintf("Directory: %s\n", relativePath))
+		} else {
+			builder.WriteString(fmt.Sprintf("File: %s\n", relativePath))
+		}
+		return nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	return builder.String(), nil
+}
+
+type searchCodeArgs struct {
+	FolderPath string `json:"folder_path" jsonschema:"The folder path to search code in"`
+	Query      string `json:"query" jsonschema:"The search query to look for in the code"`
+}
+
+func searchCode(args searchCodeArgs) (string, error) {
+	var files []string
+
+	err := filepath.Walk(args.FolderPath, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			relativePath, _ := filepath.Rel(args.FolderPath, path)
+			files = append(files, relativePath)
+		}
+		return nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	if len(files) == 0 {
+		return "No matches found.", nil
+	}
+
+	resultChan := make(chan string)
+	var wg sync.WaitGroup
+
+	for _, relPath := range files {
+		wg.Add(1)
+		go func(relPath string) {
+			defer wg.Done()
+			fullPath := filepath.Join(args.FolderPath, relPath)
+			data, err := os.ReadFile(fullPath)
+			if err != nil {
+				// skip files that can't be read
+				return
+			}
+			lines := strings.Split(string(data), "\n")
+			for i, line := range lines {
+				if strings.Contains(line, args.Query) {
+					resultChan <- fmt.Sprintf("Found in file: %s, line: %d\n", relPath, i+1)
+				}
+			}
+		}(relPath)
+	}
+
+	go func() {
+		wg.Wait()
+		close(resultChan)
+	}()
+
+	var builder strings.Builder
+	for res := range resultChan {
+		builder.WriteString(res)
+	}
+
+	result := builder.String()
+	if result == "" {
+		return "No matches found.", nil
+	}
+	return result, nil
+}
+
+type applyEditArgs struct {
+	Path    string `json:"path" jsonschema:"The absolute or relative path to the file"`
+	OldText string `json:"old_text" jsonschema:"The exact text block to find"`
+	NewText string `json:"new_text" jsonschema:"The block text to replace it with"`
+}
+
+func applyEdit(req applyEditArgs) error {
+	// 1. Read the file
+	content, err := os.ReadFile(req.Path)
+	if err != nil {
+		return fmt.Errorf("failed to read file: %w", err)
+	}
+
+	fileString := string(content)
+
+	// 2. Safety Check: Does the old text exist?
+	count := strings.Count(fileString, req.OldText)
+	if count == 0 {
+		return fmt.Errorf("could not find the 'old_text' block in %s. Ensure formatting and whitespace match exactly", req.Path)
+	}
+	if count > 1 {
+		return fmt.Errorf("the 'old_text' block is ambiguous (found %d occurrences). Please provide more context", count)
+	}
+
+	// 3. Perform the replacement
+	newContent := strings.Replace(fileString, req.OldText, req.NewText, 1)
+
+	// 4. Write back to disk
+	err = os.WriteFile(req.Path, []byte(newContent), 0644)
+	if err != nil {
+		return fmt.Errorf("failed to write to file: %w", err)
+	}
+
+	return nil
+}
+
+var readFileTool = NewButlerTool("read_file", "Reads a file from the user pc", readFileFn)
+var readFolderTool = NewButlerTool("read_folder", "Reads all files from a folder on the user pc", readFolderContentFn)
+var listFolderContentsTool = NewButlerTool("list_folder_contents", "Lists all files and directories in a folder on the user pc - this tool will only list the files and won't read them", listFolderContents)
+var searchCodeTool = NewButlerTool("search_code", "Searches for a query string in all code files within a specified folder", searchCode)
+var applyEditTool = NewButlerTool("apply_edit", "Applies a code edit by replacing old text with new text in a specified file", applyEdit)
 var StdToolset = []Tool{
-	appendLinesTool,
 	readFileTool,
+	readFolderTool,
+	listFolderContentsTool,
+	searchCodeTool,
+	applyEditTool,
 }

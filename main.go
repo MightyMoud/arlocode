@@ -2,19 +2,23 @@ package main
 
 import (
 	"context"
-	"os"
 
 	"github.com/mightymoud/sidekick-agent/internal/butler"
-	"github.com/mightymoud/sidekick-agent/internal/butler/providers/openrouter"
+	"github.com/mightymoud/sidekick-agent/internal/butler/providers/gemini"
 )
 
 func main() {
 	ctx := context.Background()
 
-	prompt := "Read the file 'gemini.go' in folder of internal/butler/providers/gemini/ and tell me what is it missing?"
+	prompt := "Update the function listFolderContents and readFolderContentFn to ignore a .git folder"
 
-	openrouterProvider := openrouter.New(os.Getenv("OPENROUTER_API_KEY"))
-	model := openrouterProvider.Model(ctx, "x-ai/grok-code-fast-1")
-	runnableAgent := butler.NewAgent(model)
-	runnableAgent.Run(ctx, prompt)
+	// openrouterProvider := openrouter.New(ctx)
+	// model := openrouterProvider.Model(ctx, "x-ai/grok-code-fast-1")
+	// openrouterBasedAgent := butler.NewAgent(model)
+	// openrouterBasedAgent.Run(ctx, prompt)
+
+	geminiProvider := gemini.New(ctx)
+	model2 := geminiProvider.Model(ctx, "gemini-3-flash-preview")
+	geminiBasedAgent := butler.NewAgent(model2)
+	geminiBasedAgent.Run(ctx, prompt)
 }

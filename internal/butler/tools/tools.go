@@ -26,7 +26,8 @@ func NewButlerTool(name, desc string, fn interface{}) Tool {
 // ToolCall is a generic representation of an LLM's request to run a tool.
 // It is provider-agnostic.
 type ToolCall struct {
-	ID           string         // Unique ID from the LLM
-	FunctionName string         // e.g., "read_file"
-	Arguments    map[string]any // The raw arguments (unmarshaled from JSON)
+	ID               string         // Unique ID from the LLM
+	FunctionName     string         // e.g., "read_file"
+	Arguments        map[string]any // The raw arguments (unmarshaled from JSON)
+	ThoughtSignature []byte         // Thought signature for Gemini API
 }

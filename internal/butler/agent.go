@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/fatih/color"
 	"github.com/mightymoud/sidekick-agent/internal/butler/memory"
 	"github.com/mightymoud/sidekick-agent/internal/butler/tools"
 )
@@ -47,6 +48,7 @@ func (a *Agent) GetMemory() []memory.MemoryEntry {
 }
 
 func (a *Agent) HandleToolCall(ctx context.Context, call tools.ToolCall) (string, error) {
+	color.Blue("\nCalling function %s - with Arguments: %+v", call.FunctionName, call.Arguments)
 	var tool tools.Tool
 	for _, t := range a.tools {
 		if t.Name == call.FunctionName {
@@ -71,8 +73,15 @@ func (a *Agent) HandleToolCall(ctx context.Context, call tools.ToolCall) (string
 	if len(results) > 1 && !results[1].IsNil() {
 		return "", results[1].Interface().(error)
 	}
+	resultStr := results[0].String()
 
-	return results[0].String(), nil
+	if len(resultStr) > 100 {
+		color.Blue("Tool %s returned: %s", call.FunctionName, resultStr[:100])
+	} else {
+		color.Blue("Tool %s returned: %s", call.FunctionName, resultStr)
+	}
+
+	return resultStr, nil
 }
 
 func (a *Agent) Run(ctx context.Context, prompt string) error {

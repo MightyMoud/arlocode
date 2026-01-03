@@ -7,8 +7,10 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 	"strings"
 
+	"github.com/fatih/color"
 	"github.com/iamwavecut/gopenrouter"
 	"github.com/mightymoud/sidekick-agent/internal/butler"
 	"github.com/mightymoud/sidekick-agent/internal/butler/memory"
@@ -21,7 +23,11 @@ type OpenRouterProvider struct {
 }
 
 // returns a general api client from that provider
-func New(apiKey string) *OpenRouterProvider {
+func New(ctx context.Context) *OpenRouterProvider {
+	apiKey := os.Getenv("OPENROUTER_API_KEY")
+	if apiKey == "" {
+		log.Fatal("OPENROUTER_API_KEY environment variable is not set")
+	}
 	client := gopenrouter.NewClient(apiKey)
 	return &OpenRouterProvider{
 		client: client,
@@ -81,7 +87,9 @@ func (l OpenRouterLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, age
 				currentResponseText.WriteString(delta.Content)
 			}
 			if delta.Reasoning != "" {
-				fmt.Printf("%s", delta.Reasoning)
+				// fmt.Printf("%s", delta.Reasoning)
+				// color.Magenta("%s", delta.Reasoning)
+				color.RGB(255, 128, 0).Printf("%s", delta.Reasoning)
 				// currentResponseText.WriteString(delta.Reasoning)
 			}
 
@@ -106,10 +114,11 @@ func (l OpenRouterLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, age
 			}
 		}
 
-		if response.Usage != nil {
-			fmt.Printf("\n[Usage]: Prompt: %d, Completion: %d, Total: %d, Cost: %f\n",
-				response.Usage.PromptTokens, response.Usage.CompletionTokens, response.Usage.TotalTokens, response.Usage.Cost)
-		}
+		// Accumulate usage stats -> for later
+		// if response.Usage != nil {
+		// 	fmt.Printf("\n[Usage]: Prompt: %d, Completion: %d, Total: %d, Cost: %f\n",
+		// 		response.Usage.PromptTokens, response.Usage.CompletionTokens, response.Usage.TotalTokens, response.Usage.Cost)
+		// }
 	}
 
 	var toolCalls []tools.ToolCall

@@ -155,6 +155,7 @@ func convertMemoryToGeminiHistory(memory []memory.MemoryEntry) []*genai.Content 
 			}
 			for _, tc := range entry.ToolCalls {
 				parts = append(parts, &genai.Part{
+					ThoughtSignature: tc.ThoughtSignature,
 					FunctionCall: &genai.FunctionCall{
 						Name: tc.FunctionName,
 						Args: tc.Arguments,
