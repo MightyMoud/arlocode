@@ -142,6 +142,31 @@ func (a *Agent) Run(ctx context.Context, prompt string) error {
 		}
 
 		for _, call := range result.ToolCalls {
+			// Ask user for confirmation before executing tool
+			// var confirm bool
+			// if err := huh.NewConfirm().
+			// 	Title("Execute tool?").
+			// 	Description(fmt.Sprintf("Do you want to execute %s?", call.FunctionName)).
+			// 	Affirmative("Yes").
+			// 	Negative("No").
+			// 	Value(&confirm).
+			// 	WithTheme(huh.ThemeCatppuccin()).
+			// 	Run(); err != nil {
+			// 	color.Red("Error getting confirmation: %v", err)
+			// 	continue
+			// }
+
+			// if !confirm {
+			// 	color.Red("Tool call %s was cancelled by the user.", call.FunctionName)
+			// 	a.AddMemoryEntry(memory.MemoryEntry{
+			// 		Role:       "tool",
+			// 		Message:    "Tool call cancelled by user",
+			// 		ToolName:   call.FunctionName,
+			// 		ToolCallID: call.ID,
+			// 	})
+			// 	continue
+			// }
+
 			output, _ := a.HandleToolCall(ctx, call)
 
 			a.AddMemoryEntry(memory.MemoryEntry{

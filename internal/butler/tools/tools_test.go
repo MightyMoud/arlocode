@@ -385,3 +385,52 @@ func TestMakeFileFn(t *testing.T) {
 		t.Errorf("Expected overwritten content '%s', got '%s'", overwriteContent, string(overwrittenContent))
 	}
 }
+
+func TestRunCommand(t *testing.T) {
+	// Test empty command
+	args := runCommandArgs{
+		Command: "",
+	}
+	_, err := runCommand(args)
+	if err == nil {
+		t.Error("Expected error for empty command")
+	}
+
+	// Test simple echo command
+	args.Command = "echo 'Hello, World!'"
+	result, err := runCommand(args)
+	if err != nil {
+		t.Fatalf("runCommand failed for echo: %v", err)
+	}
+	if !strings.Contains(result, "Hello, World!") {
+		t.Errorf("Expected output to contain 'Hello, World!', got '%s'", result)
+	}
+
+	// Test command that outputs to stderr
+	args.Command = "sh -c 'echo \"Error message\" >&2'"
+	result, err = runCommand(args)
+	if err != nil {
+		t.Fatalf("runCommand failed for stderr test: %v", err)
+	}
+	if !strings.Contains(result, "Error message") {
+		t.Errorf("Expected output to contain 'Error message', got '%s'", result)
+	}
+
+	// Test command that fails
+	args.Command = "exit 1"
+	result, err = runCommand(args)
+	// Note: runCommand doesn't return an error for failed commands, just includes stderr
+	if result == "" {
+		t.Error("Expected some output for failed command")
+	}
+
+	// Test multi-line command
+	args.Command = "echo 'Line 1' && echo 'Line 2'"
+	result, err = runCommand(args)
+	if err != nil {
+		t.Fatalf("runCommand failed for multi-line: %v", err)
+	}
+	if !strings.Contains(result, "Line 1") || !strings.Contains(result, "Line 2") {
+		t.Errorf("Expected output to contain both lines, got '%s'", result)
+	}
+}

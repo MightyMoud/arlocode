@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -253,6 +254,53 @@ func makeFileWithContentFn(args makeFileWithContentArgs) (string, error) {
 	return fmt.Sprintf("File created at %s", args.Path), nil
 }
 
+type runCommandArgs struct {
+	Command string `json:"command" jsonschema:"The command to run on the user's system"`
+}
+
+// Risky and experimental tool - fix later
+func runCommand(args runCommandArgs) (string, error) {
+	// Import os/exec is needed, but we need to add it to imports
+	// For now, let's check if the command is empty
+	if args.Command == "" {
+		return "", fmt.Errorf("command cannot be empty")
+	}
+
+	// Split the command into name and arguments
+	// Using sh -c for shell command support
+	cmdArgs := []string{"/bin/sh", "-c", args.Command}
+
+	// Create the command
+	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
+
+	// Create buffers to capture stdout and stderr
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	// Run the command
+	err := cmd.Run()
+
+	// Combine stdout and stderr output
+	var output string
+	if stdout.Len() > 0 {
+		output += stdout.String()
+	}
+	if stderr.Len() > 0 {
+		if output != "" {
+			output += "\n"
+		}
+		output += "STDERR:\n" + stderr.String()
+	}
+
+	// If there's an error but no output, include the error message
+	if err != nil && output == "" {
+		output = fmt.Sprintf("Command execution failed: %v", err)
+	}
+
+	return output, nil
+}
+
 var readFileTool = NewButlerTool("read_file", "Reads a file from the user pc - do not use this to read content from a URL", readFileFn)
 var readFolderTool = NewButlerTool("read_folder", "Reads all files from a folder on the user pc", readFolderContentFn)
 var listFolderContentsTool = NewButlerTool("list_folder_contents", "Lists all files and directories in a folder on the user pc - this tool will only list the files and won't read them", listFolderContents)
@@ -260,6 +308,7 @@ var searchCodeTool = NewButlerTool("search_code", "Searches for a query string i
 var applyEditTool = NewButlerTool("apply_edit", "Applies a code edit by replacing old text with new text in a specified file", applyEdit)
 var fetchURLAsMarkdownTool = NewButlerTool("fetch_url_as_markdown", "Fetches a webpage from a URL and converts its content to markdown format for the model to read and understand. This works best with github readmes and documentation pages", fetchURLAsMarkdown)
 var makeFileWithContentTool = NewButlerTool("make_file", "Creates a new file at the specified path with the given content", makeFileWithContentFn)
+var runCommandTool = NewButlerTool("run_command", "Runs a shell command and returns both stdout and stderr output", runCommand)
 
 var StdToolset = []Tool{
 	readFileTool,
@@ -269,4 +318,5 @@ var StdToolset = []Tool{
 	applyEditTool,
 	fetchURLAsMarkdownTool,
 	makeFileWithContentTool,
+	runCommandTool,
 }
