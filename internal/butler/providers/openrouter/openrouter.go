@@ -35,8 +35,9 @@ func New(ctx context.Context) *OpenRouterProvider {
 }
 
 type OpenRouterLLM struct {
-	modelID string
-	client  *gopenrouter.Client
+	modelID           string
+	client            *gopenrouter.Client
+	parallelToolCalls *bool // unused atm
 }
 
 func (l OpenRouterLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, agentTools []tools.Tool) (providers.ProviderResponse, error) {
@@ -46,10 +47,17 @@ func (l OpenRouterLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, age
 	req := gopenrouter.ChatCompletionRequest{
 		Model:    l.modelID,
 		Messages: messages,
-		Tools:    openRouterTools,
+		// Tools must be included in every request (initial and follow-ups)
+		// per OpenRouter documentation
+		Tools: openRouterTools,
 		Reasoning: &gopenrouter.ReasoningParams{
 			MaxTokens: 1000,
 		},
+	}
+
+	// Apply parallel tool calls configuration if set
+	if l.parallelToolCalls != nil {
+		req.ParallelToolCalls = l.parallelToolCalls
 	}
 
 	stream, err := l.client.CreateChatCompletionStream(ctx, req)
@@ -151,7 +159,13 @@ func (l OpenRouterLLM) Generate(ctx context.Context, mem []memory.MemoryEntry, a
 	req := gopenrouter.ChatCompletionRequest{
 		Model:    l.modelID,
 		Messages: messages,
-		Tools:    openRouterTools,
+		// Tools must be included in every request
+		Tools: openRouterTools,
+	}
+
+	// Apply parallel tool calls configuration if set
+	if l.parallelToolCalls != nil {
+		req.ParallelToolCalls = l.parallelToolCalls
 	}
 
 	resp, err := l.client.CreateChatCompletion(ctx, req)
@@ -168,5 +182,15 @@ func (l OpenRouterLLM) Generate(ctx context.Context, mem []memory.MemoryEntry, a
 }
 
 func (p *OpenRouterProvider) Model(ctx context.Context, modelID string) butler.LLM {
-	return &OpenRouterLLM{modelID: modelID, client: p.client}
+	return &OpenRouterLLM{
+		modelID:           modelID,
+		client:            p.client,
+		parallelToolCalls: nil, // True by default for most models
+	}
+}
+
+// WithParallelToolCalls sets whether multiple tools can be called simultaneously
+func (l *OpenRouterLLM) WithParallelToolCalls(enabled bool) *OpenRouterLLM {
+	l.parallelToolCalls = &enabled
+	return l
 }

@@ -1,11 +1,18 @@
 package tools
 
 import (
+	"bytes"
 	"fmt"
+	"log"
+	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
+
+	readability "codeberg.org/readeck/go-readability/v2"
+	md "github.com/JohannesKaufmann/html-to-markdown"
 )
 
 type readFileArgs struct {
@@ -186,15 +193,58 @@ func applyEdit(req applyEditArgs) (string, error) {
 	return "Edit applied successfully.", nil
 }
 
-var readFileTool = NewButlerTool("read_file", "Reads a file from the user pc", readFileFn)
+// Best suited for fetching docs and github readmes -> might need another general web scraper later
+type fetchURLAsMarkdownArgs struct {
+	URL string `json:"url" jsonschema:"The URL of the webpage to fetch and convert to markdown must include the protocol, e.g., https://example.com"`
+}
+
+func fetchURLAsMarkdown(args fetchURLAsMarkdownArgs) (string, error) {
+	resp, err := http.Get(args.URL)
+	if err != nil {
+		log.Fatalf("failed to fetch URL: %v", err)
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		log.Fatalf("bad status code: %d", resp.StatusCode)
+		return "", fmt.Errorf("bad status code: %d", resp.StatusCode)
+	}
+
+	parsedURL, _ := url.Parse(args.URL)
+	article, err := readability.FromReader(resp.Body, parsedURL)
+	if err != nil {
+		log.Fatalf("failed to parse article: %v", err)
+		return "", err
+	}
+
+	var HTMLContent bytes.Buffer
+	article.RenderHTML(&HTMLContent)
+
+	converter := md.NewConverter("", true, nil)
+	markdown, err := converter.ConvertString(HTMLContent.String())
+	if err != nil {
+		log.Fatalf("failed to convert to markdown: %v", err)
+		return "", err
+	}
+
+	finalOutput := fmt.Sprintf("# %s\n\n%s", article.Title(), markdown)
+
+	return finalOutput, nil
+
+}
+
+var readFileTool = NewButlerTool("read_file", "Reads a file from the user pc - do not use this to read content from a URL", readFileFn)
 var readFolderTool = NewButlerTool("read_folder", "Reads all files from a folder on the user pc", readFolderContentFn)
 var listFolderContentsTool = NewButlerTool("list_folder_contents", "Lists all files and directories in a folder on the user pc - this tool will only list the files and won't read them", listFolderContents)
 var searchCodeTool = NewButlerTool("search_code", "Searches for a query string in all code files within a specified folder", searchCode)
 var applyEditTool = NewButlerTool("apply_edit", "Applies a code edit by replacing old text with new text in a specified file", applyEdit)
+var fetchURLAsMarkdownTool = NewButlerTool("fetch_url_as_markdown", "Fetches a webpage from a URL and converts its content to markdown format for the model to read and understand. This works best with github readmes and documentation pages", fetchURLAsMarkdown)
 var StdToolset = []Tool{
 	readFileTool,
 	readFolderTool,
 	listFolderContentsTool,
 	searchCodeTool,
 	applyEditTool,
+	fetchURLAsMarkdownTool,
 }

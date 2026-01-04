@@ -10,10 +10,10 @@ import (
 func main() {
 	ctx := context.Background()
 
-	prompt := "Update the function listFolderContents and readFolderContentFn to ignore a .git folder"
+	prompt := "read this page https://openrouter.ai/docs/guides/features/tool-calling and then read the codebase and check if you can improve the way I call the tools in openrouter provider implementation"
 
 	openrouterProvider := openrouter.New(ctx)
-	model := openrouterProvider.Model(ctx, "x-ai/grok-code-fast-1")
+	model := openrouterProvider.Model(ctx, "anthropic/claude-sonnet-4.5")
 	openrouterBasedAgent := butler.NewAgent(model)
 	openrouterBasedAgent.Run(ctx, prompt)
 

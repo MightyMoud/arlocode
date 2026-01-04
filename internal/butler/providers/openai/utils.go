@@ -105,7 +105,7 @@ func convertMemoryToOpenAIMessages(mem []memory.MemoryEntry) []openai.ChatComple
 		switch entry.Role {
 		case "user":
 			messages = append(messages, openai.UserMessage(entry.Message))
-		case "assistant":
+		case "assistant", "model":
 			messages = append(messages, openai.AssistantMessage(entry.Message))
 		case "system":
 			messages = append(messages, openai.SystemMessage(entry.Message))

@@ -66,37 +66,58 @@ func generateJSONSchema(t reflect.Type) map[string]any {
 			}
 
 			name := field.Name
+			isOmitEmpty := false
 			if jsonTag != "" {
 				parts := strings.Split(jsonTag, ",")
 				name = parts[0]
-				isOmitEmpty := false
 				for _, part := range parts[1:] {
 					if part == "omitempty" {
 						isOmitEmpty = true
 						break
 					}
 				}
-				if !isOmitEmpty {
-					required = append(required, name)
-				}
+			}
+
+			// Add to required if not omitempty
+			if !isOmitEmpty {
+				required = append(required, name)
 			}
 
 			propSchema := generateJSONSchema(field.Type)
 
-			// Add description if available
+			// Add description if available - important for LLM understanding
 			descTag := field.Tag.Get("description")
 			if descTag != "" {
 				propSchema["description"] = descTag
 			}
 
+			// Add enum constraints if available
+			enumTag := field.Tag.Get("enum")
+			if enumTag != "" {
+				enumValues := strings.Split(enumTag, ",")
+				propSchema["enum"] = enumValues
+			}
+
+			// Add default value if available
+			defaultTag := field.Tag.Get("default")
+			if defaultTag != "" {
+				propSchema["default"] = defaultTag
+			}
+
 			properties[name] = propSchema
 		}
 
-		return map[string]any{
+		schema := map[string]any{
 			"type":       "object",
 			"properties": properties,
-			"required":   required,
 		}
+
+		// Only add required array if there are required fields
+		if len(required) > 0 {
+			schema["required"] = required
+		}
+
+		return schema
 	default:
 		return map[string]any{"type": "string"}
 	}
@@ -106,7 +127,7 @@ func getRoleFromMemoryEntry(entry memory.MemoryEntry) gopenrouter.ChatCompletion
 	switch entry.Role {
 	case "user":
 		return gopenrouter.RoleUser
-	case "assistant":
+	case "assistant", "model":
 		return gopenrouter.RoleAssistant
 	case "system":
 		return gopenrouter.RoleSystem
@@ -123,6 +144,7 @@ func convertMemoryToOpenRouterMessages(mem []memory.MemoryEntry) []gopenrouter.C
 				Role:       gopenrouter.RoleTool,
 				Content:    entry.Message,
 				ToolCallID: entry.ToolCallID,
+				Name:       entry.ToolName,
 			})
 		} else {
 			var toolCalls []gopenrouter.ToolCall
@@ -139,12 +161,22 @@ func convertMemoryToOpenRouterMessages(mem []memory.MemoryEntry) []gopenrouter.C
 			}
 
 			msg := gopenrouter.ChatCompletionMessage{
-				Role:    getRoleFromMemoryEntry(entry),
-				Content: entry.Message,
+				Role: getRoleFromMemoryEntry(entry),
 			}
+
+			// Per OpenRouter docs: when assistant makes tool calls, content should be null/empty
+			// Only set content if there are no tool calls or if content exists
 			if len(toolCalls) > 0 {
 				msg.ToolCalls = toolCalls
+				// Content is intentionally not set (null) when tool calls are present
+				// unless there's actual content (for interleaved thinking)
+				if entry.Message != "" {
+					msg.Content = entry.Message
+				}
+			} else {
+				msg.Content = entry.Message
 			}
+
 			messages = append(messages, msg)
 		}
 	}

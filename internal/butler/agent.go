@@ -13,13 +13,19 @@ import (
 )
 
 type Agent struct {
-	llm    LLM
-	memory []memory.MemoryEntry
-	tools  []tools.Tool
+	llm           LLM
+	memory        []memory.MemoryEntry
+	tools         []tools.Tool
+	maxIterations int
 }
 
 func NewAgent(l LLM) *Agent {
-	return &Agent{llm: l, memory: []memory.MemoryEntry{}, tools: tools.StdToolset}
+	return &Agent{
+		llm:           l,
+		memory:        []memory.MemoryEntry{},
+		tools:         tools.StdToolset,
+		maxIterations: 10, // Default max iterations as recommended by OpenRouter docs
+	}
 }
 
 // Mods
@@ -35,6 +41,11 @@ func (a *Agent) WitTools(tools []tools.Tool) *Agent {
 
 func (a *Agent) WithNoTools() *Agent {
 	a.tools = []tools.Tool{}
+	return a
+}
+
+func (a *Agent) WithMaxIterations(max int) *Agent {
+	a.maxIterations = max
 	return a
 }
 
@@ -89,16 +100,21 @@ func (a *Agent) Run(ctx context.Context, prompt string) error {
 	initMessage := memory.MemoryEntry{Message: prompt, Role: "user"}
 	a.AddMemoryEntry(initMessage)
 
-	for {
+	iterationCount := 0
+	for iterationCount < a.maxIterations {
+		iterationCount++
+
 		result, err := a.llm.Stream(ctx, a.memory, a.tools)
 		if err != nil {
 			log.Fatal("Error calling LLM Stream: ", err)
 			return err
 		}
 		a.AddMemoryEntry(memory.MemoryEntry{Role: "model", Message: result.Text, ToolCalls: result.ToolCalls})
+
 		if len(result.ToolCalls) == 0 {
 			break
 		}
+
 		for _, call := range result.ToolCalls {
 			output, _ := a.HandleToolCall(ctx, call)
 
@@ -110,5 +126,10 @@ func (a *Agent) Run(ctx context.Context, prompt string) error {
 			})
 		}
 	}
+
+	if iterationCount >= a.maxIterations {
+		color.Yellow("\nWarning: Maximum iterations (%d) reached. The agent loop was terminated.\n", a.maxIterations)
+	}
+
 	return nil
 }
