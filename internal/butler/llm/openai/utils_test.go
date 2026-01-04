@@ -1,4 +1,4 @@
-package openai_provider
+package openai_llm
 
 import (
 	"reflect"

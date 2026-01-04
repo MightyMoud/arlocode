@@ -1,4 +1,4 @@
-package gemini
+package gemini_llm
 
 import (
 	"reflect"

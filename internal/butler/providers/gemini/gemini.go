@@ -2,15 +2,10 @@ package gemini
 
 import (
 	"context"
-	"fmt"
 	"log"
-	"strings"
 
-	"github.com/fatih/color"
-	"github.com/mightymoud/arlocode/internal/butler"
-	"github.com/mightymoud/arlocode/internal/butler/memory"
-	"github.com/mightymoud/arlocode/internal/butler/providers"
-	"github.com/mightymoud/arlocode/internal/butler/tools"
+	"github.com/mightymoud/arlocode/internal/butler/llm"
+	gemini_llm "github.com/mightymoud/arlocode/internal/butler/llm/gemini"
 	"google.golang.org/genai"
 )
 
@@ -36,86 +31,7 @@ func WithApiKey(key string) *genai.ClientConfig {
 	}
 }
 
-type GeminiLLM struct {
-	modelID string
-	client  *genai.Client
-}
-
-func (l GeminiLLM) Stream(ctx context.Context, memory []memory.MemoryEntry, agentTools []tools.Tool) (providers.ProviderResponse, error) {
-	geminiTools := makeGeminiTools(agentTools)
-
-	config := &genai.GenerateContentConfig{
-		Tools: geminiTools,
-		ThinkingConfig: &genai.ThinkingConfig{
-			IncludeThoughts: true,
-		},
-	}
-
-	history := convertMemoryToGeminiHistory(memory)
-	resp := l.client.Models.GenerateContentStream(ctx, l.modelID, history, config)
-
-	var currentResponseText []string
-	var functionCalls []tools.ToolCall
-
-	for chunk, err := range resp {
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		for _, part := range chunk.Candidates[0].Content.Parts {
-
-			if part.FunctionCall != nil {
-				functionCalls = append(functionCalls, tools.ToolCall{
-					ID:               part.FunctionCall.ID,
-					FunctionName:     part.FunctionCall.Name,
-					Arguments:        part.FunctionCall.Args,
-					ThoughtSignature: part.ThoughtSignature,
-				})
-			} else if part.Thought {
-				// will be replaced with TUI integration or hooks
-				// fmt.Printf("\n[Thinking]: %s", part.Text)
-				color.RGB(230, 42, 42).Printf("%s", part.Text)
-			} else {
-				// wil be replaced with TUI integration or hooks
-				fmt.Printf("%s", part.Text)
-				currentResponseText = append(currentResponseText, part.Text)
-			}
-		}
-	}
-
-	var textResponse strings.Builder
-	for _, part := range currentResponseText {
-		textResponse.WriteString(part)
-	}
-	return providers.ProviderResponse{
-		Text:      textResponse.String(),
-		ToolCalls: functionCalls,
-	}, nil
-}
-
-func (l GeminiLLM) Generate(ctx context.Context, memory []memory.MemoryEntry, tools []tools.Tool) error {
-	history := []*genai.Content{}
-	for _, entry := range memory {
-		genAIEntry := genai.Content{
-			Role: entry.Role,
-			Parts: []*genai.Part{
-				{Text: entry.Message},
-			},
-		}
-		history = append(history, &genAIEntry)
-	}
-	config := &genai.GenerateContentConfig{
-		ThinkingConfig: &genai.ThinkingConfig{
-			IncludeThoughts: true,
-		},
-	}
-	resp, err := l.client.Models.GenerateContent(ctx, l.modelID, history, config)
-
-	fmt.Print(resp.Text())
-	return err
-}
-
 // returns an llm that can generate and stream
-func (p *GeminiProvider) Model(ctx context.Context, modelID string) butler.LLM {
-	return &GeminiLLM{modelID: modelID, client: p.client}
+func (p *GeminiProvider) Model(ctx context.Context, modelID string) llm.LLM {
+	return &gemini_llm.GeminiLLM{ModelID: modelID, Client: p.client}
 }
