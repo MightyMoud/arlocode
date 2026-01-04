@@ -7,7 +7,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/mightymoud/arlocode/internal/butler/llm"
+	"github.com/mightymoud/arlocode/internal/butler"
 	"github.com/mightymoud/arlocode/internal/butler/memory"
 	"github.com/mightymoud/arlocode/internal/butler/providers"
 	"github.com/mightymoud/arlocode/internal/butler/tools"
@@ -15,14 +15,11 @@ import (
 )
 
 type OpenAILLM struct {
-	ModelID         string
-	Client          *openai.Client
-	OnThinkingChunk llm.OnThinkingChunkFunc
-	OnTextChunk     llm.OnTextChunkFunc
-	OnToolCall      llm.OnToolCallFunc
+	ModelID string
+	Client  *openai.Client
 }
 
-func (l OpenAILLM) Stream(ctx context.Context, mem []memory.MemoryEntry, agentTools []tools.Tool) (providers.ProviderResponse, error) {
+func (l OpenAILLM) Stream(ctx context.Context, mem []memory.MemoryEntry, agentTools []tools.Tool, hooks butler.EventHooks) (providers.ProviderResponse, error) {
 	openaiTools := makeOpenAITools(agentTools)
 	messages := convertMemoryToOpenAIMessages(mem)
 
@@ -53,8 +50,8 @@ func (l OpenAILLM) Stream(ctx context.Context, mem []memory.MemoryEntry, agentTo
 		if len(chunk.Choices) > 0 {
 			delta := chunk.Choices[0].Delta
 			if delta.Content != "" {
-				if l.OnTextChunk != nil {
-					l.OnTextChunk(delta.Content)
+				if hooks.OnTextChunk != nil {
+					hooks.OnTextChunk(delta.Content)
 				}
 				fullText.WriteString(delta.Content)
 			}
@@ -75,8 +72,8 @@ func (l OpenAILLM) Stream(ctx context.Context, mem []memory.MemoryEntry, agentTo
 				if tc.Function.Arguments != "" {
 					ptc.Args.WriteString(tc.Function.Arguments)
 				}
-				if l.OnToolCall != nil {
-					l.OnToolCall(tools.ToolCall{
+				if hooks.OnToolCall != nil {
+					hooks.OnToolCall(tools.ToolCall{
 						ID:           ptc.ID,
 						FunctionName: ptc.Name,
 						Arguments:    nil, // partial, will be filled later
@@ -113,7 +110,7 @@ func (l OpenAILLM) Stream(ctx context.Context, mem []memory.MemoryEntry, agentTo
 	}, nil
 }
 
-func (l OpenAILLM) Generate(ctx context.Context, mem []memory.MemoryEntry, agentTools []tools.Tool) error {
+func (l OpenAILLM) Generate(ctx context.Context, mem []memory.MemoryEntry, agentTools []tools.Tool, hooks butler.EventHooks) error {
 	openaiTools := makeOpenAITools(agentTools)
 	messages := convertMemoryToOpenAIMessages(mem)
 
@@ -134,19 +131,4 @@ func (l OpenAILLM) Generate(ctx context.Context, mem []memory.MemoryEntry, agent
 		fmt.Print(resp.Choices[0].Message.Content)
 	}
 	return nil
-}
-
-func (l OpenAILLM) WithOnThinkingChunk(f llm.OnThinkingChunkFunc) llm.LLM {
-	l.OnThinkingChunk = f
-	return l
-}
-
-func (l OpenAILLM) WithOnTextChunk(f llm.OnTextChunkFunc) llm.LLM {
-	l.OnTextChunk = f
-	return l
-}
-
-func (l OpenAILLM) WithOnToolCall(f llm.OnToolCallFunc) llm.LLM {
-	l.OnToolCall = f
-	return l
 }

@@ -1,9 +1,10 @@
-package butler
+package agent
 
 import (
 	"context"
 	"testing"
 
+	"github.com/mightymoud/arlocode/internal/butler"
 	"github.com/mightymoud/arlocode/internal/butler/memory"
 	"github.com/mightymoud/arlocode/internal/butler/providers"
 	"github.com/mightymoud/arlocode/internal/butler/tools"
@@ -11,20 +12,20 @@ import (
 
 // MockLLM is a mock implementation of the LLM interface
 type MockLLM struct {
-	StreamFunc   func(ctx context.Context, mem []memory.MemoryEntry, t []tools.Tool) (providers.ProviderResponse, error)
-	GenerateFunc func(ctx context.Context, mem []memory.MemoryEntry, t []tools.Tool) error
+	StreamFunc   func(ctx context.Context, mem []memory.MemoryEntry, t []tools.Tool, hooks butler.EventHooks) (providers.ProviderResponse, error)
+	GenerateFunc func(ctx context.Context, mem []memory.MemoryEntry, t []tools.Tool, hooks butler.EventHooks) error
 }
 
-func (m *MockLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, t []tools.Tool) (providers.ProviderResponse, error) {
+func (m *MockLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, t []tools.Tool, hooks butler.EventHooks) (providers.ProviderResponse, error) {
 	if m.StreamFunc != nil {
-		return m.StreamFunc(ctx, mem, t)
+		return m.StreamFunc(ctx, mem, t, hooks)
 	}
 	return providers.ProviderResponse{}, nil
 }
 
-func (m *MockLLM) Generate(ctx context.Context, mem []memory.MemoryEntry, t []tools.Tool) error {
+func (m *MockLLM) Generate(ctx context.Context, mem []memory.MemoryEntry, t []tools.Tool, hooks butler.EventHooks) error {
 	if m.GenerateFunc != nil {
-		return m.GenerateFunc(ctx, mem, t)
+		return m.GenerateFunc(ctx, mem, t, hooks)
 	}
 	return nil
 }
@@ -134,7 +135,7 @@ func TestAgent_HandleToolCall(t *testing.T) {
 
 func TestAgent_Run(t *testing.T) {
 	mockLLM := &MockLLM{
-		StreamFunc: func(ctx context.Context, mem []memory.MemoryEntry, t []tools.Tool) (providers.ProviderResponse, error) {
+		StreamFunc: func(ctx context.Context, mem []memory.MemoryEntry, t []tools.Tool, hooks butler.EventHooks) (providers.ProviderResponse, error) {
 			return providers.ProviderResponse{
 				Text: "world",
 			}, nil
@@ -168,7 +169,7 @@ func TestAgent_Run_WithToolCall(t *testing.T) {
 
 	callCount := 0
 	mockLLM := &MockLLM{
-		StreamFunc: func(ctx context.Context, mem []memory.MemoryEntry, t []tools.Tool) (providers.ProviderResponse, error) {
+		StreamFunc: func(ctx context.Context, mem []memory.MemoryEntry, t []tools.Tool, hooks butler.EventHooks) (providers.ProviderResponse, error) {
 			callCount++
 			if callCount == 1 {
 				return providers.ProviderResponse{

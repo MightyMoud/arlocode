@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/iamwavecut/gopenrouter"
-	"github.com/mightymoud/arlocode/internal/butler/llm"
+	"github.com/mightymoud/arlocode/internal/butler"
 	"github.com/mightymoud/arlocode/internal/butler/memory"
 	"github.com/mightymoud/arlocode/internal/butler/providers"
 	"github.com/mightymoud/arlocode/internal/butler/tools"
@@ -20,12 +20,9 @@ type OpenRouterLLM struct {
 	ModelID           string
 	Client            *gopenrouter.Client
 	ParallelToolCalls *bool // unused atm
-	OnTextChunk       llm.OnTextChunkFunc
-	OnThinkingChunk   llm.OnThinkingChunkFunc
-	OnToolCall        llm.OnToolCallFunc
 }
 
-func (l OpenRouterLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, agentTools []tools.Tool) (providers.ProviderResponse, error) {
+func (l OpenRouterLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, agentTools []tools.Tool, hooks butler.EventHooks) (providers.ProviderResponse, error) {
 	openRouterTools := makeOpenRouterTools(agentTools)
 	messages := convertMemoryToOpenRouterMessages(mem)
 
@@ -76,14 +73,14 @@ func (l OpenRouterLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, age
 
 			// Handle Content
 			if delta.Content != "" {
-				if l.OnTextChunk != nil {
-					l.OnTextChunk(delta.Content)
+				if hooks.OnTextChunk != nil {
+					hooks.OnTextChunk(delta.Content)
 				}
 				currentResponseText.WriteString(delta.Content)
 			}
 			if delta.Reasoning != "" {
-				if l.OnThinkingChunk != nil {
-					l.OnThinkingChunk(delta.Reasoning)
+				if hooks.OnThinkingChunk != nil {
+					hooks.OnThinkingChunk(delta.Reasoning)
 				}
 				// currentResponseText.WriteString(delta.Reasoning)
 			}
@@ -131,8 +128,8 @@ func (l OpenRouterLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, age
 			FunctionName: ptc.Name,
 			Arguments:    args,
 		})
-		if l.OnToolCall != nil {
-			l.OnToolCall(tools.ToolCall{
+		if hooks.OnToolCall != nil {
+			hooks.OnToolCall(tools.ToolCall{
 				ID:           ptc.ID,
 				FunctionName: ptc.Name,
 				Arguments:    args,
@@ -146,7 +143,7 @@ func (l OpenRouterLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, age
 	}, nil
 }
 
-func (l OpenRouterLLM) Generate(ctx context.Context, mem []memory.MemoryEntry, agentTools []tools.Tool) error {
+func (l OpenRouterLLM) Generate(ctx context.Context, mem []memory.MemoryEntry, agentTools []tools.Tool, hooks butler.EventHooks) error {
 	openRouterTools := makeOpenRouterTools(agentTools)
 	messages := convertMemoryToOpenRouterMessages(mem)
 
@@ -176,22 +173,7 @@ func (l OpenRouterLLM) Generate(ctx context.Context, mem []memory.MemoryEntry, a
 }
 
 // WithParallelToolCalls sets whether multiple tools can be called simultaneously
-func (l OpenRouterLLM) WithParallelToolCalls(enabled bool) OpenRouterLLM {
+func (l *OpenRouterLLM) WithParallelToolCalls(enabled bool) *OpenRouterLLM {
 	l.ParallelToolCalls = &enabled
-	return l
-}
-
-func (l OpenRouterLLM) WithOnThinkingChunk(f llm.OnThinkingChunkFunc) llm.LLM {
-	l.OnThinkingChunk = f
-	return l
-}
-
-func (l OpenRouterLLM) WithOnTextChunk(f llm.OnTextChunkFunc) llm.LLM {
-	l.OnTextChunk = f
-	return l
-}
-
-func (l OpenRouterLLM) WithOnToolCall(f llm.OnToolCallFunc) llm.LLM {
-	l.OnToolCall = f
 	return l
 }

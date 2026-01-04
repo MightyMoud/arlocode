@@ -6,7 +6,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/mightymoud/arlocode/internal/butler/llm"
+	"github.com/mightymoud/arlocode/internal/butler"
 	"github.com/mightymoud/arlocode/internal/butler/memory"
 	"github.com/mightymoud/arlocode/internal/butler/providers"
 	"github.com/mightymoud/arlocode/internal/butler/tools"
@@ -14,14 +14,11 @@ import (
 )
 
 type GeminiLLM struct {
-	ModelID         string
-	Client          *genai.Client
-	OnTextChunk     llm.OnTextChunkFunc
-	OnThinkingChunk llm.OnThinkingChunkFunc
-	OnToolCall      llm.OnToolCallFunc
+	ModelID string
+	Client  *genai.Client
 }
 
-func (l GeminiLLM) Stream(ctx context.Context, memory []memory.MemoryEntry, agentTools []tools.Tool) (providers.ProviderResponse, error) {
+func (l GeminiLLM) Stream(ctx context.Context, memory []memory.MemoryEntry, agentTools []tools.Tool, hooks butler.EventHooks) (providers.ProviderResponse, error) {
 	geminiTools := makeGeminiTools(agentTools)
 
 	config := &genai.GenerateContentConfig{
@@ -51,8 +48,8 @@ func (l GeminiLLM) Stream(ctx context.Context, memory []memory.MemoryEntry, agen
 					Arguments:        part.FunctionCall.Args,
 					ThoughtSignature: part.ThoughtSignature,
 				})
-				if l.OnToolCall != nil {
-					l.OnToolCall(tools.ToolCall{
+				if hooks.OnToolCall != nil {
+					hooks.OnToolCall(tools.ToolCall{
 						ID:               part.FunctionCall.ID,
 						FunctionName:     part.FunctionCall.Name,
 						Arguments:        part.FunctionCall.Args,
@@ -60,12 +57,12 @@ func (l GeminiLLM) Stream(ctx context.Context, memory []memory.MemoryEntry, agen
 					})
 				}
 			} else if part.Thought {
-				if l.OnThinkingChunk != nil {
-					l.OnThinkingChunk(part.Text)
+				if hooks.OnThinkingChunk != nil {
+					hooks.OnThinkingChunk(part.Text)
 				}
 			} else {
-				if l.OnTextChunk != nil {
-					l.OnTextChunk(part.Text)
+				if hooks.OnTextChunk != nil {
+					hooks.OnTextChunk(part.Text)
 				}
 				currentResponseText = append(currentResponseText, part.Text)
 			}
@@ -82,7 +79,7 @@ func (l GeminiLLM) Stream(ctx context.Context, memory []memory.MemoryEntry, agen
 	}, nil
 }
 
-func (l GeminiLLM) Generate(ctx context.Context, memory []memory.MemoryEntry, tools []tools.Tool) error {
+func (l GeminiLLM) Generate(ctx context.Context, memory []memory.MemoryEntry, tools []tools.Tool, hooks butler.EventHooks) error {
 	history := []*genai.Content{}
 	for _, entry := range memory {
 		genAIEntry := genai.Content{
@@ -102,19 +99,4 @@ func (l GeminiLLM) Generate(ctx context.Context, memory []memory.MemoryEntry, to
 
 	fmt.Print(resp.Text())
 	return err
-}
-
-func (l GeminiLLM) WithOnThinkingChunk(f llm.OnThinkingChunkFunc) llm.LLM {
-	l.OnThinkingChunk = f
-	return l
-}
-
-func (l GeminiLLM) WithOnTextChunk(f llm.OnTextChunkFunc) llm.LLM {
-	l.OnTextChunk = f
-	return l
-}
-
-func (l GeminiLLM) WithOnToolCall(f llm.OnToolCallFunc) llm.LLM {
-	l.OnToolCall = f
-	return l
 }

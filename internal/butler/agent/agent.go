@@ -1,4 +1,4 @@
-package butler
+package agent
 
 import (
 	"context"
@@ -8,16 +8,20 @@ import (
 	"reflect"
 
 	"github.com/fatih/color"
+	"github.com/mightymoud/arlocode/internal/butler"
 	"github.com/mightymoud/arlocode/internal/butler/llm"
 	"github.com/mightymoud/arlocode/internal/butler/memory"
 	"github.com/mightymoud/arlocode/internal/butler/tools"
 )
 
 type Agent struct {
-	llm           llm.LLM
-	memory        []memory.MemoryEntry
-	tools         []tools.Tool
-	maxIterations int
+	llm             llm.LLM
+	memory          []memory.MemoryEntry
+	tools           []tools.Tool
+	maxIterations   int
+	OnTextChunk     butler.OnTextChunkFunc
+	OnThinkingChunk butler.OnThinkingChunkFunc
+	OnToolCall      butler.OnToolCallFunc
 }
 
 func NewAgent(l llm.LLM) *Agent {
@@ -48,6 +52,21 @@ func (a *Agent) WithNoTools() *Agent {
 func (a *Agent) WithMaxIterations(max int) *Agent {
 	a.maxIterations = max
 	return a
+}
+
+func (l *Agent) WithOnThinkingChunk(f butler.OnThinkingChunkFunc) *Agent {
+	l.OnThinkingChunk = f
+	return l
+}
+
+func (l *Agent) WithOnTextChunk(f butler.OnTextChunkFunc) *Agent {
+	l.OnTextChunk = f
+	return l
+}
+
+func (l *Agent) WithOnToolCall(f butler.OnToolCallFunc) *Agent {
+	l.OnToolCall = f
+	return l
 }
 
 // Mock for Memory stuff later this is where Agent will use it
@@ -101,11 +120,17 @@ func (a *Agent) Run(ctx context.Context, prompt string) error {
 	initMessage := memory.MemoryEntry{Message: prompt, Role: "user"}
 	a.AddMemoryEntry(initMessage)
 
+	hooks := butler.EventHooks{
+		OnTextChunk:     a.OnTextChunk,
+		OnThinkingChunk: a.OnThinkingChunk,
+		OnToolCall:      a.OnToolCall,
+	}
+
 	iterationCount := 0
 	for iterationCount < a.maxIterations {
 		iterationCount++
 
-		result, err := a.llm.Stream(ctx, a.memory, a.tools)
+		result, err := a.llm.Stream(ctx, a.memory, a.tools, hooks)
 		if err != nil {
 			log.Fatal("Error calling LLM Stream: ", err)
 			return err
