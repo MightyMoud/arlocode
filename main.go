@@ -14,7 +14,7 @@ func main() {
 
 	openrouterProvider := openrouter.New(ctx)
 	model := openrouterProvider.Model(ctx, "anthropic/claude-sonnet-4.5")
-	openrouterBasedAgent := butler.NewAgent(model)
+	openrouterBasedAgent := butler.NewAgent(model).WithMaxIterations(50)
 	openrouterBasedAgent.Run(ctx, prompt)
 
 	// geminiProvider := gemini.New(ctx)

@@ -3,7 +3,6 @@ package tools
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -21,7 +20,10 @@ type readFileArgs struct {
 
 // Then pass this wrapper function to NewButlerTool
 func readFileFn(args readFileArgs) (string, error) {
-	bytesData, _ := os.ReadFile(args.Path)
+	bytesData, err := os.ReadFile(args.Path)
+	if err != nil {
+		return "", err
+	}
 	return string(bytesData), nil
 }
 
@@ -201,21 +203,18 @@ type fetchURLAsMarkdownArgs struct {
 func fetchURLAsMarkdown(args fetchURLAsMarkdownArgs) (string, error) {
 	resp, err := http.Get(args.URL)
 	if err != nil {
-		log.Fatalf("failed to fetch URL: %v", err)
-		return "", err
+		return "", fmt.Errorf("failed to fetch URL: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("bad status code: %d", resp.StatusCode)
 		return "", fmt.Errorf("bad status code: %d", resp.StatusCode)
 	}
 
 	parsedURL, _ := url.Parse(args.URL)
 	article, err := readability.FromReader(resp.Body, parsedURL)
 	if err != nil {
-		log.Fatalf("failed to parse article: %v", err)
-		return "", err
+		return "", fmt.Errorf("failed to parse article: %w", err)
 	}
 
 	var HTMLContent bytes.Buffer
@@ -224,8 +223,7 @@ func fetchURLAsMarkdown(args fetchURLAsMarkdownArgs) (string, error) {
 	converter := md.NewConverter("", true, nil)
 	markdown, err := converter.ConvertString(HTMLContent.String())
 	if err != nil {
-		log.Fatalf("failed to convert to markdown: %v", err)
-		return "", err
+		return "", fmt.Errorf("failed to convert to markdown: %w", err)
 	}
 
 	finalOutput := fmt.Sprintf("# %s\n\n%s", article.Title(), markdown)
@@ -240,6 +238,7 @@ var listFolderContentsTool = NewButlerTool("list_folder_contents", "Lists all fi
 var searchCodeTool = NewButlerTool("search_code", "Searches for a query string in all code files within a specified folder", searchCode)
 var applyEditTool = NewButlerTool("apply_edit", "Applies a code edit by replacing old text with new text in a specified file", applyEdit)
 var fetchURLAsMarkdownTool = NewButlerTool("fetch_url_as_markdown", "Fetches a webpage from a URL and converts its content to markdown format for the model to read and understand. This works best with github readmes and documentation pages", fetchURLAsMarkdown)
+
 var StdToolset = []Tool{
 	readFileTool,
 	readFolderTool,
