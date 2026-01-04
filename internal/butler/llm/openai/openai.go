@@ -53,7 +53,9 @@ func (l OpenAILLM) Stream(ctx context.Context, mem []memory.MemoryEntry, agentTo
 		if len(chunk.Choices) > 0 {
 			delta := chunk.Choices[0].Delta
 			if delta.Content != "" {
-				fmt.Print(delta.Content)
+				if l.OnTextChunk != nil {
+					l.OnTextChunk(delta.Content)
+				}
 				fullText.WriteString(delta.Content)
 			}
 
@@ -72,6 +74,13 @@ func (l OpenAILLM) Stream(ctx context.Context, mem []memory.MemoryEntry, agentTo
 				}
 				if tc.Function.Arguments != "" {
 					ptc.Args.WriteString(tc.Function.Arguments)
+				}
+				if l.OnToolCall != nil {
+					l.OnToolCall(tools.ToolCall{
+						ID:           ptc.ID,
+						FunctionName: ptc.Name,
+						Arguments:    nil, // partial, will be filled later
+					})
 				}
 			}
 		}

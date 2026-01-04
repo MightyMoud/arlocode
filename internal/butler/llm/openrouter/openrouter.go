@@ -76,13 +76,12 @@ func (l OpenRouterLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, age
 
 			// Handle Content
 			if delta.Content != "" {
-				fmt.Printf("%s", delta.Content)
+				if l.OnTextChunk != nil {
+					l.OnTextChunk(delta.Content)
+				}
 				currentResponseText.WriteString(delta.Content)
 			}
 			if delta.Reasoning != "" {
-				// fmt.Printf("%s", delta.Reasoning)
-				// color.Magenta("%s", delta.Reasoning)
-				// color.RGB(255, 128, 0).Printf("%s", delta.Reasoning)
 				if l.OnThinkingChunk != nil {
 					l.OnThinkingChunk(delta.Reasoning)
 				}
@@ -132,6 +131,13 @@ func (l OpenRouterLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, age
 			FunctionName: ptc.Name,
 			Arguments:    args,
 		})
+		if l.OnToolCall != nil {
+			l.OnToolCall(tools.ToolCall{
+				ID:           ptc.ID,
+				FunctionName: ptc.Name,
+				Arguments:    args,
+			})
+		}
 	}
 
 	return providers.ProviderResponse{

@@ -61,7 +61,6 @@ func (a *Agent) GetMemory() []memory.MemoryEntry {
 }
 
 func (a *Agent) HandleToolCall(ctx context.Context, call tools.ToolCall) (string, error) {
-	color.Blue("\nCalling function %s - with Arguments: %+v", call.FunctionName, call.Arguments)
 	var tool tools.Tool
 	for _, t := range a.tools {
 		if t.Name == call.FunctionName {
@@ -88,11 +87,12 @@ func (a *Agent) HandleToolCall(ctx context.Context, call tools.ToolCall) (string
 	}
 	resultStr := results[0].String()
 
-	if len(resultStr) > 100 {
-		color.Blue("Tool %s returned: %s", call.FunctionName, resultStr[:100])
-	} else {
-		color.Blue("Tool %s returned: %s", call.FunctionName, resultStr)
-	}
+	// Maybe useful to debug later
+	// if len(resultStr) > 100 {
+	// 	color.Blue("Tool %s returned: %s", call.FunctionName, resultStr[:100])
+	// } else {
+	// 	color.Blue("Tool %s returned: %s", call.FunctionName, resultStr)
+	// }
 
 	return resultStr, nil
 }

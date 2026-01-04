@@ -6,7 +6,6 @@ import (
 	"log"
 	"strings"
 
-	"github.com/fatih/color"
 	"github.com/mightymoud/arlocode/internal/butler/llm"
 	"github.com/mightymoud/arlocode/internal/butler/memory"
 	"github.com/mightymoud/arlocode/internal/butler/providers"
@@ -52,13 +51,22 @@ func (l GeminiLLM) Stream(ctx context.Context, memory []memory.MemoryEntry, agen
 					Arguments:        part.FunctionCall.Args,
 					ThoughtSignature: part.ThoughtSignature,
 				})
+				if l.OnToolCall != nil {
+					l.OnToolCall(tools.ToolCall{
+						ID:               part.FunctionCall.ID,
+						FunctionName:     part.FunctionCall.Name,
+						Arguments:        part.FunctionCall.Args,
+						ThoughtSignature: part.ThoughtSignature,
+					})
+				}
 			} else if part.Thought {
-				// will be replaced with TUI integration or hooks
-				// fmt.Printf("\n[Thinking]: %s", part.Text)
-				color.RGB(230, 42, 42).Printf("%s", part.Text)
+				if l.OnThinkingChunk != nil {
+					l.OnThinkingChunk(part.Text)
+				}
 			} else {
-				// wil be replaced with TUI integration or hooks
-				fmt.Printf("%s", part.Text)
+				if l.OnTextChunk != nil {
+					l.OnTextChunk(part.Text)
+				}
 				currentResponseText = append(currentResponseText, part.Text)
 			}
 		}
