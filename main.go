@@ -15,7 +15,7 @@ func main() {
 	prompt := "Add a github action workflow file that will run tests for all the packages on every push to the repository."
 
 	openrouterProvider := openrouter.New(ctx)
-	model := openrouterProvider.Model(ctx, "anthropic/claude-sonnet-4.5")
+	model := openrouterProvider.Model(ctx, "z-ai/glm-4.7")
 	openrouterBasedAgent := butler.NewAgent(model).WithMaxIterations(50)
 	openrouterBasedAgent.Run(ctx, prompt)
 
