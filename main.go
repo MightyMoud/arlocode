@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 
+	"github.com/fatih/color"
 	"github.com/mightymoud/arlocode/internal/butler"
 	"github.com/mightymoud/arlocode/internal/butler/providers/openrouter"
 )
@@ -15,7 +16,9 @@ func main() {
 	prompt := "Add a github action workflow file that will run tests for all the packages on every push to the repository."
 
 	openrouterProvider := openrouter.New(ctx)
-	model := openrouterProvider.Model(ctx, "z-ai/glm-4.7")
+	model := openrouterProvider.Model(ctx, "z-ai/glm-4.7").WithOnThinkingChunk(func(chunk string) {
+		color.New(color.FgYellow).Print(chunk)
+	})
 	openrouterBasedAgent := butler.NewAgent(model).WithMaxIterations(50)
 	openrouterBasedAgent.Run(ctx, prompt)
 

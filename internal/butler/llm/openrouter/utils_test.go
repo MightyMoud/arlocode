@@ -1,4 +1,4 @@
-package openrouter
+package openrouter_llm
 
 import (
 	"reflect"

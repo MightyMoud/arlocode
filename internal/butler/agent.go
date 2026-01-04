@@ -8,18 +8,19 @@ import (
 	"reflect"
 
 	"github.com/fatih/color"
+	"github.com/mightymoud/arlocode/internal/butler/llm"
 	"github.com/mightymoud/arlocode/internal/butler/memory"
 	"github.com/mightymoud/arlocode/internal/butler/tools"
 )
 
 type Agent struct {
-	llm           LLM
+	llm           llm.LLM
 	memory        []memory.MemoryEntry
 	tools         []tools.Tool
 	maxIterations int
 }
 
-func NewAgent(l LLM) *Agent {
+func NewAgent(l llm.LLM) *Agent {
 	return &Agent{
 		llm:           l,
 		memory:        []memory.MemoryEntry{},
