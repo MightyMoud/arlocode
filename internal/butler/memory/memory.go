@@ -1,6 +1,6 @@
 package memory
 
-import "github.com/mightymoud/sidekick-agent/internal/butler/tools"
+import "github.com/mightymoud/arlocode/internal/butler/tools"
 
 type MemoryEntry struct {
 	Message    string

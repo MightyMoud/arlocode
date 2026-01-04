@@ -1,4 +1,4 @@
-module github.com/mightymoud/sidekick-agent
+module github.com/mightymoud/arlocode
 
 go 1.24.5
 

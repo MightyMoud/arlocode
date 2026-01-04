@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/mightymoud/sidekick-agent/internal/butler/memory"
-	"github.com/mightymoud/sidekick-agent/internal/butler/tools"
+	"github.com/mightymoud/arlocode/internal/butler/memory"
+	"github.com/mightymoud/arlocode/internal/butler/tools"
 	"google.golang.org/genai"
 )
 

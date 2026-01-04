@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/mightymoud/sidekick-agent/internal/butler/memory"
-	"github.com/mightymoud/sidekick-agent/internal/butler/tools"
+	"github.com/mightymoud/arlocode/internal/butler/memory"
+	"github.com/mightymoud/arlocode/internal/butler/tools"
 )
 
 func TestMakeOpenAITools(t *testing.T) {

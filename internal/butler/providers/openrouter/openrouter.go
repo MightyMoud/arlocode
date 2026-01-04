@@ -12,10 +12,10 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/iamwavecut/gopenrouter"
-	"github.com/mightymoud/sidekick-agent/internal/butler"
-	"github.com/mightymoud/sidekick-agent/internal/butler/memory"
-	"github.com/mightymoud/sidekick-agent/internal/butler/providers"
-	"github.com/mightymoud/sidekick-agent/internal/butler/tools"
+	"github.com/mightymoud/arlocode/internal/butler"
+	"github.com/mightymoud/arlocode/internal/butler/memory"
+	"github.com/mightymoud/arlocode/internal/butler/providers"
+	"github.com/mightymoud/arlocode/internal/butler/tools"
 )
 
 type OpenRouterProvider struct {

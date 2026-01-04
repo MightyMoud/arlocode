@@ -3,14 +3,14 @@ package main
 import (
 	"context"
 
-	"github.com/mightymoud/sidekick-agent/internal/butler"
-	"github.com/mightymoud/sidekick-agent/internal/butler/providers/openrouter"
+	"github.com/mightymoud/arlocode/internal/butler"
+	"github.com/mightymoud/arlocode/internal/butler/providers/openrouter"
 )
 
 func main() {
 	ctx := context.Background()
 
-	prompt := "read this page https://openrouter.ai/docs/guides/features/tool-calling and then read the codebase and check if you can improve the way I call the tools in openrouter provider implementation"
+	prompt := "Some tool tests are missing in the tools package. Please add them."
 
 	openrouterProvider := openrouter.New(ctx)
 	model := openrouterProvider.Model(ctx, "anthropic/claude-sonnet-4.5")

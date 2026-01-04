@@ -1,7 +1,7 @@
 package providers
 
 import (
-	"github.com/mightymoud/sidekick-agent/internal/butler/tools"
+	"github.com/mightymoud/arlocode/internal/butler/tools"
 )
 
 type ProviderResponse struct {

@@ -8,8 +8,8 @@ import (
 	"reflect"
 
 	"github.com/fatih/color"
-	"github.com/mightymoud/sidekick-agent/internal/butler/memory"
-	"github.com/mightymoud/sidekick-agent/internal/butler/tools"
+	"github.com/mightymoud/arlocode/internal/butler/memory"
+	"github.com/mightymoud/arlocode/internal/butler/tools"
 )
 
 type Agent struct {
