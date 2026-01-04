@@ -65,6 +65,10 @@ type listFolderContentsArgs struct {
 }
 
 func listFolderContents(args listFolderContentsArgs) (string, error) {
+	if _, err := os.Stat(args.FolderPath); os.IsNotExist(err) {
+		return "Folder does not exist.", nil
+	}
+
 	var builder strings.Builder
 
 	err := filepath.Walk(args.FolderPath, func(path string, info os.FileInfo, err error) error {
@@ -229,7 +233,24 @@ func fetchURLAsMarkdown(args fetchURLAsMarkdownArgs) (string, error) {
 	finalOutput := fmt.Sprintf("# %s\n\n%s", article.Title(), markdown)
 
 	return finalOutput, nil
+}
 
+type makeFileWithContentArgs struct {
+	Path    string `json:"path" jsonschema:"The file path to create"`
+	Content string `json:"content" jsonschema:"The content to write into the file"`
+}
+
+func makeFileWithContentFn(args makeFileWithContentArgs) (string, error) {
+	// Ensure the directory exists before creating the file
+	dir := filepath.Dir(args.Path)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return "", fmt.Errorf("failed to create directory: %w", err)
+	}
+	err := os.WriteFile(args.Path, []byte(args.Content), 0644)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("File created at %s", args.Path), nil
 }
 
 var readFileTool = NewButlerTool("read_file", "Reads a file from the user pc - do not use this to read content from a URL", readFileFn)
@@ -238,6 +259,7 @@ var listFolderContentsTool = NewButlerTool("list_folder_contents", "Lists all fi
 var searchCodeTool = NewButlerTool("search_code", "Searches for a query string in all code files within a specified folder", searchCode)
 var applyEditTool = NewButlerTool("apply_edit", "Applies a code edit by replacing old text with new text in a specified file", applyEdit)
 var fetchURLAsMarkdownTool = NewButlerTool("fetch_url_as_markdown", "Fetches a webpage from a URL and converts its content to markdown format for the model to read and understand. This works best with github readmes and documentation pages", fetchURLAsMarkdown)
+var makeFileWithContentTool = NewButlerTool("make_file", "Creates a new file at the specified path with the given content", makeFileWithContentFn)
 
 var StdToolset = []Tool{
 	readFileTool,
@@ -246,4 +268,5 @@ var StdToolset = []Tool{
 	searchCodeTool,
 	applyEditTool,
 	fetchURLAsMarkdownTool,
+	makeFileWithContentTool,
 }

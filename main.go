@@ -10,7 +10,9 @@ import (
 func main() {
 	ctx := context.Background()
 
-	prompt := "Some tool tests are missing in the tools package. Please add them."
+	// prompt := "Some tool tests are missing in the tools package. Please add them."
+	// prompt := "Add a README.md file to the internal package named butler that will explain what the butler package is doing and how to use it."
+	prompt := "Add a github action workflow file that will run tests for all the packages on every push to the repository."
 
 	openrouterProvider := openrouter.New(ctx)
 	model := openrouterProvider.Model(ctx, "anthropic/claude-sonnet-4.5")

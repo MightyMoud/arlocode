@@ -299,3 +299,89 @@ func TestFetchURLAsMarkdown(t *testing.T) {
 		t.Error("Expected error when fetching invalid URL")
 	}
 }
+
+func TestMakeFileFn(t *testing.T) {
+	// Create a temporary directory
+	tmpDir, err := os.MkdirTemp("", "testmakefile")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tmpDir)
+
+	// Test creating a new file
+	filePath := filepath.Join(tmpDir, "newfile.txt")
+	content := "This is test content\nLine 2\nLine 3"
+
+	args := makeFileWithContentArgs{
+		Path:    filePath,
+		Content: content,
+	}
+
+	result, err := makeFileWithContentFn(args)
+	if err != nil {
+		t.Fatalf("makeFileWithContentFn failed: %v", err)
+	}
+
+	expectedResult := "File created at " + filePath
+	if result != expectedResult {
+		t.Errorf("Expected result '%s', got '%s'", expectedResult, result)
+	}
+
+	// Verify the file was created with correct content
+	fileContent, err := os.ReadFile(filePath)
+	if err != nil {
+		t.Fatalf("Failed to read created file: %v", err)
+	}
+
+	if string(fileContent) != content {
+		t.Errorf("Expected file content '%s', got '%s'", content, string(fileContent))
+	}
+
+	// Test creating a file in a subdirectory that doesn't exist yet
+	subDirPath := filepath.Join(tmpDir, "subdir")
+	os.Mkdir(subDirPath, 0755)
+	nestedFilePath := filepath.Join(subDirPath, "nested.txt")
+	nestedContent := "Nested file content"
+
+	nestedArgs := makeFileWithContentArgs{
+		Path:    nestedFilePath,
+		Content: nestedContent,
+	}
+
+	_, err = makeFileWithContentFn(nestedArgs)
+	if err != nil {
+		t.Fatalf("makeFileWithContentFn failed for nested file: %v", err)
+	}
+
+	// Verify nested file
+	nestedFileContent, err := os.ReadFile(nestedFilePath)
+	if err != nil {
+		t.Fatalf("Failed to read nested file: %v", err)
+	}
+
+	if string(nestedFileContent) != nestedContent {
+		t.Errorf("Expected nested file content '%s', got '%s'", nestedContent, string(nestedFileContent))
+	}
+
+	// Test overwriting an existing file
+	overwriteContent := "Overwritten content"
+	overwriteArgs := makeFileWithContentArgs{
+		Path:    filePath,
+		Content: overwriteContent,
+	}
+
+	_, err = makeFileWithContentFn(overwriteArgs)
+	if err != nil {
+		t.Fatalf("makeFileWithContentFn failed when overwriting: %v", err)
+	}
+
+	// Verify the file was overwritten
+	overwrittenContent, err := os.ReadFile(filePath)
+	if err != nil {
+		t.Fatalf("Failed to read overwritten file: %v", err)
+	}
+
+	if string(overwrittenContent) != overwriteContent {
+		t.Errorf("Expected overwritten content '%s', got '%s'", overwriteContent, string(overwrittenContent))
+	}
+}
