@@ -71,6 +71,8 @@ github.com/gorilla/websocket v1.5.3 h1:saDtZ6Pbx/0u+bgYQ3q96pZgCzfhKXGPqt7kZ72aN
 github.com/gorilla/websocket v1.5.3/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/iamwavecut/gopenrouter v0.0.0-20250819194515-3428c8a33343 h1:jKAldi6vke+PZd9SQSXQcgUUs7v0jfIK4s23GLQ+4p0=
 github.com/iamwavecut/gopenrouter v0.0.0-20250819194515-3428c8a33343/go.mod h1:i++zUZRK5YC7J5Lagh+LVgDxJ7UNpw3ZBufCIaQKjiU=
+github.com/kjk/flex v0.0.0-20171203210503-ed34d6b6a425 h1:Iibr/k2MalRurqlsZszaaQNCqrztmz/sMHHXDwz5mN0=
+github.com/kjk/flex v0.0.0-20171203210503-ed34d6b6a425/go.mod h1:Tj+9AXmPMed68pFV4Ssetmk4Q8rNfBIKfoBCY5WUPCE=
 github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=

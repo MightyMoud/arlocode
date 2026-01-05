@@ -6,6 +6,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/kjk/flex"
 
 	"github.com/mightymoud/arlocode/internal/layers"
 )
@@ -44,23 +45,78 @@ func (m model) View() string {
 		return "Loading..."
 	}
 
-	// Create a canvas for layer composition
-	canvas := layers.NewCanvas(m.width, m.height-1)
+	// =========================================================================
+	// FLEXBOX LAYOUT SETUP
+	// =========================================================================
+
+	// 1. Create the Root Node
+	root := flex.NewNode()
+	root.StyleSetWidth(float32(m.width))
+	root.StyleSetHeight(float32(m.height))
+	root.StyleSetFlexDirection(flex.FlexDirectionColumn)
+
+	// 2. Define Children Nodes
+	header := flex.NewNode()
+	header.StyleSetHeight(3) // 3 rows high for header
+	header.StyleSetFlexShrink(0)
+
+	mainContent := flex.NewNode()
+	mainContent.StyleSetFlexGrow(1) // Fills remaining space
+
+	footer := flex.NewNode()
+	footer.StyleSetHeight(1) // 1 row for footer/status bar
+	footer.StyleSetFlexShrink(0)
+
+	// Insert children into root
+	root.InsertChild(header, 0)
+	root.InsertChild(mainContent, 1)
+	root.InsertChild(footer, 2)
+
+	// 3. Calculate Layout
+	flex.CalculateLayout(root, float32(m.width), float32(m.height), flex.DirectionLTR)
 
 	// =========================================================================
-	// LAYER 1 (Z=0): Background - A patterned background layer
+	// RENDER EACH PANEL USING CALCULATED FLEX DIMENSIONS
 	// =========================================================================
+
+	// Create a canvas for layer composition
+	canvas := layers.NewCanvas(m.width, m.height)
+
+	// --- HEADER PANEL ---
+	headerWidth := int(header.LayoutGetWidth())
+	headerHeight := int(header.LayoutGetHeight())
+	headerY := int(header.LayoutGetTop())
+
+	headerStyle := lipgloss.NewStyle().
+		Width(headerWidth).
+		Height(headerHeight).
+		Background(lipgloss.Color("#0f3460")).
+		Foreground(lipgloss.Color("#e0e0e0")).
+		Padding(0, 2).
+		Align(lipgloss.Left, lipgloss.Center)
+
+	headerContent := headerStyle.Render(
+		lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#e94560")).Render("⚡ ArloCode") +
+			"  │  Flexbox Layout Demo  │  Press SPACE toggle modal, Q quit",
+	)
+	canvas.AddLayer(layers.NewLayer(headerContent, 0).WithOffset(0, headerY))
+
+	// --- MAIN CONTENT PANEL ---
+	mainWidth := int(mainContent.LayoutGetWidth())
+	mainHeight := int(mainContent.LayoutGetHeight())
+	mainY := int(mainContent.LayoutGetTop())
+
+	// Background pattern for main area
 	bgStyle := lipgloss.NewStyle().
-		Width(m.width).
-		Height(m.height - 1).
+		Width(mainWidth).
+		Height(mainHeight).
 		Background(lipgloss.Color("#1a1a2e")).
 		Foreground(lipgloss.Color("#4a4a6a"))
 
-	// Create a dotted pattern for the background
 	pattern := ""
-	for y := 0; y < m.height-1; y++ {
+	for y := 0; y < mainHeight; y++ {
 		row := ""
-		for x := 0; x < m.width; x++ {
+		for x := 0; x < mainWidth; x++ {
 			if (x+y)%4 == 0 {
 				row += "·"
 			} else {
@@ -68,24 +124,20 @@ func (m model) View() string {
 			}
 		}
 		pattern += row
-		if y < m.height-2 {
+		if y < mainHeight-1 {
 			pattern += "\n"
 		}
 	}
 	backgroundContent := bgStyle.Render(pattern)
+	canvas.AddLayer(layers.NewLayer(backgroundContent, 1).WithOffset(0, mainY))
 
-	// Add background as Layer with Z=0 (bottom layer)
-	canvas.AddLayer(layers.NewLayer(backgroundContent, 0))
+	// --- CENTERED CONTENT PANEL (inside main) ---
+	contentPanelWidth := min(60, mainWidth-10)
+	contentPanelHeight := min(15, mainHeight-4)
 
-	// =========================================================================
-	// LAYER 2 (Z=1): Main content panel
-	// =========================================================================
-	mainPanelWidth := min(60, m.width-10)
-	mainPanelHeight := min(15, m.height-8)
-
-	mainPanelStyle := lipgloss.NewStyle().
-		Width(mainPanelWidth).
-		Height(mainPanelHeight).
+	contentPanelStyle := lipgloss.NewStyle().
+		Width(contentPanelWidth).
+		Height(contentPanelHeight).
 		Background(lipgloss.Color("#16213e")).
 		Foreground(lipgloss.Color("#e0e0e0")).
 		Border(lipgloss.RoundedBorder()).
@@ -93,27 +145,27 @@ func (m model) View() string {
 		Padding(1, 2).
 		Align(lipgloss.Center, lipgloss.Center)
 
-	mainContent := mainPanelStyle.Render(
+	contentPanel := contentPanelStyle.Render(
 		lipgloss.JoinVertical(lipgloss.Center,
-			lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#e94560")).Render("[Layer Demo]"),
+			lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#e94560")).Render("[Flexbox Layout Demo]"),
 			"",
-			"This is the main content panel (Z=1)",
-			"It sits on top of the dotted background",
+			"This panel uses github.com/kjk/flex",
+			"for flexbox-based terminal layout!",
+			"",
+			fmt.Sprintf("Header: %dw × %dh", headerWidth, headerHeight),
+			fmt.Sprintf("Main:   %dw × %dh", mainWidth, mainHeight),
+			fmt.Sprintf("Footer: %dw × %dh", int(footer.LayoutGetWidth()), int(footer.LayoutGetHeight())),
 			"",
 			lipgloss.NewStyle().Faint(true).Render("Press SPACE to toggle modal"),
-			lipgloss.NewStyle().Faint(true).Render("Press Q to quit"),
 		),
 	)
 
-	// Center the main panel
-	mainPanelX := (m.width - lipgloss.Width(mainContent)) / 2
-	mainPanelY := (m.height - lipgloss.Height(mainContent)) / 2
+	// Center the content panel within main area
+	contentPanelX := (mainWidth - lipgloss.Width(contentPanel)) / 2
+	contentPanelY := mainY + (mainHeight-lipgloss.Height(contentPanel))/2
+	canvas.AddLayer(layers.NewLayer(contentPanel, 2).WithOffset(contentPanelX, contentPanelY))
 
-	canvas.AddLayer(layers.NewLayer(mainContent, 1).WithOffset(mainPanelX, mainPanelY))
-
-	// =========================================================================
-	// LAYER 3 (Z=2): Modal overlay (conditionally shown)
-	// =========================================================================
+	// --- MODAL OVERLAY (conditionally shown) ---
 	if m.showModal {
 		modalWidth := 40
 		modalHeight := 10
@@ -132,25 +184,27 @@ func (m model) View() string {
 			lipgloss.JoinVertical(lipgloss.Center,
 				lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#ffd460")).Render("! Modal Dialog !"),
 				"",
-				"This modal is on Z=2",
-				"It overlays everything below!",
+				"Modal overlays flexbox layout",
+				"at Z-index = 5",
 				"",
 				lipgloss.NewStyle().Italic(true).Render("Press SPACE to close"),
 			),
 		)
 
-		// Center the modal
+		// Center the modal on screen
 		modalX := (m.width - lipgloss.Width(modalContent)) / 2
 		modalY := (m.height - lipgloss.Height(modalContent)) / 2
-
-		canvas.AddLayer(layers.NewLayer(modalContent, 2).WithOffset(modalX, modalY))
+		canvas.AddLayer(layers.NewLayer(modalContent, 5).WithOffset(modalX, modalY))
 	}
 
-	// =========================================================================
-	// LAYER 4 (Z=10): Status bar (always on top)
-	// =========================================================================
-	statusStyle := lipgloss.NewStyle().
-		Width(m.width).
+	// --- FOOTER/STATUS BAR ---
+	footerWidth := int(footer.LayoutGetWidth())
+	footerHeight := int(footer.LayoutGetHeight())
+	footerY := int(footer.LayoutGetTop())
+
+	footerStyle := lipgloss.NewStyle().
+		Width(footerWidth).
+		Height(footerHeight).
 		Background(lipgloss.Color("#0f3460")).
 		Foreground(lipgloss.Color("#e0e0e0")).
 		Padding(0, 1)
@@ -160,13 +214,11 @@ func (m model) View() string {
 		modalStatus = lipgloss.NewStyle().Foreground(lipgloss.Color("#00ff00")).Render("Modal: ON")
 	}
 
-	statusContent := statusStyle.Render(
-		fmt.Sprintf("Layers Demo │ Size: %dx%d │ %s │ Press SPACE toggle modal, Q quit",
+	footerContent := footerStyle.Render(
+		fmt.Sprintf("Size: %dx%d │ %s │ Flexbox: Header→Main→Footer",
 			m.width, m.height, modalStatus),
 	)
-
-	// Status bar at the bottom (Y = height - 1), highest Z to always show on top
-	canvas.AddLayer(layers.NewLayer(statusContent, 10).WithOffset(0, m.height-2))
+	canvas.AddLayer(layers.NewLayer(footerContent, 10).WithOffset(0, footerY))
 
 	return canvas.RenderWithLipgloss()
 }
