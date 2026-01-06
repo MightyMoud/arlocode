@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	fmt.Println("=== Layer Rendering Examples ===\n")
+	fmt.Println("=== Layer Rendering Examples ===")
 
 	// Example 1: Basic Overlay
 	example1BasicOverlay()
@@ -54,7 +54,7 @@ func example1BasicOverlay() {
 func example2ZOrderPriority() {
 	fmt.Println("--- Example 2: Z-Order Priority ---")
 	fmt.Println("Three layers at same position with Z=0, Z=1, Z=2")
-	fmt.Println("Highest Z wins:\n")
+	fmt.Println("Highest Z wins:")
 
 	canvas := layers.NewCanvas(15, 3)
 
@@ -188,6 +188,5 @@ func example6TransparencyVsOpaque() {
 	canvas2.AddLayer(layers.NewLayer(fg, 1).WithOffset(5, 2))
 
 	fmt.Println("\nOpaque render (spaces cover background):")
-	fmt.Println(canvas2.RenderOpaque())
 	fmt.Println()
 }

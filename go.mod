@@ -7,9 +7,9 @@ require (
 	github.com/JohannesKaufmann/html-to-markdown v1.6.0
 	github.com/charmbracelet/bubbletea v1.3.10
 	github.com/charmbracelet/lipgloss v1.1.0
-	github.com/charmbracelet/x/exp/charmtone v0.0.0-20251215102626-e0db08df7383
 	github.com/fatih/color v1.18.0
 	github.com/iamwavecut/gopenrouter v0.0.0-20250819194515-3428c8a33343
+	github.com/kjk/flex v0.0.0-20171203210503-ed34d6b6a425
 	github.com/openai/openai-go/v3 v3.15.0
 	google.golang.org/genai v1.40.0
 )
@@ -39,7 +39,6 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.3.6 // indirect
 	github.com/googleapis/gax-go/v2 v2.15.0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
-	github.com/kjk/flex v0.0.0-20171203210503-ed34d6b6a425 // indirect
 	github.com/lucasb-eyer/go-colorful v1.3.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
