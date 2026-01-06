@@ -1,6 +1,3 @@
-// Package layers provides a Z-axis layering system for rendering multiple
-// content layers on top of each other in a terminal UI using lipgloss.
-// This implementation uses lipgloss.Place for proper ANSI handling.
 package layers
 
 import (

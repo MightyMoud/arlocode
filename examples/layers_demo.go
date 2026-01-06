@@ -1,5 +1,3 @@
-// This file demonstrates various examples of using the layers package
-// for Z-axis compositing in terminal UIs with bubbletea and lipgloss.
 package main
 
 import (
@@ -10,7 +8,7 @@ import (
 	"github.com/mightymoud/arlocode/internal/layers"
 )
 
-func main() {
+func layersDemo() {
 	fmt.Println("=== Layer Rendering Examples ===")
 
 	// Example 1: Basic Overlay

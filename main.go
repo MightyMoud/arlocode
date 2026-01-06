@@ -10,8 +10,8 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/kjk/flex"
 
-	"github.com/mightymoud/arlocode/internal/layers"
-	"github.com/mightymoud/arlocode/internal/notifications"
+	"github.com/mightymoud/arlocode/internal/tui/layers"
+	"github.com/mightymoud/arlocode/internal/tui/notifications"
 )
 
 type model struct {

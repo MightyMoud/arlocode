@@ -1,5 +1,3 @@
-// This file demonstrates the notification system with animated pop-ups
-// that slide in from the top-right corner using harmonica spring animations.
 package main
 
 import (

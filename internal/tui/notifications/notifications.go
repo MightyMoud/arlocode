@@ -1,6 +1,3 @@
-// Package notifications provides an animated notification system for terminal UIs.
-// Notifications slide in from the top-right corner, display for a configurable duration,
-// then slide out. Uses charmbracelet/harmonica for smooth spring-based animations.
 package notifications
 
 import (
