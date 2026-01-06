@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/mightymoud/arlocode/internal/layers"
+	"github.com/mightymoud/arlocode/internal/tui/layers"
 )
 
 func layersDemo() {
