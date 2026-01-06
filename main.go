@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/kjk/flex"
@@ -19,6 +20,7 @@ type model struct {
 	showModal     bool
 	activeLayer   int // 0 = background focused, 1 = modal focused
 	notifications *notifications.NotificationManager
+	modalInput    textinput.Model
 }
 
 // tickMsg is sent on each animation frame for notifications
@@ -36,6 +38,9 @@ func tick() tea.Cmd {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
+	var cmds []tea.Cmd
+
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
@@ -50,9 +55,42 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return m, tick()
 	case tea.KeyMsg:
+		// If modal is open, handle modal-specific keys first
+		if m.showModal {
+			switch msg.String() {
+			case "esc":
+				// Close modal and blur input
+				m.showModal = false
+				m.modalInput.Blur()
+				return m, nil
+			case "enter":
+				// Submit the input value (you can do something with it here)
+				if m.notifications != nil && m.modalInput.Value() != "" {
+					m.notifications.PushSuccess("Submitted!", m.modalInput.Value())
+					m.modalInput.SetValue("")
+				}
+				m.showModal = false
+				m.modalInput.Blur()
+				return m, nil
+			default:
+				// Route all other keys to the textinput
+				m.modalInput, cmd = m.modalInput.Update(msg)
+				cmds = append(cmds, cmd)
+				return m, tea.Batch(cmds...)
+			}
+		}
+
+		// Handle keys when modal is NOT open
 		switch msg.String() {
 		case " ":
 			m.showModal = !m.showModal
+			if m.showModal {
+				// Focus the input when modal opens
+				m.modalInput.Focus()
+				cmds = append(cmds, textinput.Blink)
+			} else {
+				m.modalInput.Blur()
+			}
 		case "tab":
 			m.activeLayer = (m.activeLayer + 1) % 2
 		case "i":
@@ -75,11 +113,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.notifications != nil {
 				m.notifications.DismissAll()
 			}
-		case "q", "esc", "ctrl+c":
+		case "q", "ctrl+c":
 			return m, tea.Quit
 		}
 	}
-	return m, nil
+	return m, tea.Batch(cmds...)
 }
 
 func (m model) View() string {
@@ -209,27 +247,29 @@ func (m model) View() string {
 
 	// --- MODAL OVERLAY (conditionally shown) ---
 	if m.showModal {
-		modalWidth := 40
-		modalHeight := 10
+		modalWidth := 50
+		// modalHeight := 12
 
 		modalStyle := lipgloss.NewStyle().
 			Width(modalWidth).
-			Height(modalHeight).
 			Background(lipgloss.Color("#2d132c")).
 			Foreground(lipgloss.Color("#ffffff")).
 			Border(lipgloss.RoundedBorder()).
 			BorderForeground(lipgloss.Color("#ee4540")).
-			Padding(1, 2).
-			Align(lipgloss.Center, lipgloss.Center)
+			Padding(1, 2)
+
+		// Style for the input label
+		labelStyle := lipgloss.NewStyle().
+			Foreground(lipgloss.Color("#aaaaaa"))
 
 		modalContent := modalStyle.Render(
-			lipgloss.JoinVertical(lipgloss.Center,
-				lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#ffd460")).Render("! Modal Dialog !"),
+			lipgloss.JoinVertical(lipgloss.Left,
+				lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#ffd460")).Render("Modal with Input"),
 				"",
-				"Modal overlays flexbox layout",
-				"at Z-index = 5",
+				labelStyle.Render("Enter something:"),
+				m.modalInput.View(),
 				"",
-				lipgloss.NewStyle().Italic(true).Render("Press SPACE to close"),
+				lipgloss.NewStyle().Faint(true).Render("Enter to submit • Esc to close"),
 			),
 		)
 
@@ -274,9 +314,22 @@ func (m model) View() string {
 }
 
 func main() {
-	// Initialize the model with notification manager
+	// Create and configure the text input for the modal
+	ti := textinput.New()
+	ti.Placeholder = "Type here..."
+	ti.Width = 40
+	ti.CharLimit = 100
+
+	// Style the text input
+	ti.PromptStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#ee4540"))
+	ti.TextStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#ffffff"))
+	ti.PlaceholderStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#666666"))
+	ti.Cursor.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("#ffd460"))
+
+	// Initialize the model with notification manager and text input
 	m := model{
 		notifications: notifications.NewNotificationManager(80, 24),
+		modalInput:    ti,
 	}
 
 	p := tea.NewProgram(m)

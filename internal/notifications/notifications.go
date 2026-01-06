@@ -81,8 +81,8 @@ func NewNotificationManager(screenWidth, screenHeight int) *NotificationManager 
 		screenHeight:    screenHeight,
 		defaultWidth:    40,
 		defaultDuration: 4 * time.Second,
-		springFrequency: 6.0,
-		springDamping:   0.8,
+		springFrequency: 12.0,
+		springDamping:   0.6,
 		idCounter:       0,
 	}
 }
@@ -298,6 +298,7 @@ func (m *NotificationManager) RenderWithPosition() (content string, x, y int) {
 
 // renderNotification renders a single notification with appropriate styling
 func (m *NotificationManager) renderNotification(n *Notification) string {
+
 	// Content width (excluding border and padding)
 	contentWidth := n.width
 
@@ -305,7 +306,10 @@ func (m *NotificationManager) renderNotification(n *Notification) string {
 	baseStyle := lipgloss.NewStyle().
 		Width(contentWidth).
 		Padding(1, 2).
-		Border(lipgloss.RoundedBorder())
+		Border(lipgloss.ThickBorder()).
+		BorderTop(false).
+		BorderBottom(false).
+		BorderLeft(false)
 
 	// Apply type-specific colors
 	switch n.Type {
