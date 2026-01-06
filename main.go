@@ -3,23 +3,36 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/kjk/flex"
 
 	"github.com/mightymoud/arlocode/internal/layers"
+	"github.com/mightymoud/arlocode/internal/notifications"
 )
 
 type model struct {
-	width       int
-	height      int
-	showModal   bool
-	activeLayer int // 0 = background focused, 1 = modal focused
+	width         int
+	height        int
+	showModal     bool
+	activeLayer   int // 0 = background focused, 1 = modal focused
+	notifications *notifications.NotificationManager
 }
 
+// tickMsg is sent on each animation frame for notifications
+type tickMsg time.Time
+
 func (m model) Init() tea.Cmd {
-	return tea.EnterAltScreen
+	return tea.Batch(tea.EnterAltScreen, tick())
+}
+
+// tick returns a command that sends a tickMsg after a short delay
+func tick() tea.Cmd {
+	return tea.Tick(time.Second/60, func(t time.Time) tea.Msg {
+		return tickMsg(t)
+	})
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -27,12 +40,41 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
+		if m.notifications != nil {
+			m.notifications.UpdateScreenSize(msg.Width, msg.Height)
+		}
+	case tickMsg:
+		// Update notification animations
+		if m.notifications != nil {
+			m.notifications.Update()
+		}
+		return m, tick()
 	case tea.KeyMsg:
 		switch msg.String() {
 		case " ":
 			m.showModal = !m.showModal
 		case "tab":
 			m.activeLayer = (m.activeLayer + 1) % 2
+		case "i":
+			if m.notifications != nil {
+				m.notifications.PushInfo("Info", "This is an informational message")
+			}
+		case "s":
+			if m.notifications != nil {
+				m.notifications.PushSuccess("Success!", "The operation completed successfully")
+			}
+		case "w":
+			if m.notifications != nil {
+				m.notifications.PushWarning("Warning", "Something might need your attention")
+			}
+		case "e":
+			if m.notifications != nil {
+				m.notifications.PushError("Error", "Something went wrong!")
+			}
+		case "d":
+			if m.notifications != nil {
+				m.notifications.DismissAll()
+			}
 		case "q", "esc", "ctrl+c":
 			return m, tea.Quit
 		}
@@ -97,7 +139,7 @@ func (m model) View() string {
 
 	headerContent := headerStyle.Render(
 		lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#e94560")).Render("⚡ ArloCode") +
-			"  │  Flexbox Layout Demo  │  Press SPACE toggle modal, Q quit",
+			"  │  Flexbox Layout Demo  │  SPACE toggle modal, i/s/w/e notifications, Q quit",
 	)
 	canvas.AddLayer(layers.NewLayer(headerContent, 0).WithOffset(0, headerY))
 
@@ -220,11 +262,24 @@ func (m model) View() string {
 	)
 	canvas.AddLayer(layers.NewLayer(footerContent, 10).WithOffset(0, footerY))
 
+	// --- NOTIFICATION OVERLAY ---
+	if m.notifications != nil {
+		notifContent, notifX, notifY := m.notifications.RenderWithPosition()
+		if notifContent != "" {
+			canvas.AddLayer(layers.NewLayer(notifContent, 100).WithOffset(notifX, notifY))
+		}
+	}
+
 	return canvas.RenderWithLipgloss()
 }
 
 func main() {
-	p := tea.NewProgram(model{})
+	// Initialize the model with notification manager
+	m := model{
+		notifications: notifications.NewNotificationManager(80, 24),
+	}
+
+	p := tea.NewProgram(m)
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)
