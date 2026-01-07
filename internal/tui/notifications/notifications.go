@@ -6,7 +6,7 @@ import (
 
 	"github.com/charmbracelet/harmonica"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/mightymoud/arlocode/internal/themes"
+	"github.com/mightymoud/arlocode/internal/tui/themes"
 )
 
 // NotificationType defines the visual style of a notification
