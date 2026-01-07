@@ -15,3 +15,7 @@ func tickCmd() tea.Cmd {
 		return tickMsg(t)
 	})
 }
+
+type AgentTextChunkMsg string
+type AgentThinkingChunkMsg string
+type AgentThinkingCompleteMsg string

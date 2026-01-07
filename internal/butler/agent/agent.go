@@ -15,13 +15,15 @@ import (
 )
 
 type Agent struct {
-	llm             llm.LLM
-	memory          []memory.MemoryEntry
-	tools           []tools.Tool
-	maxIterations   int
-	OnTextChunk     butler.OnTextChunkFunc
-	OnThinkingChunk butler.OnThinkingChunkFunc
-	OnToolCall      butler.OnToolCallFunc
+	llm                llm.LLM
+	memory             []memory.MemoryEntry
+	tools              []tools.Tool
+	maxIterations      int
+	OnTextChunk        butler.OnTextChunkFunc
+	OnStreamComplete   butler.OnStreamCompleteFunc
+	OnThinkingChunk    butler.OnThinkingChunkFunc
+	OnThinkingComplete butler.OnThinkingCompleteFunc
+	OnToolCall         butler.OnToolCallFunc
 }
 
 func NewAgent(l llm.LLM) *Agent {
@@ -56,6 +58,11 @@ func (a *Agent) WithMaxIterations(max int) *Agent {
 
 func (l *Agent) WithOnThinkingChunk(f butler.OnThinkingChunkFunc) *Agent {
 	l.OnThinkingChunk = f
+	return l
+}
+
+func (l *Agent) WithOnThinkingComplete(f butler.OnThinkingCompleteFunc) *Agent {
+	l.OnThinkingComplete = f
 	return l
 }
 

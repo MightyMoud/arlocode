@@ -1,0 +1,22 @@
+package conversation
+
+type ConversationMessage struct {
+	Type    string
+	Content string
+}
+
+type ConversationManager struct {
+	Conversation   []ConversationMessage
+	AgentThinking  bool
+	ThinkingBuffer string
+}
+
+func (cm *ConversationManager) AddThinkingMessage(content string) {
+	conversationTurn := ConversationMessage{
+		Type:    "agent_thinking",
+		Content: cm.ThinkingBuffer,
+	}
+	cm.Conversation = append(cm.Conversation, conversationTurn)
+	cm.AgentThinking = false
+	cm.ThinkingBuffer = ""
+}

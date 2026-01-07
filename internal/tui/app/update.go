@@ -1,6 +1,8 @@
 package app
 
 import (
+	"context"
+
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -22,6 +24,16 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return m, tea.Batch(cmds...)
 
+	case AgentThinkingCompleteMsg:
+		m.Conversation.AddThinkingMessage(m.Conversation.ThinkingBuffer)
+		return m, nil
+
+	case AgentThinkingChunkMsg:
+		m.Conversation.AgentThinking = true
+		m.Conversation.ThinkingBuffer += string(msg)
+
+		return m, nil
+
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c":
@@ -41,6 +53,13 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.ModalInput.Blur()
 				m.MainInput.Focus()
 				return m, textinput.Blink
+			}
+			value := m.MainInput.Value()
+			if value != "" {
+				// Clear main input after submission
+				m.MainInput.SetValue("")
+				go m.Shared.Agent.Run(context.Background(), value)
+				return m, tickCmd()
 			}
 		case "ctrl+o":
 			// Toggle modal

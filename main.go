@@ -7,7 +7,9 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/mightymoud/arlocode/internal/coding_agent"
 	"github.com/mightymoud/arlocode/internal/tui/app"
+	"github.com/mightymoud/arlocode/internal/tui/app/conversation"
 	"github.com/mightymoud/arlocode/internal/tui/notifications"
 	"github.com/mightymoud/arlocode/internal/tui/themes"
 )
@@ -34,16 +36,30 @@ func main() {
 	modalInput.TextStyle = lipgloss.NewStyle().Foreground(t.Text())
 	modalInput.PlaceholderStyle = lipgloss.NewStyle().Foreground(t.Overlay0())
 	modalInput.Cursor.Style = lipgloss.NewStyle().Foreground(t.Rosewater())
+	shared := &app.SharedState{}
 
-	m := app.AppModel{
+	m := &app.AppModel{
 		MainInput:     mainInput,
 		ModalInput:    modalInput,
 		Notifications: notifications.NewNotificationManager(80, 24),
+		Conversation:  &conversation.ConversationManager{},
+		Shared:        shared,
 	}
 
+	codingAgent := coding_agent.Agent.WithMaxIterations(10).
+		WithOnThinkingChunk(func(s string) {
+			shared.Program.Send(app.AgentThinkingChunkMsg(s))
+		}).
+		WithOnThinkingComplete(func() {
+			shared.Program.Send(app.AgentThinkingCompleteMsg(""))
+		})
+
+	shared.Agent = codingAgent
 	p := tea.NewProgram(m, tea.WithAltScreen())
+	shared.Program = p
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Error: %v", err)
 		os.Exit(1)
 	}
+
 }

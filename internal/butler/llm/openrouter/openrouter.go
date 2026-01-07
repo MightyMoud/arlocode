@@ -49,6 +49,7 @@ func (l OpenRouterLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, age
 	defer stream.Close()
 
 	var currentResponseText strings.Builder
+	isThinking := false
 
 	type streamToolCall struct {
 		Index int
@@ -71,18 +72,26 @@ func (l OpenRouterLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, age
 		if len(response.Choices) > 0 {
 			delta := response.Choices[0].Delta
 
-			// Handle Content
-			if delta.Content != "" {
-				if hooks.OnTextChunk != nil {
-					hooks.OnTextChunk(delta.Content)
-				}
-				currentResponseText.WriteString(delta.Content)
-			}
 			if delta.Reasoning != "" {
+				isThinking = true
 				if hooks.OnThinkingChunk != nil {
 					hooks.OnThinkingChunk(delta.Reasoning)
 				}
 				// currentResponseText.WriteString(delta.Reasoning)
+			}
+
+			// Handle Content
+			if delta.Content != "" {
+				if isThinking {
+					isThinking = false
+				}
+				if hooks.OnThinkingComplete != nil {
+					hooks.OnThinkingComplete()
+				}
+				if hooks.OnTextChunk != nil {
+					hooks.OnTextChunk(delta.Content)
+				}
+				currentResponseText.WriteString(delta.Content)
 			}
 
 			// Handle Tool Calls

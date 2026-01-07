@@ -7,6 +7,87 @@ import (
 	"github.com/mightymoud/arlocode/internal/tui/themes"
 )
 
+// =========================================================================
+// MODAL LAYER - Flexbox layout for modal overlay
+// =========================================================================
+func (m AppModel) RenderModal() (canvas layers.Canvas) {
+	// Get theme styles
+	t := themes.Current
+
+	// Modal flexbox container
+	modalRoot := flex.NewNode()
+	modalRoot.StyleSetWidth(50)
+	modalRoot.StyleSetFlexDirection(flex.FlexDirectionColumn)
+	modalRoot.StyleSetPadding(flex.EdgeAll, 1)
+
+	// Modal content nodes
+	modalTitleNode := flex.NewNode()
+	modalTitleNode.StyleSetHeight(2)
+
+	modalInputNode := flex.NewNode()
+	modalInputNode.StyleSetHeight(1)
+	modalInputNode.StyleSetMargin(flex.EdgeVertical, 1)
+
+	modalHintNode := flex.NewNode()
+	modalHintNode.StyleSetHeight(1)
+
+	modalRoot.InsertChild(modalTitleNode, 0)
+	modalRoot.InsertChild(modalInputNode, 1)
+	modalRoot.InsertChild(modalHintNode, 2)
+
+	flex.CalculateLayout(modalRoot, 50, flex.Undefined, flex.DirectionLTR)
+
+	// Modal styles with consistent background
+	modalBg := t.Surface1()
+	modalWidth := int(modalRoot.LayoutGetWidth())
+
+	modalStyle := lipgloss.NewStyle().
+		Background(modalBg).
+		Border(lipgloss.ThickBorder(), false, false, false, true).
+		BorderForeground(t.Pink()).
+		BorderBackground(modalBg).
+		Padding(1, 2).
+		Width(modalWidth)
+
+	modalTitleStyle := lipgloss.NewStyle().
+		Background(modalBg).
+		Bold(true).
+		Foreground(t.Peach()).
+		Width(modalWidth - 6).
+		PaddingBottom(1)
+
+	modalInputBoxStyle := lipgloss.NewStyle().
+		Background(modalBg).
+		Width(modalWidth - 6)
+
+	modalHintStyle := lipgloss.NewStyle().
+		Background(modalBg).
+		Foreground(t.Overlay1()).
+		Width(modalWidth - 6).
+		PaddingTop(1)
+
+	// Update modal input styles to match modal background
+	m.ModalInput.TextStyle = lipgloss.NewStyle().Foreground(t.Text()).Background(modalBg)
+	m.ModalInput.PlaceholderStyle = lipgloss.NewStyle().Foreground(t.Overlay0()).Background(modalBg)
+	m.ModalInput.Cursor.Style = lipgloss.NewStyle().Foreground(t.Rosewater()).Background(modalBg)
+
+	modalContent := modalStyle.Render(
+		lipgloss.JoinVertical(lipgloss.Left,
+			modalTitleStyle.Render("Modal"),
+			modalInputBoxStyle.Render(m.ModalInput.View()),
+			modalHintStyle.Render("Enter to close • Esc to cancel"),
+		),
+	)
+
+	// Center modal on screen
+	modalX := (m.width - lipgloss.Width(modalContent)) / 2
+	modalY := (m.height - lipgloss.Height(modalContent)) / 2
+
+	// Add modal layer (Z=1, renders on top)
+	canvas.AddLayer(layers.NewLayer(modalContent, 1).WithOffset(modalX, modalY))
+	return
+}
+
 func (m AppModel) View() string {
 	if m.width == 0 || m.height == 0 {
 		return "Loading..."
@@ -37,6 +118,10 @@ func (m AppModel) View() string {
 
 	// Calculate layout
 	root.InsertChild(contentNode, 0)
+
+	agentThinkingNode := flex.NewNode()
+	agentThinkingNode.StyleSetHeight(5)
+	root.InsertChild(agentThinkingNode, 1)
 	flex.CalculateLayout(root, float32(m.width), float32(m.height), flex.DirectionLTR)
 
 	// Base layer style (faint when modal is open)
@@ -68,10 +153,17 @@ func (m AppModel) View() string {
 	input := inputBoxStyle.Render(m.MainInput.View())
 	hint := hintStyle.Render("Ctrl+O to open modal • Esc to quit")
 
+	sections := []string{title, input, hint}
+	if m.Conversation.AgentThinking {
+		thinkingStyle := baseLayerStyle.
+			Foreground(t.Yellow()).
+			PaddingTop(1)
+		thinkingText := thinkingStyle.Render(m.Conversation.ThinkingBuffer + "█")
+		sections = append(sections, thinkingText)
+	}
+
 	mainContent := lipgloss.JoinVertical(lipgloss.Center,
-		title,
-		input,
-		hint,
+		sections...,
 	)
 
 	// Center in the full screen area using flex-calculated position
@@ -81,82 +173,8 @@ func (m AppModel) View() string {
 	// Add base layer (Z=0)
 	canvas.AddLayer(layers.NewLayer(mainContent, 0).WithOffset(contentX, contentY))
 
-	// =========================================================================
-	// MODAL LAYER - Flexbox layout for modal overlay
-	// =========================================================================
-
 	if m.showModal {
-		// Modal flexbox container
-		modalRoot := flex.NewNode()
-		modalRoot.StyleSetWidth(50)
-		modalRoot.StyleSetFlexDirection(flex.FlexDirectionColumn)
-		modalRoot.StyleSetPadding(flex.EdgeAll, 1)
-
-		// Modal content nodes
-		modalTitleNode := flex.NewNode()
-		modalTitleNode.StyleSetHeight(2)
-
-		modalInputNode := flex.NewNode()
-		modalInputNode.StyleSetHeight(1)
-		modalInputNode.StyleSetMargin(flex.EdgeVertical, 1)
-
-		modalHintNode := flex.NewNode()
-		modalHintNode.StyleSetHeight(1)
-
-		modalRoot.InsertChild(modalTitleNode, 0)
-		modalRoot.InsertChild(modalInputNode, 1)
-		modalRoot.InsertChild(modalHintNode, 2)
-
-		flex.CalculateLayout(modalRoot, 50, flex.Undefined, flex.DirectionLTR)
-
-		// Modal styles with consistent background
-		modalBg := t.Surface1()
-		modalWidth := int(modalRoot.LayoutGetWidth())
-
-		modalStyle := lipgloss.NewStyle().
-			Background(modalBg).
-			Border(lipgloss.ThickBorder(), false, false, false, true).
-			BorderForeground(t.Pink()).
-			BorderBackground(modalBg).
-			Padding(1, 2).
-			Width(modalWidth)
-
-		modalTitleStyle := lipgloss.NewStyle().
-			Background(modalBg).
-			Bold(true).
-			Foreground(t.Peach()).
-			Width(modalWidth - 6).
-			PaddingBottom(1)
-
-		modalInputBoxStyle := lipgloss.NewStyle().
-			Background(modalBg).
-			Width(modalWidth - 6)
-
-		modalHintStyle := lipgloss.NewStyle().
-			Background(modalBg).
-			Foreground(t.Overlay1()).
-			Width(modalWidth - 6).
-			PaddingTop(1)
-
-		// Update modal input styles to match modal background
-		m.ModalInput.TextStyle = lipgloss.NewStyle().Foreground(t.Text()).Background(modalBg)
-		m.ModalInput.PlaceholderStyle = lipgloss.NewStyle().Foreground(t.Overlay0()).Background(modalBg)
-		m.ModalInput.Cursor.Style = lipgloss.NewStyle().Foreground(t.Rosewater()).Background(modalBg)
-
-		modalContent := modalStyle.Render(
-			lipgloss.JoinVertical(lipgloss.Left,
-				modalTitleStyle.Render("Modal"),
-				modalInputBoxStyle.Render(m.ModalInput.View()),
-				modalHintStyle.Render("Enter to close • Esc to cancel"),
-			),
-		)
-
-		// Center modal on screen
-		modalX := (m.width - lipgloss.Width(modalContent)) / 2
-		modalY := (m.height - lipgloss.Height(modalContent)) / 2
-
-		// Add modal layer (Z=1, renders on top)
-		canvas.AddLayer(layers.NewLayer(modalContent, 1).WithOffset(modalX, modalY))
+		m.RenderModal()
 	}
 
 	// =========================================================================
