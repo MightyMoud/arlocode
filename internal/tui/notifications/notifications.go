@@ -6,6 +6,7 @@ import (
 
 	"github.com/charmbracelet/harmonica"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/mightymoud/arlocode/internal/themes"
 )
 
 // NotificationType defines the visual style of a notification
@@ -296,17 +297,18 @@ func (m *NotificationManager) RenderWithPosition() (content string, x, y int) {
 // renderNotification renders a single notification with appropriate styling
 func (m *NotificationManager) renderNotification(n *Notification) string {
 
+	t := themes.Current
+
 	// Content width (excluding border and padding)
 	contentWidth := n.width
 
 	// Base style - fixed width box
 	baseStyle := lipgloss.NewStyle().
+		Background(t.Surface0()).
 		Width(contentWidth).
 		Padding(1, 2).
-		Border(lipgloss.ThickBorder()).
-		BorderTop(false).
-		BorderBottom(false).
-		BorderLeft(false)
+		Border(lipgloss.ThickBorder(), false, true, false, false).
+		BorderBackground(t.Surface0())
 
 	// Apply type-specific colors
 	switch n.Type {

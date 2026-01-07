@@ -9,7 +9,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/kjk/flex"
-
+	"github.com/mightymoud/arlocode/internal/themes"
 	"github.com/mightymoud/arlocode/internal/tui/layers"
 	"github.com/mightymoud/arlocode/internal/tui/notifications"
 )
@@ -18,23 +18,23 @@ type model struct {
 	width         int
 	height        int
 	showModal     bool
-	activeLayer   int // 0 = background focused, 1 = modal focused
-	notifications *notifications.NotificationManager
+	mainInput     textinput.Model
 	modalInput    textinput.Model
+	notifications *notifications.NotificationManager
 }
 
-// tickMsg is sent on each animation frame for notifications
+// tickMsg is sent on each animation frame
 type tickMsg time.Time
 
-func (m model) Init() tea.Cmd {
-	return tea.Batch(tea.EnterAltScreen, tick())
-}
-
-// tick returns a command that sends a tickMsg after a short delay
-func tick() tea.Cmd {
+// tickCmd returns a command that ticks at 60fps for animations
+func tickCmd() tea.Cmd {
 	return tea.Tick(time.Second/60, func(t time.Time) tea.Msg {
 		return tickMsg(t)
 	})
+}
+
+func (m model) Init() tea.Cmd {
+	return textinput.Blink
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -45,78 +45,65 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
-		if m.notifications != nil {
-			m.notifications.UpdateScreenSize(msg.Width, msg.Height)
-		}
+		m.notifications.UpdateScreenSize(msg.Width, msg.Height)
+
 	case tickMsg:
 		// Update notification animations
-		if m.notifications != nil {
-			m.notifications.Update()
+		if m.notifications.Update() {
+			cmds = append(cmds, tickCmd())
 		}
-		return m, tick()
+		return m, tea.Batch(cmds...)
+
 	case tea.KeyMsg:
-		// If modal is open, handle modal-specific keys first
-		if m.showModal {
-			switch msg.String() {
-			case "esc":
-				// Close modal and blur input
+		switch msg.String() {
+		case "ctrl+c":
+			return m, tea.Quit
+		case "esc":
+			if m.showModal {
 				m.showModal = false
 				m.modalInput.Blur()
-				return m, nil
-			case "enter":
-				// Submit the input value (you can do something with it here)
-				if m.notifications != nil && m.modalInput.Value() != "" {
-					m.notifications.PushSuccess("Submitted!", m.modalInput.Value())
-					m.modalInput.SetValue("")
-				}
+				m.mainInput.Focus()
+				return m, textinput.Blink
+			}
+			return m, tea.Quit
+		case "enter":
+			if m.showModal {
+				// Close modal on enter
 				m.showModal = false
 				m.modalInput.Blur()
-				return m, nil
-			default:
-				// Route all other keys to the textinput
-				m.modalInput, cmd = m.modalInput.Update(msg)
-				cmds = append(cmds, cmd)
-				return m, tea.Batch(cmds...)
+				m.mainInput.Focus()
+				return m, textinput.Blink
+			}
+		case "ctrl+o":
+			// Toggle modal
+			m.showModal = !m.showModal
+			if m.showModal {
+				m.mainInput.Blur()
+				m.modalInput.Focus()
+				return m, textinput.Blink
+			} else {
+				m.modalInput.Blur()
+				m.mainInput.Focus()
+				return m, textinput.Blink
+			}
+		case "w":
+			// Show warning notification
+			if !m.showModal {
+				m.notifications.PushWarning("Warning", "This is a warning notification!")
+				return m, tickCmd()
 			}
 		}
 
-		// Handle keys when modal is NOT open
-		switch msg.String() {
-		case " ":
-			m.showModal = !m.showModal
-			if m.showModal {
-				// Focus the input when modal opens
-				m.modalInput.Focus()
-				cmds = append(cmds, textinput.Blink)
-			} else {
-				m.modalInput.Blur()
-			}
-		case "tab":
-			m.activeLayer = (m.activeLayer + 1) % 2
-		case "i":
-			if m.notifications != nil {
-				m.notifications.PushInfo("Info", "This is an informational message")
-			}
-		case "s":
-			if m.notifications != nil {
-				m.notifications.PushSuccess("Success!", "The operation completed successfully")
-			}
-		case "w":
-			if m.notifications != nil {
-				m.notifications.PushWarning("Warning", "Something might need your attention")
-			}
-		case "e":
-			if m.notifications != nil {
-				m.notifications.PushError("Error", "Something went wrong!")
-			}
-		case "d":
-			if m.notifications != nil {
-				m.notifications.DismissAll()
-			}
-		case "q", "ctrl+c":
-			return m, tea.Quit
+		// Route input to the focused component
+		if m.showModal {
+			m.modalInput, cmd = m.modalInput.Update(msg)
+			cmds = append(cmds, cmd)
+		} else {
+			m.mainInput, cmd = m.mainInput.Update(msg)
+			cmds = append(cmds, cmd)
 		}
 	}
+
 	return m, tea.Batch(cmds...)
 }
 
@@ -125,217 +112,197 @@ func (m model) View() string {
 		return "Loading..."
 	}
 
+	// Get theme styles
+	t := themes.Current
+
+	// Create canvas for layer composition
+	canvas := layers.NewCanvas(m.width, m.height)
+
 	// =========================================================================
-	// FLEXBOX LAYOUT SETUP
+	// BASE LAYER - Flexbox layout for main content
 	// =========================================================================
 
-	// 1. Create the Root Node
+	// Root flexbox container
 	root := flex.NewNode()
 	root.StyleSetWidth(float32(m.width))
 	root.StyleSetHeight(float32(m.height))
 	root.StyleSetFlexDirection(flex.FlexDirectionColumn)
+	root.StyleSetJustifyContent(flex.JustifyCenter)
+	root.StyleSetAlignItems(flex.AlignCenter)
 
-	// 2. Define Children Nodes
-	header := flex.NewNode()
-	header.StyleSetHeight(3) // 3 rows high for header
-	header.StyleSetFlexShrink(0)
+	// Content container (centered vertically and horizontally)
+	contentNode := flex.NewNode()
+	contentNode.StyleSetFlexDirection(flex.FlexDirectionColumn)
+	contentNode.StyleSetAlignItems(flex.AlignCenter)
 
-	mainContent := flex.NewNode()
-	mainContent.StyleSetFlexGrow(1) // Fills remaining space
-
-	footer := flex.NewNode()
-	footer.StyleSetHeight(1) // 1 row for footer/status bar
-	footer.StyleSetFlexShrink(0)
-
-	// Insert children into root
-	root.InsertChild(header, 0)
-	root.InsertChild(mainContent, 1)
-	root.InsertChild(footer, 2)
-
-	// 3. Calculate Layout
+	// Calculate layout
+	root.InsertChild(contentNode, 0)
 	flex.CalculateLayout(root, float32(m.width), float32(m.height), flex.DirectionLTR)
 
-	// =========================================================================
-	// RENDER EACH PANEL USING CALCULATED FLEX DIMENSIONS
-	// =========================================================================
+	// Base layer style (faint when modal is open)
+	baseLayerStyle := lipgloss.NewStyle().Faint(m.showModal)
 
-	// Create a canvas for layer composition
-	canvas := layers.NewCanvas(m.width, m.height)
+	// Styles using theme colors
+	titleStyle := baseLayerStyle.
+		Bold(true).
+		Foreground(t.Mauve()).
+		PaddingBottom(2)
 
-	// --- HEADER PANEL ---
-	headerWidth := int(header.LayoutGetWidth())
-	headerHeight := int(header.LayoutGetHeight())
-	headerY := int(header.LayoutGetTop())
+	inputBoxStyle := baseLayerStyle.
+		Border(lipgloss.ThickBorder()).
+		BorderTop(false).
+		BorderBottom(false).
+		BorderRight(false).
+		Height(5).
+		Background(t.Surface0()).
+		BorderForeground(t.Blue()).
+		Padding(0, 1).
+		Width(60)
 
-	headerStyle := lipgloss.NewStyle().
-		Width(headerWidth).
-		Height(headerHeight).
-		Background(lipgloss.Color("#0f3460")).
-		Foreground(lipgloss.Color("#e0e0e0")).
-		Padding(0, 2).
-		Align(lipgloss.Left, lipgloss.Center)
+	hintStyle := baseLayerStyle.
+		Foreground(t.Overlay1()).
+		PaddingTop(2)
 
-	headerContent := headerStyle.Render(
-		lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#e94560")).Render("⚡ ArloCode") +
-			"  │  Flexbox Layout Demo  │  SPACE toggle modal, i/s/w/e notifications, Q quit",
-	)
-	canvas.AddLayer(layers.NewLayer(headerContent, 0).WithOffset(0, headerY))
+	// Render main content elements
+	title := titleStyle.Render("⚡ ArloCode")
+	input := inputBoxStyle.Render(m.mainInput.View())
+	hint := hintStyle.Render("Ctrl+O to open modal • Esc to quit")
 
-	// --- MAIN CONTENT PANEL ---
-	mainWidth := int(mainContent.LayoutGetWidth())
-	mainHeight := int(mainContent.LayoutGetHeight())
-	mainY := int(mainContent.LayoutGetTop())
-
-	// Background pattern for main area
-	bgStyle := lipgloss.NewStyle().
-		Width(mainWidth).
-		Height(mainHeight).
-		Background(lipgloss.Color("#1a1a2e")).
-		Foreground(lipgloss.Color("#4a4a6a"))
-
-	pattern := ""
-	for y := 0; y < mainHeight; y++ {
-		row := ""
-		for x := 0; x < mainWidth; x++ {
-			if (x+y)%4 == 0 {
-				row += "·"
-			} else {
-				row += " "
-			}
-		}
-		pattern += row
-		if y < mainHeight-1 {
-			pattern += "\n"
-		}
-	}
-	backgroundContent := bgStyle.Render(pattern)
-	canvas.AddLayer(layers.NewLayer(backgroundContent, 1).WithOffset(0, mainY))
-
-	// --- CENTERED CONTENT PANEL (inside main) ---
-	contentPanelWidth := min(60, mainWidth-10)
-	contentPanelHeight := min(15, mainHeight-4)
-
-	contentPanelStyle := lipgloss.NewStyle().
-		Width(contentPanelWidth).
-		Height(contentPanelHeight).
-		Background(lipgloss.Color("#16213e")).
-		Foreground(lipgloss.Color("#e0e0e0")).
-		Border(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("#0f3460")).
-		Padding(1, 2).
-		Align(lipgloss.Center, lipgloss.Center)
-
-	contentPanel := contentPanelStyle.Render(
-		lipgloss.JoinVertical(lipgloss.Center,
-			lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#e94560")).Render("[Flexbox Layout Demo]"),
-			"",
-			"This panel uses github.com/kjk/flex",
-			"for flexbox-based terminal layout!",
-			"",
-			fmt.Sprintf("Header: %dw × %dh", headerWidth, headerHeight),
-			fmt.Sprintf("Main:   %dw × %dh", mainWidth, mainHeight),
-			fmt.Sprintf("Footer: %dw × %dh", int(footer.LayoutGetWidth()), int(footer.LayoutGetHeight())),
-			"",
-			lipgloss.NewStyle().Faint(true).Render("Press SPACE to toggle modal"),
-		),
+	mainContent := lipgloss.JoinVertical(lipgloss.Center,
+		title,
+		input,
+		hint,
 	)
 
-	// Center the content panel within main area
-	contentPanelX := (mainWidth - lipgloss.Width(contentPanel)) / 2
-	contentPanelY := mainY + (mainHeight-lipgloss.Height(contentPanel))/2
-	canvas.AddLayer(layers.NewLayer(contentPanel, 2).WithOffset(contentPanelX, contentPanelY))
+	// Center in the full screen area using flex-calculated position
+	contentX := (m.width - lipgloss.Width(mainContent)) / 2
+	contentY := (m.height - lipgloss.Height(mainContent)) / 2
 
-	// --- MODAL OVERLAY (conditionally shown) ---
+	// Add base layer (Z=0)
+	canvas.AddLayer(layers.NewLayer(mainContent, 0).WithOffset(contentX, contentY))
+
+	// =========================================================================
+	// MODAL LAYER - Flexbox layout for modal overlay
+	// =========================================================================
+
 	if m.showModal {
-		modalWidth := 50
-		// modalHeight := 12
+		// Modal flexbox container
+		modalRoot := flex.NewNode()
+		modalRoot.StyleSetWidth(50)
+		modalRoot.StyleSetFlexDirection(flex.FlexDirectionColumn)
+		modalRoot.StyleSetPadding(flex.EdgeAll, 1)
+
+		// Modal content nodes
+		modalTitleNode := flex.NewNode()
+		modalTitleNode.StyleSetHeight(2)
+
+		modalInputNode := flex.NewNode()
+		modalInputNode.StyleSetHeight(1)
+		modalInputNode.StyleSetMargin(flex.EdgeVertical, 1)
+
+		modalHintNode := flex.NewNode()
+		modalHintNode.StyleSetHeight(1)
+
+		modalRoot.InsertChild(modalTitleNode, 0)
+		modalRoot.InsertChild(modalInputNode, 1)
+		modalRoot.InsertChild(modalHintNode, 2)
+
+		flex.CalculateLayout(modalRoot, 50, flex.Undefined, flex.DirectionLTR)
+
+		// Modal styles with consistent background
+		modalBg := t.Surface1()
+		modalWidth := int(modalRoot.LayoutGetWidth())
 
 		modalStyle := lipgloss.NewStyle().
-			Width(modalWidth).
-			Background(lipgloss.Color("#2d132c")).
-			Foreground(lipgloss.Color("#ffffff")).
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#ee4540")).
-			Padding(1, 2)
+			Background(modalBg).
+			Border(lipgloss.ThickBorder(), false, false, false, true).
+			BorderForeground(t.Pink()).
+			BorderBackground(modalBg).
+			Padding(1, 2).
+			Width(modalWidth)
 
-		// Style for the input label
-		labelStyle := lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#aaaaaa"))
+		modalTitleStyle := lipgloss.NewStyle().
+			Background(modalBg).
+			Bold(true).
+			Foreground(t.Peach()).
+			Width(modalWidth - 6).
+			PaddingBottom(1)
+
+		modalInputBoxStyle := lipgloss.NewStyle().
+			Background(modalBg).
+			Width(modalWidth - 6)
+
+		modalHintStyle := lipgloss.NewStyle().
+			Background(modalBg).
+			Foreground(t.Overlay1()).
+			Width(modalWidth - 6).
+			PaddingTop(1)
+
+		// Update modal input styles to match modal background
+		m.modalInput.TextStyle = lipgloss.NewStyle().Foreground(t.Text()).Background(modalBg)
+		m.modalInput.PlaceholderStyle = lipgloss.NewStyle().Foreground(t.Overlay0()).Background(modalBg)
+		m.modalInput.Cursor.Style = lipgloss.NewStyle().Foreground(t.Rosewater()).Background(modalBg)
 
 		modalContent := modalStyle.Render(
 			lipgloss.JoinVertical(lipgloss.Left,
-				lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#ffd460")).Render("Modal with Input"),
-				"",
-				labelStyle.Render("Enter something:"),
-				m.modalInput.View(),
-				"",
-				lipgloss.NewStyle().Faint(true).Render("Enter to submit • Esc to close"),
+				modalTitleStyle.Render("Modal"),
+				modalInputBoxStyle.Render(m.modalInput.View()),
+				modalHintStyle.Render("Enter to close • Esc to cancel"),
 			),
 		)
 
-		// Center the modal on screen
+		// Center modal on screen
 		modalX := (m.width - lipgloss.Width(modalContent)) / 2
 		modalY := (m.height - lipgloss.Height(modalContent)) / 2
-		canvas.AddLayer(layers.NewLayer(modalContent, 5).WithOffset(modalX, modalY))
+
+		// Add modal layer (Z=1, renders on top)
+		canvas.AddLayer(layers.NewLayer(modalContent, 1).WithOffset(modalX, modalY))
 	}
 
-	// --- FOOTER/STATUS BAR ---
-	footerWidth := int(footer.LayoutGetWidth())
-	footerHeight := int(footer.LayoutGetHeight())
-	footerY := int(footer.LayoutGetTop())
+	// =========================================================================
+	// NOTIFICATIONS LAYER - Rendered on top of everything
+	// =========================================================================
 
-	footerStyle := lipgloss.NewStyle().
-		Width(footerWidth).
-		Height(footerHeight).
-		Background(lipgloss.Color("#0f3460")).
-		Foreground(lipgloss.Color("#e0e0e0")).
-		Padding(0, 1)
-
-	modalStatus := "Modal: OFF"
-	if m.showModal {
-		modalStatus = lipgloss.NewStyle().Foreground(lipgloss.Color("#00ff00")).Render("Modal: ON")
-	}
-
-	footerContent := footerStyle.Render(
-		fmt.Sprintf("Size: %dx%d │ %s │ Flexbox: Header→Main→Footer",
-			m.width, m.height, modalStatus),
-	)
-	canvas.AddLayer(layers.NewLayer(footerContent, 10).WithOffset(0, footerY))
-
-	// --- NOTIFICATION OVERLAY ---
-	if m.notifications != nil {
+	if m.notifications.HasActiveNotifications() {
 		notifContent, notifX, notifY := m.notifications.RenderWithPosition()
-		if notifContent != "" {
-			canvas.AddLayer(layers.NewLayer(notifContent, 100).WithOffset(notifX, notifY))
-		}
+		canvas.AddLayer(layers.NewLayer(notifContent, 2).WithOffset(notifX, notifY))
 	}
 
-	return canvas.RenderWithLipgloss()
+	return canvas.Render()
 }
 
 func main() {
-	// Create and configure the text input for the modal
-	ti := textinput.New()
-	ti.Placeholder = "Type here..."
-	ti.Width = 40
-	ti.CharLimit = 100
+	// Get theme for input styling
+	t := themes.Current
 
-	// Style the text input
-	ti.PromptStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#ee4540"))
-	ti.TextStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#ffffff"))
-	ti.PlaceholderStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#666666"))
-	ti.Cursor.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("#ffd460"))
+	// Create main input
+	mainInput := textinput.New()
+	mainInput.Placeholder = "What would you like to do?"
+	mainInput.Width = 56
+	mainInput.CharLimit = 200
+	mainInput.TextStyle = lipgloss.NewStyle().Foreground(t.Text())
+	mainInput.PlaceholderStyle = lipgloss.NewStyle().Foreground(t.Overlay0()).Background(t.Surface0())
+	mainInput.Cursor.Style = lipgloss.NewStyle().Foreground(t.Rosewater())
+	mainInput.Focus()
 
-	// Initialize the model with notification manager and text input
+	// Create modal input
+	modalInput := textinput.New()
+	modalInput.Placeholder = "Enter value..."
+	modalInput.Width = 40
+	modalInput.CharLimit = 100
+	modalInput.TextStyle = lipgloss.NewStyle().Foreground(t.Text())
+	modalInput.PlaceholderStyle = lipgloss.NewStyle().Foreground(t.Overlay0())
+	modalInput.Cursor.Style = lipgloss.NewStyle().Foreground(t.Rosewater())
+
 	m := model{
+		mainInput:     mainInput,
+		modalInput:    modalInput,
 		notifications: notifications.NewNotificationManager(80, 24),
-		modalInput:    ti,
 	}
 
-	p := tea.NewProgram(m)
+	p := tea.NewProgram(m, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
-		fmt.Printf("Alas, there's been an error: %v", err)
+		fmt.Printf("Error: %v", err)
 		os.Exit(1)
 	}
-
 }

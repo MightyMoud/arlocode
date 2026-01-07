@@ -5,6 +5,7 @@ go 1.25.5
 require (
 	codeberg.org/readeck/go-readability/v2 v2.1.0
 	github.com/JohannesKaufmann/html-to-markdown v1.6.0
+	github.com/catppuccin/go v0.3.0
 	github.com/charmbracelet/bubbles v0.21.0
 	github.com/charmbracelet/bubbletea v1.3.10
 	github.com/charmbracelet/harmonica v0.2.0
