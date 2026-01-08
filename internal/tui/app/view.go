@@ -7,10 +7,7 @@ import (
 	"github.com/mightymoud/arlocode/internal/tui/themes"
 )
 
-// =========================================================================
-// MODAL LAYER - Flexbox layout for modal overlay
-// =========================================================================
-func (m AppModel) RenderModal() (canvas layers.Canvas) {
+func (m AppModel) RenderModal(canvas *layers.Canvas) {
 	// Get theme styles
 	t := themes.Current
 
@@ -85,23 +82,10 @@ func (m AppModel) RenderModal() (canvas layers.Canvas) {
 
 	// Add modal layer (Z=1, renders on top)
 	canvas.AddLayer(layers.NewLayer(modalContent, 1).WithOffset(modalX, modalY))
-	return
 }
 
-func (m AppModel) View() string {
-	if m.width == 0 || m.height == 0 {
-		return "Loading..."
-	}
-
-	// Get theme styles
+func (m AppModel) RenderWelcomeScreen(canvas *layers.Canvas) {
 	t := themes.Current
-
-	// Create canvas for layer composition
-	canvas := layers.NewCanvas(m.width, m.height)
-
-	// =========================================================================
-	// BASE LAYER - Flexbox layout for main content
-	// =========================================================================
 
 	// Root flexbox container
 	root := flex.NewNode()
@@ -169,17 +153,28 @@ func (m AppModel) View() string {
 	// Center in the full screen area using flex-calculated position
 	contentX := (m.width - lipgloss.Width(mainContent)) / 2
 	contentY := (m.height - lipgloss.Height(mainContent)) / 2
-
 	// Add base layer (Z=0)
 	canvas.AddLayer(layers.NewLayer(mainContent, 0).WithOffset(contentX, contentY))
+}
 
-	if m.showModal {
-		m.RenderModal()
+func (m AppModel) View() string {
+	if m.width == 0 || m.height == 0 {
+		return "Loading..."
 	}
 
-	// =========================================================================
-	// NOTIFICATIONS LAYER - Rendered on top of everything
-	// =========================================================================
+	// Create canvas for layer composition
+	canvas := layers.NewCanvas(m.width, m.height)
+
+	if m.Conversation.IsEmpty() {
+		m.RenderWelcomeScreen(canvas)
+	} else {
+		// Future implementation for conversation view
+		m.RenderWelcomeScreen(canvas) // Placeholder
+	}
+
+	if m.showModal {
+		m.RenderModal(canvas)
+	}
 
 	if m.Notifications.HasActiveNotifications() {
 		notifContent, notifX, notifY := m.Notifications.RenderWithPosition()

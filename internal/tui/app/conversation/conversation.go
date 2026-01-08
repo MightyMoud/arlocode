@@ -20,3 +20,7 @@ func (cm *ConversationManager) AddThinkingMessage(content string) {
 	cm.AgentThinking = false
 	cm.ThinkingBuffer = ""
 }
+
+func (cm *ConversationManager) IsEmpty() bool {
+	return len(cm.Conversation) == 0
+}

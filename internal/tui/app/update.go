@@ -5,7 +5,10 @@ import (
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	state "github.com/mightymoud/arlocode/internal/tui"
 )
+
+var appState = state.Get()
 
 func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
@@ -58,7 +61,7 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if value != "" {
 				// Clear main input after submission
 				m.MainInput.SetValue("")
-				go m.Shared.Agent.Run(context.Background(), value)
+				go appState.Agent().Run(context.Background(), value)
 				return m, tickCmd()
 			}
 		case "ctrl+o":
