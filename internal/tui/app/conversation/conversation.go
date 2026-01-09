@@ -11,6 +11,27 @@ type ConversationManager struct {
 	ThinkingBuffer string
 }
 
+func NewConversationManager() *ConversationManager {
+	return &ConversationManager{
+		Conversation: []ConversationMessage{
+			{
+				Type:    "user",
+				Content: "Why are you here",
+			},
+			{
+				Type:    "thinking",
+				Content: "I think therefore I am.",
+			},
+			{
+				Type:    "agent",
+				Content: "this is my first message!",
+			},
+		},
+		AgentThinking:  false,
+		ThinkingBuffer: "",
+	}
+}
+
 func (cm *ConversationManager) AddThinkingMessage(content string) {
 	conversationTurn := ConversationMessage{
 		Type:    "agent_thinking",

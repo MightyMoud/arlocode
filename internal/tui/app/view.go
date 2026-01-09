@@ -132,17 +132,24 @@ func (m AppModel) RenderWelcomeScreen(canvas *layers.Canvas) {
 		Foreground(t.Overlay1()).
 		PaddingTop(2)
 
+	m.WelcomeScreen.Input.Width = lipgloss.Width(inputBoxStyle.Render(m.WelcomeScreen.Input.View())) - 4
+	m.WelcomeScreen.Input.PlaceholderStyle = lipgloss.NewStyle().Foreground(t.Overlay0()).Background(t.Surface0())
+	m.WelcomeScreen.Input.TextStyle = lipgloss.NewStyle().Foreground(t.Text()).Background(t.Surface0())
+	m.WelcomeScreen.Input.Cursor.Style = lipgloss.NewStyle().Foreground(t.Blue()).Background(t.Surface0())
+	m.WelcomeScreen.Input.PromptStyle = lipgloss.NewStyle().Foreground(t.Blue()).Background(t.Surface0())
+	m.WelcomeScreen.Input.Prompt = ""
+
 	// Render main content elements
 	title := titleStyle.Render("⚡ ArloCode")
-	input := inputBoxStyle.Render(m.MainInput.View())
+	input := inputBoxStyle.Render(m.WelcomeScreen.Input.View())
 	hint := hintStyle.Render("Ctrl+O to open modal • Esc to quit")
 
 	sections := []string{title, input, hint}
-	if m.Conversation.AgentThinking {
+	if m.ChatScreen.Conversation.AgentThinking {
 		thinkingStyle := baseLayerStyle.
 			Foreground(t.Yellow()).
 			PaddingTop(1)
-		thinkingText := thinkingStyle.Render(m.Conversation.ThinkingBuffer + "█")
+		thinkingText := thinkingStyle.Render(m.ChatScreen.Conversation.ThinkingBuffer + "█")
 		sections = append(sections, thinkingText)
 	}
 
@@ -157,6 +164,126 @@ func (m AppModel) RenderWelcomeScreen(canvas *layers.Canvas) {
 	canvas.AddLayer(layers.NewLayer(mainContent, 0).WithOffset(contentX, contentY))
 }
 
+func (m AppModel) RenderChatScreen(canvas *layers.Canvas) {
+	t := themes.Current
+	// Base layer style (faint when modal is open)
+	baseLayerStyle := lipgloss.NewStyle().Faint(m.showModal)
+
+	root := flex.NewNode()
+	root.StyleSetWidth(float32(m.width))
+	root.StyleSetHeight(float32(m.height))
+	root.StyleSetFlexDirection(flex.FlexDirectionRow)
+
+	sideBar := flex.NewNode()
+	sideBar.StyleSetWidth(30)
+	sideBar.StyleSetHeight(float32(m.height))
+
+	contentArea := flex.NewNode()
+	contentArea.StyleSetFlexDirection(flex.FlexDirectionColumn)
+	contentArea.StyleSetFlexGrow(1)
+	contentArea.StyleSetHeight(float32(m.height))
+
+	// add to content area
+	chatContent := flex.NewNode()
+	chatContent.StyleSetFlexGrow(1)
+
+	inputArea := flex.NewNode()
+	inputArea.StyleSetHeight(5)
+
+	statusBar := flex.NewNode()
+	statusBar.StyleSetHeight(1)
+
+	contentArea.InsertChild(chatContent, 0)
+	contentArea.InsertChild(inputArea, 1)
+	contentArea.InsertChild(statusBar, 2)
+
+	root.InsertChild(sideBar, 0)
+	root.InsertChild(contentArea, 1)
+
+	flex.CalculateLayout(root, float32(m.width), float32(m.height), flex.DirectionLTR)
+
+	inputBoxStyle := baseLayerStyle.
+		Border(lipgloss.ThickBorder()).
+		BorderTop(false).
+		BorderBottom(false).
+		BorderRight(false).
+		Height(3).
+		Background(t.Surface0()).
+		BorderForeground(t.Blue()).
+		Padding(0, 1)
+
+	hintStyle := baseLayerStyle.
+		Foreground(t.Overlay1()).
+		Padding(0, 2)
+
+	// Get calculated heights for main content layout
+	contentAreaHeight := int(contentArea.LayoutGetHeight())
+	chatContentHeight := int(chatContent.LayoutGetHeight())
+	inputHeight := int(inputArea.LayoutGetHeight())
+	statusBarHeight := int(statusBar.LayoutGetHeight())
+
+	mainAreaWidth := int(contentArea.LayoutGetWidth())
+
+	// Sidebar width
+	sidebarWidth := int(sideBar.LayoutGetWidth())
+
+	// Render main content elements
+	chatDiv := lipgloss.NewStyle().
+		Background(lipgloss.Color(t.Surface0())).
+		Width(mainAreaWidth).
+		Height(chatContentHeight)
+	inputDiv := inputBoxStyle.
+		Height(inputHeight).
+		Width(mainAreaWidth)
+	hintDiv := hintStyle.
+		Height(statusBarHeight).
+		Width(mainAreaWidth)
+
+	// Render conversation history
+	var conversationContent string
+	for _, msg := range m.ChatScreen.Conversation.Conversation {
+		msgStyle := baseLayerStyle.
+			Foreground(t.Text()).
+			Padding(0, 2)
+		conversationContent += msgStyle.Render(msg.Content) + "\n"
+	}
+
+	// Render thinking indicator if agent is thinking
+	if m.ChatScreen.Conversation.AgentThinking {
+		thinkingStyle := baseLayerStyle.
+			Foreground(t.Yellow()).
+			Padding(0, 2)
+		conversationContent += thinkingStyle.Render(m.ChatScreen.Conversation.ThinkingBuffer+"█") + "\n"
+	}
+
+	// Combine all content
+	mainContent := lipgloss.NewStyle().
+		Background(lipgloss.Color(t.Surface0())).
+		Width(mainAreaWidth).
+		Height(contentAreaHeight).
+		Margin(0, 1).
+		Render(lipgloss.JoinVertical(lipgloss.Left,
+			chatDiv.Render(conversationContent),
+			inputDiv.Render(m.ChatScreen.Input.View()),
+			hintDiv.Render("Ctrl+O to open modal • Esc to quit"),
+		))
+
+	sideBarContent := lipgloss.NewStyle().
+		Background(lipgloss.Color(t.Surface1())).
+		Width(sidebarWidth).
+		Height(contentAreaHeight).
+		Margin(0, 1)
+
+	fullScreen := lipgloss.JoinHorizontal(
+		lipgloss.Bottom,
+		mainContent,
+		sideBarContent.Render(" Sidebar\n (Placeholder)"),
+	)
+
+	// Add base layer (Z=0)
+	canvas.AddLayer(layers.NewLayer(fullScreen, 0).WithOffset(0, 0))
+}
+
 func (m AppModel) View() string {
 	if m.width == 0 || m.height == 0 {
 		return "Loading..."
@@ -165,17 +292,20 @@ func (m AppModel) View() string {
 	// Create canvas for layer composition
 	canvas := layers.NewCanvas(m.width, m.height)
 
-	if m.Conversation.IsEmpty() {
+	// Render the current screen
+	switch m.currentScreen {
+	case ScreenWelcome:
 		m.RenderWelcomeScreen(canvas)
-	} else {
-		// Future implementation for conversation view
-		m.RenderWelcomeScreen(canvas) // Placeholder
+	case ScreenChat:
+		m.RenderChatScreen(canvas)
 	}
 
+	// Render modal if open
 	if m.showModal {
 		m.RenderModal(canvas)
 	}
 
+	// Render notifications if any
 	if m.Notifications.HasActiveNotifications() {
 		notifContent, notifX, notifY := m.Notifications.RenderWithPosition()
 		canvas.AddLayer(layers.NewLayer(notifContent, 2).WithOffset(notifX, notifY))

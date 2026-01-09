@@ -6,17 +6,35 @@ import (
 	"github.com/mightymoud/arlocode/internal/tui/notifications"
 )
 
-type MainModel struct {
+// Screen represents the different screens in the application
+type Screen int
+
+const (
+	ScreenWelcome Screen = iota
+	ScreenChat
+)
+
+// WelcomeScreenModel represents the welcome screen state
+type WelcomeScreenModel struct {
+	Input textinput.Model
 }
 
+// ChatScreenModel represents the chat screen state
+type ChatScreenModel struct {
+	Input        textinput.Model
+	Conversation *conversation.ConversationManager
+}
+
+// AppModel is the main application model that manages screen routing
 type AppModel struct {
 	width         int
 	height        int
 	showModal     bool
-	MainInput     textinput.Model
+	currentScreen Screen
 	ModalInput    textinput.Model
 	Notifications *notifications.NotificationManager
 
-	// Coding agent related fields
-	Conversation *conversation.ConversationManager
+	// Screen models
+	WelcomeScreen WelcomeScreenModel
+	ChatScreen    ChatScreenModel
 }
