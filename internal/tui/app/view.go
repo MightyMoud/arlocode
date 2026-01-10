@@ -254,7 +254,10 @@ func (m AppModel) RenderChatScreen(canvas *layers.Canvas) {
 		Height(contentAreaHeight).
 		Margin(0, 1)
 
-	// Combine all content - viewport content is set in Update()
+	// Viewport content is set in Update() before scroll events are processed
+	// This is required because viewport needs content to calculate scroll bounds
+
+	// Combine all content
 	mainContent := lipgloss.NewStyle().
 		Width(mainAreaWidth).
 		Height(contentAreaHeight).

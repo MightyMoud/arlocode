@@ -22,9 +22,10 @@ type WelcomeScreenModel struct {
 
 // ChatScreenModel represents the chat screen state
 type ChatScreenModel struct {
-	Input        textinput.Model
-	Conversation *conversation.ConversationManager
-	Viewport     viewport.Model
+	Input                textinput.Model
+	Conversation         *conversation.ConversationManager
+	Viewport             viewport.Model
+	ShouldScrollToBottom bool // Flag set by Update, consumed by View
 }
 
 // AppModel is the main application model that manages screen routing
