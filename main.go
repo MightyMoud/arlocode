@@ -32,7 +32,7 @@ func main() {
 
 	appState.SetAgent(codingAgent)
 
-	p := tea.NewProgram(m, tea.WithAltScreen())
+	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseCellMotion())
 	appState.SetProgram(p)
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Error: %v", err)
