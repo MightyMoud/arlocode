@@ -1,0 +1,72 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+version: 2
+
+project_name: arlocode
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: arlocode
+    main: ./main.go
+    binary: arlocode
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X github.com/mightymoud/arlocode/cmd.version={{.Version}}
+      - -X github.com/mightymoud/arlocode/cmd.commit={{.ShortCommit}}
+      - -X github.com/mightymoud/arlocode/cmd.date={{.Date}}
+
+archives:
+  - id: arlocode
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - "^ci:"
+      - Merge pull request
+      - Merge branch
+
+release:
+  github:
+    owner: mightymoud
+    name: arlocode
+  draft: false
+  prerelease: auto
+  name_template: "v{{.Version}}"
+
+brews:
+  - repository:
+      owner: mightymoud
+      name: homebrew-tap
+    name: arlocode
+    homepage: "https://github.com/mightymoud/arlocode"
+    description: "ArloCode - AI coding agent for long running tasks and local models"
+    license: "GPL-3.0"
+    install: |
+      bin.install "arlocode"
+    test: |
+      system "#{bin}/arlocode", "--version"
