@@ -250,65 +250,69 @@ func (m AppModel) RenderChatScreen(canvas *layers.Canvas) {
 
 	// Render conversation history
 	var messageBoxes []string
-	// Base message style with left border only
-	msgStyle := baseLayerStyle.
+
+	// Shared style helper for consistent message styling
+	agentStyle := baseLayerStyle.
 		Border(lipgloss.ThickBorder(), false, false, false, true).
+		BorderForeground(t.Green()).
+		Foreground(t.Text()).
 		Padding(1, 1).
 		MarginBottom(1).
-		Width(mainAreaWidth - 4).
-		BorderForeground(t.Overlay0())
+		Width(mainAreaWidth - 4)
 
+	thinkingStyle := baseLayerStyle.
+		Border(lipgloss.ThickBorder(), false, false, false, true).
+		BorderForeground(t.Yellow()).
+		Foreground(t.Overlay1()).
+		Background(t.Surface1()).
+		Padding(1, 1).
+		MarginBottom(1).
+		Width(mainAreaWidth - 4)
+
+	userStyle := baseLayerStyle.
+		Border(lipgloss.ThickBorder(), false, false, false, true).
+		BorderForeground(t.Blue()).
+		Foreground(t.Text()).
+		Padding(1, 1).
+		MarginBottom(1).
+		Width(mainAreaWidth - 4)
+
+	defaultStyle := baseLayerStyle.
+		Border(lipgloss.ThickBorder(), false, false, false, true).
+		BorderForeground(t.Overlay0()).
+		Foreground(t.Text()).
+		Padding(1, 1).
+		MarginBottom(1).
+		Width(mainAreaWidth - 4)
+
+	// Render all completed messages from conversation
 	for _, msg := range m.ChatScreen.Conversation.Conversation {
-
-		// Apply different colors based on message type
+		// Skip empty messages
+		if msg.Content == "" {
+			continue
+		}
+		var style lipgloss.Style
 		switch msg.Type {
 		case "user":
-			msgStyle = msgStyle.
-				BorderForeground(t.Blue()).
-				Foreground(t.Text())
+			style = userStyle
 		case "agent":
-			msgStyle = msgStyle.
-				BorderForeground(t.Green()).
-				Foreground(t.Text())
+			style = agentStyle
 		case "thinking", "agent_thinking":
-			msgStyle = msgStyle.
-				BorderForeground(t.Yellow()).
-				Foreground(t.Overlay1()).
-				Background(t.Surface1())
-			// Faint(true)
+			style = thinkingStyle
 		default:
-			msgStyle = msgStyle.
-				BorderForeground(t.Overlay0()).
-				Foreground(t.Text())
+			style = defaultStyle
 		}
-
-		messageBoxes = append(messageBoxes, msgStyle.Render(msg.Content))
+		messageBoxes = append(messageBoxes, style.Render(msg.Content))
 	}
 
-	// Render thinking indicator if agent is currently thinking
-	if m.ChatScreen.Conversation.AgentThinking {
-		thinkingStyle := baseLayerStyle.
-			Border(lipgloss.ThickBorder(), false, false, false, true).
-			BorderForeground(t.Yellow()).
-			Foreground(t.Overlay1()).
-			Background(t.Surface1()).
-			Faint(true).
-			Padding(0, 1).
-			MarginBottom(1).
-			Width(mainAreaWidth - 4)
-		messageBoxes = append(messageBoxes, thinkingStyle.Render(m.ChatScreen.Conversation.ThinkingBuffer+"█"))
+	// Render active thinking buffer (streaming)
+	if m.ChatScreen.Conversation.AgentThinking && m.ChatScreen.Conversation.ThinkingBuffer != "" {
+		messageBoxes = append(messageBoxes, thinkingStyle.Faint(true).Render(m.ChatScreen.Conversation.ThinkingBuffer+"█"))
 	}
 
-	// Render streaming text buffer if agent is sending text
+	// Render active text buffer (streaming)
 	if m.ChatScreen.Conversation.TextBuffer != "" {
-		streamingStyle := baseLayerStyle.
-			Border(lipgloss.ThickBorder(), false, false, false, true).
-			BorderForeground(t.Green()).
-			Foreground(t.Text()).
-			Padding(0, 1).
-			MarginBottom(1).
-			Width(mainAreaWidth - 4)
-		messageBoxes = append(messageBoxes, streamingStyle.Render(m.ChatScreen.Conversation.TextBuffer+"█"))
+		messageBoxes = append(messageBoxes, agentStyle.Render(m.ChatScreen.Conversation.TextBuffer+"█"))
 	}
 
 	conversationContent := lipgloss.JoinVertical(lipgloss.Left, messageBoxes...)

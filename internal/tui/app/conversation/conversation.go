@@ -14,20 +14,7 @@ type ConversationManager struct {
 
 func NewConversationManager() *ConversationManager {
 	return &ConversationManager{
-		Conversation: []ConversationMessage{
-			{
-				Type:    "user",
-				Content: "Hi there!",
-			},
-			{
-				Type:    "thinking",
-				Content: "Let me think about that...",
-			},
-			{
-				Type:    "agent",
-				Content: "Hello! How can I assist you today?",
-			},
-		},
+		Conversation:   []ConversationMessage{},
 		AgentThinking:  false,
 		ThinkingBuffer: "",
 	}
@@ -36,7 +23,7 @@ func NewConversationManager() *ConversationManager {
 func (cm *ConversationManager) AddThinkingMessage(content string) {
 	conversationTurn := ConversationMessage{
 		Type:    "thinking",
-		Content: cm.ThinkingBuffer,
+		Content: content,
 	}
 	cm.Conversation = append(cm.Conversation, conversationTurn)
 	cm.AgentThinking = false
@@ -46,7 +33,7 @@ func (cm *ConversationManager) AddThinkingMessage(content string) {
 func (cm *ConversationManager) AddAgentMessage(content string) {
 	conversationTurn := ConversationMessage{
 		Type:    "agent",
-		Content: cm.TextBuffer,
+		Content: content,
 	}
 	cm.Conversation = append(cm.Conversation, conversationTurn)
 	cm.TextBuffer = ""

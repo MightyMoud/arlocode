@@ -84,9 +84,9 @@ func (l OpenRouterLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, age
 			if delta.Content != "" {
 				if isThinking {
 					isThinking = false
-				}
-				if hooks.OnThinkingComplete != nil {
-					hooks.OnThinkingComplete()
+					if hooks.OnThinkingComplete != nil {
+						hooks.OnThinkingComplete()
+					}
 				}
 				if hooks.OnTextChunk != nil {
 					hooks.OnTextChunk(delta.Content)

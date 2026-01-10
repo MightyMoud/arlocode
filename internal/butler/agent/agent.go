@@ -133,9 +133,11 @@ func (a *Agent) Run(ctx context.Context, prompt string) error {
 	a.AddMemoryEntry(initMessage)
 
 	hooks := butler.EventHooks{
-		OnTextChunk:     a.OnTextChunk,
-		OnThinkingChunk: a.OnThinkingChunk,
-		OnToolCall:      a.OnToolCall,
+		OnTextChunk:        a.OnTextChunk,
+		OnStreamComplete:   a.OnStreamComplete,
+		OnThinkingChunk:    a.OnThinkingChunk,
+		OnThinkingComplete: a.OnThinkingComplete,
+		OnToolCall:         a.OnToolCall,
 	}
 
 	iterationCount := 0
