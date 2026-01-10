@@ -1,6 +1,8 @@
 package app
 
 import (
+	"strings"
+
 	"github.com/charmbracelet/glamour"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/mightymoud/arlocode/internal/tui/themes"
@@ -11,19 +13,20 @@ import (
 func (m AppModel) buildConversationContent(mainAreaWidth int, baseLayerStyle lipgloss.Style) string {
 	t := themes.Current
 
-	// Create glamour renderer for agent messages
+	// Create glamour renderer for agent messages with themed styles
 	glamourRenderer, _ := glamour.NewTermRenderer(
-		glamour.WithAutoStyle(),
+		glamour.WithStyles(themes.GlamourStyle()),
 		glamour.WithWordWrap(mainAreaWidth-10),
+		glamour.WithPreservedNewLines(),
 	)
 
 	agentStyle := baseLayerStyle.
 		Border(lipgloss.ThickBorder(), false, false, false, true).
 		BorderForeground(t.Green()).
 		Foreground(t.Text()).
-		Padding(1, 1).
-		MarginBottom(1).
-		Width(mainAreaWidth - 4)
+		PaddingBottom(1).
+		PaddingLeft(1).
+		MarginBottom(1)
 
 	thinkingStyle := baseLayerStyle.
 		Border(lipgloss.ThickBorder(), false, false, false, true).
@@ -68,7 +71,8 @@ func (m AppModel) buildConversationContent(mainAreaWidth int, baseLayerStyle lip
 			if glamourRenderer != nil {
 				rendered, err := glamourRenderer.Render(msg.Content)
 				if err == nil {
-					content = rendered
+					content = strings.TrimRight(rendered, "\n")
+					// content = rendered
 				} else {
 					content = msg.Content
 				}

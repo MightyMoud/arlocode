@@ -4,6 +4,7 @@ package themes
 
 import (
 	catppuccin "github.com/catppuccin/go"
+	"github.com/charmbracelet/glamour/ansi"
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -199,7 +200,7 @@ var (
 	}
 
 	// Default theme
-	Current = Macchiato
+	Current = TokyoNight
 )
 
 // AllThemes returns a list of all available themes
@@ -218,6 +219,290 @@ func SetTheme(t Theme) {
 // Name returns the theme name
 func (t Theme) Name() string {
 	return t.name
+}
+
+// =============================================================================
+// GLAMOUR STYLE - Returns a glamour StyleConfig using theme colors
+// =============================================================================
+
+// GlamourStyle returns a glamour ansi.StyleConfig using the theme's colors.
+// This can be used with glamour.WithStyles() to render markdown with themed colors.
+func (t Theme) GlamourStyle() ansi.StyleConfig {
+	// Helper to create string pointers
+	sp := func(s string) *string { return &s }
+	// Helper to create bool pointers
+	bp := func(b bool) *bool { return &b }
+	// Helper to create uint pointers
+	up := func(u uint) *uint { return &u }
+
+	return ansi.StyleConfig{
+		Document: ansi.StyleBlock{
+			StylePrimitive: ansi.StylePrimitive{
+				BlockPrefix: "\n",
+				BlockSuffix: "\n",
+				Color:       sp(t.palette.Text),
+			},
+			Margin: up(0),
+		},
+		BlockQuote: ansi.StyleBlock{
+			StylePrimitive: ansi.StylePrimitive{
+				Color:  sp(t.palette.Overlay1),
+				Italic: bp(true),
+			},
+			Indent:      up(1),
+			IndentToken: sp("│ "),
+		},
+		List: ansi.StyleList{
+			LevelIndent: 2,
+			StyleBlock: ansi.StyleBlock{
+				StylePrimitive: ansi.StylePrimitive{
+					Color: sp(t.palette.Text),
+				},
+			},
+		},
+		Heading: ansi.StyleBlock{
+			StylePrimitive: ansi.StylePrimitive{
+				BlockSuffix: "\n",
+				Color:       sp(t.palette.Mauve),
+				Bold:        bp(true),
+			},
+		},
+		H1: ansi.StyleBlock{
+			StylePrimitive: ansi.StylePrimitive{
+				Prefix:          " ",
+				Suffix:          " ",
+				Color:           sp(t.palette.Base),
+				BackgroundColor: sp(t.palette.Mauve),
+				Bold:            bp(true),
+			},
+		},
+		H2: ansi.StyleBlock{
+			StylePrimitive: ansi.StylePrimitive{
+				Prefix: "## ",
+				Color:  sp(t.palette.Pink),
+				Bold:   bp(true),
+			},
+		},
+		H3: ansi.StyleBlock{
+			StylePrimitive: ansi.StylePrimitive{
+				Prefix: "### ",
+				Color:  sp(t.palette.Lavender),
+				Bold:   bp(true),
+			},
+		},
+		H4: ansi.StyleBlock{
+			StylePrimitive: ansi.StylePrimitive{
+				Prefix: "#### ",
+				Color:  sp(t.palette.Blue),
+			},
+		},
+		H5: ansi.StyleBlock{
+			StylePrimitive: ansi.StylePrimitive{
+				Prefix: "##### ",
+				Color:  sp(t.palette.Sapphire),
+			},
+		},
+		H6: ansi.StyleBlock{
+			StylePrimitive: ansi.StylePrimitive{
+				Prefix: "###### ",
+				Color:  sp(t.palette.Teal),
+				Bold:   bp(false),
+			},
+		},
+		Text: ansi.StylePrimitive{
+			Color: sp(t.palette.Text),
+		},
+		Strikethrough: ansi.StylePrimitive{
+			CrossedOut: bp(true),
+		},
+		Emph: ansi.StylePrimitive{
+			Italic: bp(true),
+			Color:  sp(t.palette.Text),
+		},
+		Strong: ansi.StylePrimitive{
+			Bold:  bp(true),
+			Color: sp(t.palette.Text),
+		},
+		HorizontalRule: ansi.StylePrimitive{
+			Color:  sp(t.palette.Overlay0),
+			Format: "\n--------\n",
+		},
+		Item: ansi.StylePrimitive{
+			BlockPrefix: "• ",
+			Color:       sp(t.palette.Text),
+		},
+		Enumeration: ansi.StylePrimitive{
+			BlockPrefix: ". ",
+			Color:       sp(t.palette.Text),
+		},
+		Task: ansi.StyleTask{
+			StylePrimitive: ansi.StylePrimitive{
+				Color: sp(t.palette.Text),
+			},
+			Ticked:   "[✓] ",
+			Unticked: "[ ] ",
+		},
+		Link: ansi.StylePrimitive{
+			Color:     sp(t.palette.Blue),
+			Underline: bp(true),
+		},
+		LinkText: ansi.StylePrimitive{
+			Color: sp(t.palette.Sapphire),
+			Bold:  bp(true),
+		},
+		Image: ansi.StylePrimitive{
+			Color:     sp(t.palette.Lavender),
+			Underline: bp(true),
+		},
+		ImageText: ansi.StylePrimitive{
+			Color:  sp(t.palette.Overlay1),
+			Format: "Image: {{.text}} →",
+		},
+		Code: ansi.StyleBlock{
+			StylePrimitive: ansi.StylePrimitive{
+				Prefix:          " ",
+				Suffix:          " ",
+				Color:           sp(t.palette.Peach),
+				BackgroundColor: sp(t.palette.Surface0),
+			},
+		},
+		CodeBlock: ansi.StyleCodeBlock{
+			StyleBlock: ansi.StyleBlock{
+				StylePrimitive: ansi.StylePrimitive{
+					Color: sp(t.palette.Text),
+				},
+				Margin: up(2),
+			},
+			Chroma: &ansi.Chroma{
+				Text: ansi.StylePrimitive{
+					Color: sp(t.palette.Text),
+				},
+				Error: ansi.StylePrimitive{
+					Color:           sp(t.palette.Text),
+					BackgroundColor: sp(t.palette.Red),
+				},
+				Comment: ansi.StylePrimitive{
+					Color: sp(t.palette.Overlay1),
+				},
+				CommentPreproc: ansi.StylePrimitive{
+					Color: sp(t.palette.Peach),
+				},
+				Keyword: ansi.StylePrimitive{
+					Color: sp(t.palette.Mauve),
+				},
+				KeywordReserved: ansi.StylePrimitive{
+					Color: sp(t.palette.Mauve),
+				},
+				KeywordNamespace: ansi.StylePrimitive{
+					Color: sp(t.palette.Pink),
+				},
+				KeywordType: ansi.StylePrimitive{
+					Color: sp(t.palette.Yellow),
+				},
+				Operator: ansi.StylePrimitive{
+					Color: sp(t.palette.Sky),
+				},
+				Punctuation: ansi.StylePrimitive{
+					Color: sp(t.palette.Overlay2),
+				},
+				Name: ansi.StylePrimitive{
+					Color: sp(t.palette.Text),
+				},
+				NameBuiltin: ansi.StylePrimitive{
+					Color: sp(t.palette.Red),
+				},
+				NameTag: ansi.StylePrimitive{
+					Color: sp(t.palette.Pink),
+				},
+				NameAttribute: ansi.StylePrimitive{
+					Color: sp(t.palette.Yellow),
+				},
+				NameClass: ansi.StylePrimitive{
+					Color:     sp(t.palette.Yellow),
+					Underline: bp(true),
+					Bold:      bp(true),
+				},
+				NameConstant: ansi.StylePrimitive{
+					Color: sp(t.palette.Peach),
+				},
+				NameDecorator: ansi.StylePrimitive{
+					Color: sp(t.palette.Pink),
+				},
+				NameException: ansi.StylePrimitive{
+					Color: sp(t.palette.Maroon),
+				},
+				NameFunction: ansi.StylePrimitive{
+					Color: sp(t.palette.Blue),
+				},
+				NameOther: ansi.StylePrimitive{
+					Color: sp(t.palette.Text),
+				},
+				Literal: ansi.StylePrimitive{
+					Color: sp(t.palette.Text),
+				},
+				LiteralNumber: ansi.StylePrimitive{
+					Color: sp(t.palette.Peach),
+				},
+				LiteralDate: ansi.StylePrimitive{
+					Color: sp(t.palette.Peach),
+				},
+				LiteralString: ansi.StylePrimitive{
+					Color: sp(t.palette.Green),
+				},
+				LiteralStringEscape: ansi.StylePrimitive{
+					Color: sp(t.palette.Pink),
+				},
+				GenericDeleted: ansi.StylePrimitive{
+					Color: sp(t.palette.Red),
+				},
+				GenericEmph: ansi.StylePrimitive{
+					Italic: bp(true),
+				},
+				GenericInserted: ansi.StylePrimitive{
+					Color: sp(t.palette.Green),
+				},
+				GenericStrong: ansi.StylePrimitive{
+					Bold: bp(true),
+				},
+				GenericSubheading: ansi.StylePrimitive{
+					Color: sp(t.palette.Overlay1),
+				},
+				Background: ansi.StylePrimitive{
+					BackgroundColor: sp(t.palette.Surface0),
+				},
+			},
+		},
+		Table: ansi.StyleTable{
+			StyleBlock: ansi.StyleBlock{
+				StylePrimitive: ansi.StylePrimitive{
+					Color: sp(t.palette.Text),
+				},
+			},
+			CenterSeparator: sp("┼"),
+			ColumnSeparator: sp("│"),
+			RowSeparator:    sp("─"),
+		},
+		DefinitionList: ansi.StyleBlock{
+			StylePrimitive: ansi.StylePrimitive{
+				Color: sp(t.palette.Text),
+			},
+		},
+		DefinitionTerm: ansi.StylePrimitive{
+			Color: sp(t.palette.Lavender),
+			Bold:  bp(true),
+		},
+		DefinitionDescription: ansi.StylePrimitive{
+			BlockPrefix: "\n→ ",
+			Color:       sp(t.palette.Text),
+		},
+		HTMLBlock: ansi.StyleBlock{},
+		HTMLSpan:  ansi.StyleBlock{},
+	}
+}
+
+// GlamourStyle returns a glamour StyleConfig for the current theme
+func GlamourStyle() ansi.StyleConfig {
+	return Current.GlamourStyle()
 }
 
 // =============================================================================

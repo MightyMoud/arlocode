@@ -204,7 +204,7 @@ func (m AppModel) RenderChatScreen(canvas *layers.Canvas) {
 
 	hintStyle := baseLayerStyle.
 		Foreground(t.Overlay1()).
-		Padding(0, 2)
+		Padding(0, 1)
 
 	// Get calculated heights for main content layout
 	contentAreaHeight := int(contentArea.LayoutGetHeight())
@@ -236,7 +236,7 @@ func (m AppModel) RenderChatScreen(canvas *layers.Canvas) {
 		BorderBackground(t.Surface0()).
 		Background(t.Surface0()).
 		Height(inputHeight).
-		Width(mainAreaWidth)
+		Width(mainAreaWidth - 1)
 	hintDiv := hintStyle.
 		Height(statusBarHeight).
 		Width(mainAreaWidth).
@@ -249,7 +249,7 @@ func (m AppModel) RenderChatScreen(canvas *layers.Canvas) {
 	m.ChatScreen.Input.Prompt = ""
 
 	sideBarDiv := lipgloss.NewStyle().
-		Background(lipgloss.Color(t.Surface1())).
+		Background(lipgloss.Color(t.Base())).
 		Width(sidebarWidth).
 		Height(contentAreaHeight).
 		Margin(0, 1)
