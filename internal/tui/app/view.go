@@ -202,16 +202,6 @@ func (m AppModel) RenderChatScreen(canvas *layers.Canvas) {
 
 	flex.CalculateLayout(root, float32(m.width), float32(m.height), flex.DirectionLTR)
 
-	inputBoxStyle := baseLayerStyle.
-		Border(lipgloss.ThickBorder()).
-		BorderTop(false).
-		BorderBottom(false).
-		BorderRight(false).
-		Height(3).
-		Background(t.Surface0()).
-		BorderForeground(t.Blue()).
-		Padding(0, 1)
-
 	hintStyle := baseLayerStyle.
 		Foreground(t.Overlay1()).
 		Padding(0, 2)
@@ -229,55 +219,116 @@ func (m AppModel) RenderChatScreen(canvas *layers.Canvas) {
 
 	// Render main content elements
 	chatDiv := lipgloss.NewStyle().
-		Background(lipgloss.Color(t.Surface0())).
 		Width(mainAreaWidth).
-		Height(chatContentHeight)
-	inputDiv := inputBoxStyle.
+		Height(chatContentHeight).
+		Background(t.Base())
+
+	inputDiv := baseLayerStyle.
+		Border(lipgloss.ThickBorder(), false, false, false, true).
+		BorderForeground(t.Blue()).
+		BorderBackground(t.Surface0()).
+		Background(t.Surface0()).
 		Height(inputHeight).
-		Width(mainAreaWidth)
+		Width(mainAreaWidth).
+		Background(t.Blue())
 	hintDiv := hintStyle.
 		Height(statusBarHeight).
-		Width(mainAreaWidth)
+		Width(mainAreaWidth).
+		Background(t.Base())
+
+	m.ChatScreen.Input.Width = lipgloss.Width(inputDiv.Render(m.ChatScreen.Input.View())) - 4
+	m.ChatScreen.Input.PlaceholderStyle = lipgloss.NewStyle().Foreground(t.Overlay0()).Background(t.Surface0())
+	m.ChatScreen.Input.TextStyle = lipgloss.NewStyle().Foreground(t.Text()).Background(t.Surface0())
+	m.ChatScreen.Input.Cursor.Style = lipgloss.NewStyle().Foreground(t.Blue()).Background(t.Surface0())
+	m.ChatScreen.Input.Prompt = ""
+
+	sideBarDiv := lipgloss.NewStyle().
+		Background(lipgloss.Color(t.Surface1())).
+		Width(sidebarWidth).
+		Height(contentAreaHeight).
+		Margin(0, 1)
 
 	// Render conversation history
-	var conversationContent string
+	var messageBoxes []string
+	// Base message style with left border only
+	msgStyle := baseLayerStyle.
+		Border(lipgloss.ThickBorder(), false, false, false, true).
+		Padding(1, 1).
+		MarginBottom(1).
+		Width(mainAreaWidth - 4).
+		BorderForeground(t.Overlay0())
+
 	for _, msg := range m.ChatScreen.Conversation.Conversation {
-		msgStyle := baseLayerStyle.
-			Foreground(t.Text()).
-			Padding(0, 2)
-		conversationContent += msgStyle.Render(msg.Content) + "\n"
+
+		// Apply different colors based on message type
+		switch msg.Type {
+		case "user":
+			msgStyle = msgStyle.
+				BorderForeground(t.Blue()).
+				Foreground(t.Text())
+		case "agent":
+			msgStyle = msgStyle.
+				BorderForeground(t.Green()).
+				Foreground(t.Text())
+		case "thinking", "agent_thinking":
+			msgStyle = msgStyle.
+				BorderForeground(t.Yellow()).
+				Foreground(t.Overlay1()).
+				Background(t.Surface1())
+			// Faint(true)
+		default:
+			msgStyle = msgStyle.
+				BorderForeground(t.Overlay0()).
+				Foreground(t.Text())
+		}
+
+		messageBoxes = append(messageBoxes, msgStyle.Render(msg.Content))
 	}
 
-	// Render thinking indicator if agent is thinking
+	// Render thinking indicator if agent is currently thinking
 	if m.ChatScreen.Conversation.AgentThinking {
 		thinkingStyle := baseLayerStyle.
-			Foreground(t.Yellow()).
-			Padding(0, 2)
-		conversationContent += thinkingStyle.Render(m.ChatScreen.Conversation.ThinkingBuffer+"█") + "\n"
+			Border(lipgloss.ThickBorder(), false, false, false, true).
+			BorderForeground(t.Yellow()).
+			Foreground(t.Overlay1()).
+			Background(t.Surface1()).
+			Faint(true).
+			Padding(0, 1).
+			MarginBottom(1).
+			Width(mainAreaWidth - 4)
+		messageBoxes = append(messageBoxes, thinkingStyle.Render(m.ChatScreen.Conversation.ThinkingBuffer+"█"))
 	}
+
+	// Render streaming text buffer if agent is sending text
+	if m.ChatScreen.Conversation.TextBuffer != "" {
+		streamingStyle := baseLayerStyle.
+			Border(lipgloss.ThickBorder(), false, false, false, true).
+			BorderForeground(t.Green()).
+			Foreground(t.Text()).
+			Padding(0, 1).
+			MarginBottom(1).
+			Width(mainAreaWidth - 4)
+		messageBoxes = append(messageBoxes, streamingStyle.Render(m.ChatScreen.Conversation.TextBuffer+"█"))
+	}
+
+	conversationContent := lipgloss.JoinVertical(lipgloss.Left, messageBoxes...)
 
 	// Combine all content
 	mainContent := lipgloss.NewStyle().
-		Background(lipgloss.Color(t.Surface0())).
 		Width(mainAreaWidth).
 		Height(contentAreaHeight).
 		Margin(0, 1).
+		Background(t.Surface0()).
 		Render(lipgloss.JoinVertical(lipgloss.Left,
 			chatDiv.Render(conversationContent),
 			inputDiv.Render(m.ChatScreen.Input.View()),
 			hintDiv.Render("Ctrl+O to open modal • Esc to quit"),
 		))
 
-	sideBarContent := lipgloss.NewStyle().
-		Background(lipgloss.Color(t.Surface1())).
-		Width(sidebarWidth).
-		Height(contentAreaHeight).
-		Margin(0, 1)
-
 	fullScreen := lipgloss.JoinHorizontal(
 		lipgloss.Bottom,
 		mainContent,
-		sideBarContent.Render(" Sidebar\n (Placeholder)"),
+		sideBarDiv.Render(" Sidebar\n (Placeholder)"),
 	)
 
 	// Add base layer (Z=0)

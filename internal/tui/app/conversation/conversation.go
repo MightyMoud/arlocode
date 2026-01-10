@@ -9,6 +9,7 @@ type ConversationManager struct {
 	Conversation   []ConversationMessage
 	AgentThinking  bool
 	ThinkingBuffer string
+	TextBuffer     string
 }
 
 func NewConversationManager() *ConversationManager {
@@ -16,15 +17,15 @@ func NewConversationManager() *ConversationManager {
 		Conversation: []ConversationMessage{
 			{
 				Type:    "user",
-				Content: "Why are you here",
+				Content: "Hi there!",
 			},
 			{
 				Type:    "thinking",
-				Content: "I think therefore I am.",
+				Content: "Let me think about that...",
 			},
 			{
 				Type:    "agent",
-				Content: "this is my first message!",
+				Content: "Hello! How can I assist you today?",
 			},
 		},
 		AgentThinking:  false,
@@ -34,12 +35,29 @@ func NewConversationManager() *ConversationManager {
 
 func (cm *ConversationManager) AddThinkingMessage(content string) {
 	conversationTurn := ConversationMessage{
-		Type:    "agent_thinking",
+		Type:    "thinking",
 		Content: cm.ThinkingBuffer,
 	}
 	cm.Conversation = append(cm.Conversation, conversationTurn)
 	cm.AgentThinking = false
 	cm.ThinkingBuffer = ""
+}
+
+func (cm *ConversationManager) AddAgentMessage(content string) {
+	conversationTurn := ConversationMessage{
+		Type:    "agent",
+		Content: cm.TextBuffer,
+	}
+	cm.Conversation = append(cm.Conversation, conversationTurn)
+	cm.TextBuffer = ""
+}
+
+func (cm *ConversationManager) AddUserMessage(content string) {
+	conversationTurn := ConversationMessage{
+		Type:    "user",
+		Content: content,
+	}
+	cm.Conversation = append(cm.Conversation, conversationTurn)
 }
 
 func (cm *ConversationManager) IsEmpty() bool {

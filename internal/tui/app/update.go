@@ -42,13 +42,22 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return m, tea.Batch(cmds...)
 
-	case AgentThinkingCompleteMsg:
-		m.ChatScreen.Conversation.AddThinkingMessage(m.ChatScreen.Conversation.ThinkingBuffer)
+	case AgentTextChunkMsg:
+		m.ChatScreen.Conversation.TextBuffer += string(msg)
+		return m, tea.Batch(cmds...)
+
+	case AgentTextCompleteMsg:
+		m.ChatScreen.Conversation.AddAgentMessage(m.ChatScreen.Conversation.TextBuffer)
+		m.ChatScreen.Conversation.TextBuffer = ""
 		return m, tea.Batch(cmds...)
 
 	case AgentThinkingChunkMsg:
 		m.ChatScreen.Conversation.AgentThinking = true
 		m.ChatScreen.Conversation.ThinkingBuffer += string(msg)
+		return m, tea.Batch(cmds...)
+
+	case AgentThinkingCompleteMsg:
+		m.ChatScreen.Conversation.AddThinkingMessage(m.ChatScreen.Conversation.ThinkingBuffer)
 		return m, tea.Batch(cmds...)
 
 	case tea.KeyMsg:
@@ -128,6 +137,8 @@ func (m AppModel) handleWelcomeScreenKeys(msg tea.KeyMsg) (AppModel, tea.Cmd) {
 			m.currentScreen = ScreenChat
 			m.WelcomeScreen.Input.Blur()
 			m.ChatScreen.Input.Focus()
+			// Add user message to conversation
+			m.ChatScreen.Conversation.AddUserMessage(value)
 			// Start the agent
 			go appState.Agent().Run(context.Background(), value)
 			return m, tickCmd()
@@ -144,6 +155,8 @@ func (m AppModel) handleChatScreenKeys(msg tea.KeyMsg) (AppModel, tea.Cmd) {
 		if value != "" {
 			// Clear input after submission
 			m.ChatScreen.Input.SetValue("")
+			// Add user message to conversation
+			m.ChatScreen.Conversation.AddUserMessage(value)
 			// Start the agent
 			go appState.Agent().Run(context.Background(), value)
 			return m, tickCmd()

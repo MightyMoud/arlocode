@@ -22,6 +22,12 @@ func main() {
 		}).
 		WithOnThinkingComplete(func() {
 			appState.Program().Send(app.AgentThinkingCompleteMsg(""))
+		}).
+		WithOnTextChunk(func(s string) {
+			appState.Program().Send(app.AgentTextChunkMsg(s))
+		}).
+		WithOnStreamComplete(func() {
+			appState.Program().Send(app.AgentTextCompleteMsg(""))
 		})
 
 	appState.SetAgent(codingAgent)

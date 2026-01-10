@@ -71,6 +71,11 @@ func (l *Agent) WithOnTextChunk(f butler.OnTextChunkFunc) *Agent {
 	return l
 }
 
+func (l *Agent) WithOnStreamComplete(f butler.OnStreamCompleteFunc) *Agent {
+	l.OnStreamComplete = f
+	return l
+}
+
 func (l *Agent) WithOnToolCall(f butler.OnToolCallFunc) *Agent {
 	l.OnToolCall = f
 	return l

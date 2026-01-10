@@ -199,7 +199,7 @@ var (
 	}
 
 	// Default theme
-	Current = TokyoNightStorm
+	Current = Macchiato
 )
 
 // AllThemes returns a list of all available themes

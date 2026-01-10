@@ -167,9 +167,6 @@ func placeStringAt(bgLine, content string, x, bgWidth, maxWidth int) string {
 		return bgLine
 	}
 
-	// ANSI reset sequence to prevent color bleed
-	const ansiReset = "\x1b[0m"
-
 	// Build the result
 	var result strings.Builder
 
@@ -177,8 +174,6 @@ func placeStringAt(bgLine, content string, x, bgWidth, maxWidth int) string {
 	if x > 0 {
 		leftPart := truncateWithAnsi(bgLine, 0, x)
 		result.WriteString(leftPart)
-		// Reset before content to prevent background styles from affecting content
-		result.WriteString(ansiReset)
 	}
 
 	// Part 2: The content itself
@@ -187,8 +182,6 @@ func placeStringAt(bgLine, content string, x, bgWidth, maxWidth int) string {
 	// Part 3: Background after content (x + contentWidth to end)
 	afterX := x + contentWidth
 	if afterX < bgWidth {
-		// Reset after content to prevent content styles from bleeding into background
-		result.WriteString(ansiReset)
 		rightPart := truncateWithAnsi(bgLine, afterX, bgWidth)
 		result.WriteString(rightPart)
 	}
