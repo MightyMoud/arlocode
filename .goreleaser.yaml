@@ -58,15 +58,15 @@ release:
   prerelease: auto
   name_template: "v{{.Version}}"
 
-brews:
-  - repository:
-      owner: mightymoud
-      name: homebrew-tap
-    name: arlocode
-    homepage: "https://github.com/mightymoud/arlocode"
-    description: "ArloCode - AI coding agent for long running tasks and local models"
-    license: "GPL-3.0"
-    install: |
-      bin.install "arlocode"
-    test: |
-      system "#{bin}/arlocode", "--version"
+# brews:
+#   - repository:
+#       owner: mightymoud
+#       name: homebrew-tap
+#     name: arlocode
+#     homepage: "https://github.com/mightymoud/arlocode"
+#     description: "ArloCode - AI coding agent for long running tasks and local models"
+#     license: "GPL-3.0"
+#     install: |
+#       bin.install "arlocode"
+#     test: |
+#       system "#{bin}/arlocode", "--version"
