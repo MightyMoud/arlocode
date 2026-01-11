@@ -9,6 +9,6 @@ import (
 
 var ctx = context.Background()
 var provider = openrouter.New(ctx)
-var model = provider.Model(ctx, "anthropic/claude-sonnet-4.5")
+var model = provider.Model(ctx, "z-ai/glm-4.7")
 
 var Agent = agent.NewAgent(model)

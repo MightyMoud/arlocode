@@ -43,7 +43,7 @@ var rootCmd = &cobra.Command{
 		// Create the app model using the new constructor
 		m := app.NewAppModel()
 
-		codingAgent := coding_agent.Agent.WithMaxIterations(10).
+		codingAgent := coding_agent.Agent.WithMaxIterations(30).
 			WithOnThinkingChunk(func(s string) {
 				appState.Program().Send(app.AgentThinkingChunkMsg(s))
 			}).
