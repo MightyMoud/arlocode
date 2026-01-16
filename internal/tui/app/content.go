@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/charmbracelet/glamour"
@@ -28,14 +29,18 @@ func (m AppModel) buildConversationContent(mainAreaWidth int, baseLayerStyle lip
 		PaddingLeft(1).
 		MarginBottom(1)
 
-	thinkingStyle := baseLayerStyle.
+	activeThinkingStyle := baseLayerStyle.
 		Border(lipgloss.ThickBorder(), false, false, false, true).
 		BorderForeground(t.Yellow()).
-		Foreground(t.Overlay1()).
-		Background(t.Surface1()).
+		Foreground(t.Text()).
 		Padding(1, 1).
 		MarginBottom(1).
-		Width(mainAreaWidth - 4)
+		Faint(true).
+		Width(mainAreaWidth - 2)
+
+	finishedThinkingStyle := activeThinkingStyle.
+		UnsetPadding().
+		PaddingLeft(1)
 
 	userStyle := baseLayerStyle.
 		Border(lipgloss.ThickBorder(), false, false, false, true).
@@ -57,9 +62,6 @@ func (m AppModel) buildConversationContent(mainAreaWidth int, baseLayerStyle lip
 
 	// Render all completed messages from conversation
 	for _, msg := range m.ChatScreen.Conversation.Conversation {
-		if msg.Content == "" {
-			continue
-		}
 		var style lipgloss.Style
 		var content string
 		switch msg.Type {
@@ -79,35 +81,29 @@ func (m AppModel) buildConversationContent(mainAreaWidth int, baseLayerStyle lip
 			} else {
 				content = msg.Content
 			}
-		case "thinking", "agent_thinking":
-			style = thinkingStyle
-			content = msg.Content
+		case "thinking":
+			if msg.Status == "complete" {
+				style = finishedThinkingStyle
+				// Show duration instead of content
+				duration := msg.EndTime.Sub(msg.StartTime)
+				seconds := int(duration.Seconds())
+				if seconds < 1 {
+					content = "thought for < 1s"
+				} else {
+					content = fmt.Sprintf("thought for %ds", seconds)
+				}
+			} else {
+				style = activeThinkingStyle
+				// In progress - show the actual content (streaming tokens)
+				content = msg.Content + "█"
+			}
 		default:
 			style = defaultStyle
 			content = msg.Content
 		}
-		messageBoxes = append(messageBoxes, style.Render(content))
-	}
-
-	// Render active thinking buffer (streaming)
-	if m.ChatScreen.Conversation.AgentThinking && m.ChatScreen.Conversation.ThinkingBuffer != "" {
-		messageBoxes = append(messageBoxes, thinkingStyle.Faint(true).Render(m.ChatScreen.Conversation.ThinkingBuffer+"█"))
-	}
-
-	// Render active text buffer (streaming)
-	if m.ChatScreen.Conversation.TextBuffer != "" {
-		streamContent := m.ChatScreen.Conversation.TextBuffer
-		if glamourRenderer != nil {
-			rendered, err := glamourRenderer.Render(streamContent)
-			if err == nil {
-				streamContent = rendered + "█"
-			} else {
-				streamContent = streamContent + "█"
-			}
-		} else {
-			streamContent = streamContent + "█"
+		if content != "" {
+			messageBoxes = append(messageBoxes, style.Render(content))
 		}
-		messageBoxes = append(messageBoxes, agentStyle.Render(streamContent))
 	}
 
 	return lipgloss.JoinVertical(lipgloss.Left, messageBoxes...)

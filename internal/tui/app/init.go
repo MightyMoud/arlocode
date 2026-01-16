@@ -30,7 +30,7 @@ func NewAppModel() AppModel {
 	vp.Height = 5
 
 	return AppModel{
-		currentScreen: ScreenWelcome,
+		currentScreen: ScreenChat,
 		WelcomeScreen: WelcomeScreenModel{
 			Input: welcomeInput,
 		},

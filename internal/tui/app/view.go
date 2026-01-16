@@ -145,13 +145,13 @@ func (m AppModel) RenderWelcomeScreen(canvas *layers.Canvas) {
 	hint := hintStyle.Render("Ctrl+O to open modal • Esc to quit")
 
 	sections := []string{title, input, hint}
-	if m.ChatScreen.Conversation.AgentThinking {
-		thinkingStyle := baseLayerStyle.
-			Foreground(t.Yellow()).
-			PaddingTop(1)
-		thinkingText := thinkingStyle.Render(m.ChatScreen.Conversation.ThinkingBuffer + "█")
-		sections = append(sections, thinkingText)
-	}
+	// if m.ChatScreen.Conversation.AgentThinking {
+	// 	thinkingStyle := baseLayerStyle.
+	// 		Foreground(t.Yellow()).
+	// 		PaddingTop(1)
+	// 	thinkingText := thinkingStyle.Render(m.ChatScreen.Conversation.ThinkingBuffer + "█")
+	// 	sections = append(sections, thinkingText)
+	// }
 
 	mainContent := lipgloss.JoinVertical(lipgloss.Center,
 		sections...,

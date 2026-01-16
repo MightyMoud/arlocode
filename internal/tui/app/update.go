@@ -39,13 +39,6 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.Notifications.UpdateScreenSize(msg.Width, msg.Height)
 	}
 
-	// if m.currentScreen == ScreenChat && !m.showModal && m.ChatScreen.Conversation.TextBuffer != "" {
-	// 	// Check if it's a scroll event using IsWheel()
-	// 	m.ChatScreen.Viewport, cmd = m.ChatScreen.Viewport.Update(msg)
-	// 	cmds = append(cmds, cmd)
-	// 	return m, tea.Batch(cmds...)
-	// }
-
 	// Handle mouse events first before textinput can process them
 	if mouseMsg, ok := msg.(tea.MouseMsg); ok {
 		// Forward mouse wheel events to viewport for scrolling
@@ -87,26 +80,31 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, tea.Batch(cmds...)
 
 	case AgentTextChunkMsg:
-		m.ChatScreen.Conversation.TextBuffer += string(msg)
+		// Start agent message as long as there is no thinking
+		if !m.ChatScreen.Conversation.GetLastMessage().IsType("agent") {
+			m.ChatScreen.Conversation.StartAgentMessage()
+		}
+		m.ChatScreen.Conversation.UpdateAgentMessage(string(msg))
 		// Flag to scroll to bottom when streaming - consumed by View
 		m.ChatScreen.ShouldScrollToBottom = true
 		return m, tea.Batch(cmds...)
 
 	case AgentTextCompleteMsg:
-		m.ChatScreen.Conversation.AddAgentMessage(m.ChatScreen.Conversation.TextBuffer)
-		m.ChatScreen.Conversation.TextBuffer = ""
+		m.ChatScreen.Conversation.CompleteAgentMessage()
 		m.ChatScreen.ShouldScrollToBottom = true
 		return m, tea.Batch(cmds...)
 
 	case AgentThinkingChunkMsg:
-		m.ChatScreen.Conversation.AgentThinking = true
-		m.ChatScreen.Conversation.ThinkingBuffer += string(msg)
-		// Flag to scroll to bottom when thinking - consumed by View
+		// Create new thinking message on first chunk
+		if !m.ChatScreen.Conversation.AgentThinking {
+			m.ChatScreen.Conversation.StartThinkingMessage()
+		}
+		m.ChatScreen.Conversation.UpdateThinkingMessage(string(msg))
 		m.ChatScreen.ShouldScrollToBottom = true
 		return m, tea.Batch(cmds...)
 
 	case AgentThinkingCompleteMsg:
-		m.ChatScreen.Conversation.AddThinkingMessage(m.ChatScreen.Conversation.ThinkingBuffer)
+		m.ChatScreen.Conversation.CompleteAgentThinkingMessage()
 		m.ChatScreen.ShouldScrollToBottom = true
 		return m, tea.Batch(cmds...)
 
