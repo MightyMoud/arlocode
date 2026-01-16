@@ -118,6 +118,13 @@ func (a *Agent) HandleToolCall(ctx context.Context, call tools.ToolCall) (string
 	}
 	resultStr := results[0].String()
 
+	if a.OnToolCall != nil {
+		a.OnToolCall(tools.ToolCall{
+			ID:           "toolID", // TODO: generate unique ID for tool call
+			FunctionName: tool.Name,
+			Arguments:    call.Arguments,
+		})
+	}
 	// Maybe useful to debug later
 	// if len(resultStr) > 100 {
 	// 	color.Blue("Tool %s returned: %s", call.FunctionName, resultStr[:100])

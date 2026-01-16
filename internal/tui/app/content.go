@@ -58,6 +58,14 @@ func (m AppModel) buildConversationContent(mainAreaWidth int, baseLayerStyle lip
 		MarginBottom(1).
 		Width(mainAreaWidth - 4)
 
+	toolStyle := baseLayerStyle.
+		Border(lipgloss.ThickBorder(), false, false, false, true).
+		BorderForeground(t.Sapphire()).
+		Foreground(t.Text()).
+		Padding(1, 1).
+		MarginBottom(1).
+		Width(mainAreaWidth - 4)
+
 	var messageBoxes []string
 
 	// Render all completed messages from conversation
@@ -97,6 +105,9 @@ func (m AppModel) buildConversationContent(mainAreaWidth int, baseLayerStyle lip
 				// In progress - show the actual content (streaming tokens)
 				content = msg.Content + "█"
 			}
+		case "tool_call":
+			style = toolStyle
+			content = "🔧 " + msg.Content
 		default:
 			style = defaultStyle
 			content = msg.Content

@@ -1,6 +1,12 @@
 package conversation
 
-import "time"
+import (
+	"encoding/json"
+	"fmt"
+	"time"
+
+	"github.com/mightymoud/arlocode/internal/butler/tools"
+)
 
 type MessageStatus string
 
@@ -80,6 +86,30 @@ func (cm *ConversationManager) CompleteAgentMessage() {
 func (cm *ConversationManager) AddUserMessage(content string) {
 	conversationTurn := ConversationMessage{
 		Type:      "user",
+		Content:   content,
+		StartTime: time.Now(),
+		EndTime:   time.Now(),
+		Status:    StatusComplete,
+	}
+	cm.Conversation = append(cm.Conversation, conversationTurn)
+}
+
+func (cm *ConversationManager) AddToolCallMessage(tc tools.ToolCall) {
+	// Convert to underlying ToolCall and create a conversation entry
+
+	// Create a readable representation of arguments
+	argsJSON, err := json.Marshal(tc.Arguments)
+	argsStr := ""
+	if err == nil {
+		argsStr = string(argsJSON)
+	} else {
+		argsStr = fmt.Sprintf("(failed to marshal args: %v)", err)
+	}
+
+	content := fmt.Sprintf("%s %s", tc.FunctionName, argsStr)
+
+	conversationTurn := ConversationMessage{
+		Type:      "tool_call",
 		Content:   content,
 		StartTime: time.Now(),
 		EndTime:   time.Now(),

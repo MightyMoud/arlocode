@@ -137,13 +137,14 @@ func (l OpenRouterLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, age
 			FunctionName: ptc.Name,
 			Arguments:    args,
 		})
-		if hooks.OnToolCall != nil {
-			hooks.OnToolCall(tools.ToolCall{
-				ID:           ptc.ID,
-				FunctionName: ptc.Name,
-				Arguments:    args,
-			})
-		}
+		// MOVED TO AGENT SIDE -> will confirm later where best fits
+		// if hooks.OnToolCall != nil {
+		// 	hooks.OnToolCall(tools.ToolCall{
+		// 		ID:           ptc.ID,
+		// 		FunctionName: ptc.Name,
+		// 		Arguments:    args,
+		// 	})
+		// }
 	}
 	if hooks.OnStreamComplete != nil {
 		hooks.OnStreamComplete()

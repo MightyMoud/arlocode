@@ -19,6 +19,7 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/mightymoud/arlocode/internal/butler/tools"
 	"github.com/mightymoud/arlocode/internal/coding_agent"
 	state "github.com/mightymoud/arlocode/internal/tui"
 	"github.com/mightymoud/arlocode/internal/tui/app"
@@ -55,6 +56,9 @@ var rootCmd = &cobra.Command{
 			}).
 			WithOnStreamComplete(func() {
 				appState.Program().Send(app.AgentTextCompleteMsg(""))
+			}).
+			WithOnToolCall(func(tc tools.ToolCall) {
+				appState.Program().Send(app.ToolCallMsg(tc))
 			})
 
 		appState.SetAgent(codingAgent)

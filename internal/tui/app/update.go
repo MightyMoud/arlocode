@@ -2,9 +2,14 @@ package app
 
 import (
 	"context"
+	"encoding/json"
+	"os"
+	"path/filepath"
+	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/mightymoud/arlocode/internal/butler/tools"
 	state "github.com/mightymoud/arlocode/internal/tui"
 )
 
@@ -80,9 +85,10 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, tea.Batch(cmds...)
 
 	case AgentTextChunkMsg:
-		// Start agent message as long as there is no thinking
+		// Create new agent message on first chunk
 		if !m.ChatScreen.Conversation.GetLastMessage().IsType("agent") {
 			m.ChatScreen.Conversation.StartAgentMessage()
+			time.Sleep(100 * time.Millisecond)
 		}
 		m.ChatScreen.Conversation.UpdateAgentMessage(string(msg))
 		// Flag to scroll to bottom when streaming - consumed by View
@@ -96,7 +102,7 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case AgentThinkingChunkMsg:
 		// Create new thinking message on first chunk
-		if !m.ChatScreen.Conversation.AgentThinking {
+		if !m.ChatScreen.Conversation.AgentThinking || !m.ChatScreen.Conversation.GetLastMessage().IsType("thinking") {
 			m.ChatScreen.Conversation.StartThinkingMessage()
 		}
 		m.ChatScreen.Conversation.UpdateThinkingMessage(string(msg))
@@ -108,11 +114,38 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.ChatScreen.ShouldScrollToBottom = true
 		return m, tea.Batch(cmds...)
 
+	case ToolCallMsg:
+		tc := tools.ToolCall(msg)
+		m.ChatScreen.Conversation.AddToolCallMessage(tc)
+		time.Sleep(100 * time.Millisecond)
+
+		m.ChatScreen.ShouldScrollToBottom = true
+		return m, tea.Batch(cmds...)
+
 	case tea.KeyMsg:
 		// Handle global key bindings first
 		switch msg.String() {
 		case "ctrl+c":
 			return m, tea.Quit
+
+		// useful for debugging
+		case "ctrl+s":
+			// Save conversation history to internal/tui/app/msg.json
+			data, err := json.MarshalIndent(m.ChatScreen.Conversation.Conversation, "", "  ")
+			if err != nil {
+				m.Notifications.PushError("Save Failed", "failed to marshal conversation")
+				return m, nil
+			}
+
+			outPath := filepath.Join("internal", "tui", "app", "msg.json")
+			err = os.WriteFile(outPath, data, 0644)
+			if err != nil {
+				m.Notifications.PushError("Save Failed", "failed to write msg.json")
+				return m, nil
+			}
+			m.Notifications.PushSuccess("Saved", "Conversation saved to msg.json")
+			return m, nil
+
 		case "esc":
 			if m.showModal {
 				m.showModal = false

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/mightymoud/arlocode/internal/butler/tools"
 )
 
 // tickMsg is sent on each animation frame
@@ -18,5 +19,8 @@ func tickCmd() tea.Cmd {
 
 type AgentTextChunkMsg string
 type AgentTextCompleteMsg string
+
 type AgentThinkingChunkMsg string
 type AgentThinkingCompleteMsg string
+
+type ToolCallMsg tools.ToolCall
