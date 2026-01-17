@@ -17,6 +17,14 @@ func tickCmd() tea.Cmd {
 	})
 }
 
+type tickLoadingMsg time.Time
+
+func TickLoading() tea.Cmd {
+	return tea.Tick(time.Second/10, func(t time.Time) tea.Msg {
+		return tickLoadingMsg(t)
+	})
+}
+
 type AgentTextChunkMsg string
 type AgentTextCompleteMsg string
 

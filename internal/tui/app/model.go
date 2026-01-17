@@ -32,6 +32,7 @@ type ChatScreenModel struct {
 type AppModel struct {
 	width         int
 	height        int
+	loadingFrame  float64
 	showModal     bool
 	currentScreen Screen
 	ModalInput    textinput.Model

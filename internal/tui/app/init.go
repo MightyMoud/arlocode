@@ -31,6 +31,7 @@ func NewAppModel() AppModel {
 
 	return AppModel{
 		currentScreen: ScreenChat,
+		loadingFrame:  0,
 		WelcomeScreen: WelcomeScreenModel{
 			Input: welcomeInput,
 		},
@@ -45,5 +46,5 @@ func NewAppModel() AppModel {
 }
 
 func (m AppModel) Init() tea.Cmd {
-	return textinput.Blink
+	return tea.Batch(textinput.Blink, TickLoading())
 }

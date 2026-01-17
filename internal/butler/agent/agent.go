@@ -19,6 +19,7 @@ type Agent struct {
 	memory             []memory.MemoryEntry
 	tools              []tools.Tool
 	maxIterations      int
+	Responding         bool
 	OnTextChunk        butler.OnTextChunkFunc
 	OnStreamComplete   butler.OnStreamCompleteFunc
 	OnThinkingChunk    butler.OnThinkingChunkFunc
@@ -136,6 +137,7 @@ func (a *Agent) HandleToolCall(ctx context.Context, call tools.ToolCall) (string
 }
 
 func (a *Agent) Run(ctx context.Context, prompt string) error {
+	a.Responding = true
 	initMessage := memory.MemoryEntry{Message: prompt, Role: "user"}
 	a.AddMemoryEntry(initMessage)
 
@@ -202,6 +204,7 @@ func (a *Agent) Run(ctx context.Context, prompt string) error {
 	if iterationCount >= a.maxIterations {
 		color.Yellow("\nWarning: Maximum iterations (%d) reached. The agent loop was terminated.\n", a.maxIterations)
 	}
+	a.Responding = false
 
 	return nil
 }

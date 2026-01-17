@@ -77,6 +77,11 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.ChatScreen.Viewport.Height = chatContentHeight
 		}
 
+	case tickLoadingMsg:
+		m.loadingFrame += 0.4
+		cmds = append(cmds, TickLoading())
+		return m, tea.Batch(cmds...)
+
 	case tickMsg:
 		// Update notification animations
 		if m.Notifications.Update() {

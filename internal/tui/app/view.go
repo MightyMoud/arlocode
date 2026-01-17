@@ -1,6 +1,8 @@
 package app
 
 import (
+	"math"
+
 	"github.com/charmbracelet/lipgloss"
 	"github.com/kjk/flex"
 	"github.com/mightymoud/arlocode/internal/tui/layers"
@@ -164,6 +166,63 @@ func (m AppModel) RenderWelcomeScreen(canvas *layers.Canvas) {
 	canvas.AddLayer(layers.NewLayer(mainContent, 0).WithOffset(contentX, contentY))
 }
 
+func getLoadingColor(intensity float64, breathPhase float64) string {
+	// Soft purple/violet gradient - same as thinking for consistency
+	// Color shifts slightly with breath phase for extra life
+
+	finalIntensity := intensity * (0.7 + breathPhase*0.3)
+
+	if finalIntensity > 0.85 {
+		return "\033[38;5;213m" // Bright pink/magenta
+	} else if finalIntensity > 0.7 {
+		return "\033[38;5;177m" // Light purple
+	} else if finalIntensity > 0.55 {
+		return "\033[38;5;141m" // Medium purple
+	} else if finalIntensity > 0.4 {
+		return "\033[38;5;135m" // Purple
+	} else if finalIntensity > 0.25 {
+		return "\033[38;5;99m" // Deep purple
+	} else {
+		return "\033[38;5;93m" // Dark violet
+	}
+}
+
+func (m AppModel) renderLoading(aniWidth int) string {
+	coloredLine := ""
+	center := float64(aniWidth) / 2
+
+	// Breathing cycle - smooth expansion and contraction
+	breathPhase := (math.Sin(m.loadingFrame*0.4) + 1) / 2 // 0 to 1, slow cycle
+	maxRadius := float64(aniWidth) / 2 * breathPhase
+
+	for i := 0; i < aniWidth; i++ {
+		pos := float64(i)
+		distFromCenter := math.Abs(pos - center)
+
+		// Create soft edges with gaussian-like falloff
+		if distFromCenter <= maxRadius {
+			// Inside the breath - calculate intensity based on position within breath
+			edgeDist := maxRadius - distFromCenter
+			// Soft edge falloff
+			edgeIntensity := 1.0
+			if edgeDist < 3 {
+				edgeIntensity = edgeDist / 3
+			}
+			// Center glow
+			centerGlow := math.Exp(-distFromCenter * 0.1)
+			intensity := edgeIntensity*0.6 + centerGlow*0.4
+
+			color := getLoadingColor(intensity, breathPhase)
+			coloredLine += color + "━" + "\033[0m"
+		} else {
+			coloredLine += " "
+		}
+	}
+
+	return coloredLine
+
+}
+
 func (m AppModel) RenderChatScreen(canvas *layers.Canvas) {
 	t := themes.Current
 	// Base layer style (faint when modal is open)
@@ -190,12 +249,16 @@ func (m AppModel) RenderChatScreen(canvas *layers.Canvas) {
 	inputArea := flex.NewNode()
 	inputArea.StyleSetHeight(5)
 
+	loadingArea := flex.NewNode()
+	loadingArea.StyleSetHeight(1)
+
 	statusBar := flex.NewNode()
 	statusBar.StyleSetHeight(1)
 
 	contentArea.InsertChild(chatContent, 0)
-	contentArea.InsertChild(inputArea, 1)
-	contentArea.InsertChild(statusBar, 2)
+	contentArea.InsertChild(loadingArea, 1)
+	contentArea.InsertChild(inputArea, 2)
+	contentArea.InsertChild(statusBar, 3)
 
 	root.InsertChild(sideBar, 0)
 	root.InsertChild(contentArea, 1)
@@ -209,7 +272,12 @@ func (m AppModel) RenderChatScreen(canvas *layers.Canvas) {
 	// Get calculated heights for main content layout
 	contentAreaHeight := int(contentArea.LayoutGetHeight())
 	chatContentHeight := int(chatContent.LayoutGetHeight())
-	// fmt.Println("Chat Content Height:", chatContentHeight)
+	if !appState.Agent().Responding {
+		chatContentHeight += 1
+	} else {
+		chatContentHeight = int(chatContent.LayoutGetHeight())
+	}
+
 	inputHeight := int(inputArea.LayoutGetHeight())
 	statusBarHeight := int(statusBar.LayoutGetHeight())
 
@@ -228,6 +296,11 @@ func (m AppModel) RenderChatScreen(canvas *layers.Canvas) {
 	chatDiv := lipgloss.NewStyle().
 		Width(mainAreaWidth).
 		Height(chatContentHeight).
+		Background(t.Base())
+
+	loadingDiv := lipgloss.NewStyle().
+		Height(1).
+		Width(mainAreaWidth).
 		Background(t.Base())
 
 	inputDiv := baseLayerStyle.
@@ -257,17 +330,21 @@ func (m AppModel) RenderChatScreen(canvas *layers.Canvas) {
 	// Viewport content is set in Update() before scroll events are processed
 	// This is required because viewport needs content to calculate scroll bounds
 
+	contentSlice := []string{
+		chatDiv.Render(m.ChatScreen.Viewport.View()),
+		inputDiv.Render(m.ChatScreen.Input.View()),
+		hintDiv.Render("Ctrl+O to open modal • Esc to quit"),
+	}
+	if appState.Agent().Responding {
+		contentSlice = append(contentSlice[:1], append([]string{loadingDiv.Render(m.renderLoading(mainAreaWidth))}, contentSlice[1:]...)...)
+	}
 	// Combine all content
 	mainContent := lipgloss.NewStyle().
 		Width(mainAreaWidth).
 		Height(contentAreaHeight).
 		Margin(0, 1).
 		Background(t.Surface0()).
-		Render(lipgloss.JoinVertical(lipgloss.Left,
-			chatDiv.Render(m.ChatScreen.Viewport.View()),
-			inputDiv.Render(m.ChatScreen.Input.View()),
-			hintDiv.Render("Ctrl+O to open modal • Esc to quit"),
-		))
+		Render(lipgloss.JoinVertical(lipgloss.Left, contentSlice...))
 
 	fullScreen := lipgloss.JoinHorizontal(
 		lipgloss.Bottom,
