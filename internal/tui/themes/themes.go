@@ -360,10 +360,9 @@ func (t Theme) GlamourStyle() ansi.StyleConfig {
 		},
 		Code: ansi.StyleBlock{
 			StylePrimitive: ansi.StylePrimitive{
-				Prefix:          " ",
-				Suffix:          " ",
-				Color:           sp(t.palette.Peach),
-				BackgroundColor: sp(t.palette.Surface0),
+				Prefix: " ",
+				Suffix: " ",
+				Color:  sp(t.palette.Peach),
 			},
 		},
 		CodeBlock: ansi.StyleCodeBlock{
@@ -371,15 +370,15 @@ func (t Theme) GlamourStyle() ansi.StyleConfig {
 				StylePrimitive: ansi.StylePrimitive{
 					Color: sp(t.palette.Text),
 				},
-				Margin: up(2),
+				Margin: up(0),
 			},
 			Chroma: &ansi.Chroma{
 				Text: ansi.StylePrimitive{
 					Color: sp(t.palette.Text),
 				},
 				Error: ansi.StylePrimitive{
-					Color:           sp(t.palette.Text),
-					BackgroundColor: sp(t.palette.Red),
+					Color: sp(t.palette.Red),
+					// Removed BackgroundColor to prevent thick border artifacts on unrecognized tokens
 				},
 				Comment: ansi.StylePrimitive{
 					Color: sp(t.palette.Overlay1),
@@ -468,7 +467,7 @@ func (t Theme) GlamourStyle() ansi.StyleConfig {
 					Color: sp(t.palette.Overlay1),
 				},
 				Background: ansi.StylePrimitive{
-					BackgroundColor: sp(t.palette.Surface0),
+					// Note: Removed BackgroundColor to prevent thick border rendering artifacts
 				},
 			},
 		},
