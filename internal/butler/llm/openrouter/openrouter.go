@@ -146,8 +146,8 @@ func (l OpenRouterLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, age
 		// 	})
 		// }
 	}
-	if hooks.OnStreamComplete != nil {
-		hooks.OnStreamComplete()
+	if hooks.OnTurnComplete != nil {
+		hooks.OnTurnComplete()
 	}
 
 	return providers.ProviderResponse{

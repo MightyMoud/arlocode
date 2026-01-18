@@ -10,10 +10,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/mightymoud/arlocode/internal/butler/tools"
-	state "github.com/mightymoud/arlocode/internal/tui"
 )
-
-var appState = state.Get()
 
 // Update handles all messages and routes them to the appropriate screen
 func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -241,7 +238,7 @@ func (m AppModel) handleWelcomeScreenKeys(msg tea.KeyMsg) (AppModel, tea.Cmd) {
 			// Add user message to conversation
 			m.ChatScreen.Conversation.AddUserMessage(value)
 			// Start the agent
-			go appState.Agent().Run(context.Background(), value)
+			m.Bridge.Run(context.Background(), value)
 			return m, tickCmd()
 		}
 	}
@@ -259,7 +256,7 @@ func (m AppModel) handleChatScreenKeys(msg tea.KeyMsg) (AppModel, tea.Cmd) {
 			// Add user message to conversation
 			m.ChatScreen.Conversation.AddUserMessage(value)
 			// Start the agent
-			go appState.Agent().Run(context.Background(), value)
+			m.Bridge.Run(context.Background(), value)
 			return m, tickCmd()
 		}
 	}

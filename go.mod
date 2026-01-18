@@ -15,6 +15,7 @@ require (
 	github.com/iamwavecut/gopenrouter v0.0.0-20250819194515-3428c8a33343
 	github.com/kjk/flex v0.0.0-20171203210503-ed34d6b6a425
 	github.com/openai/openai-go/v3 v3.15.0
+	github.com/spf13/cobra v1.10.2
 	google.golang.org/genai v1.40.0
 )
 
@@ -61,7 +62,6 @@ require (
 	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/muesli/termenv v0.16.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
-	github.com/spf13/cobra v1.10.2 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/stretchr/testify v1.11.1 // indirect
 	github.com/tidwall/gjson v1.18.0 // indirect

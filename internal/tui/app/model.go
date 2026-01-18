@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/bubbles/viewport"
+	"github.com/mightymoud/arlocode/internal/bridge"
 	"github.com/mightymoud/arlocode/internal/tui/app/conversation"
 	"github.com/mightymoud/arlocode/internal/tui/notifications"
 )
@@ -35,6 +36,7 @@ type AppModel struct {
 	loadingFrame  float64
 	showModal     bool
 	currentScreen Screen
+	Bridge        bridge.AgentBridge
 	ModalInput    textinput.Model
 	Notifications *notifications.NotificationManager
 

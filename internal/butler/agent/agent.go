@@ -19,12 +19,12 @@ type Agent struct {
 	memory             []memory.MemoryEntry
 	tools              []tools.Tool
 	maxIterations      int
-	Responding         bool
 	OnTextChunk        butler.OnTextChunkFunc
-	OnStreamComplete   butler.OnStreamCompleteFunc
+	OnTextComplete     butler.OnTextCompleteFunc
 	OnThinkingChunk    butler.OnThinkingChunkFunc
 	OnThinkingComplete butler.OnThinkingCompleteFunc
 	OnToolCall         butler.OnToolCallFunc
+	OnTurnComplete     butler.OnTurnCompleteFunc
 }
 
 func NewAgent(l llm.LLM) *Agent {
@@ -72,13 +72,18 @@ func (l *Agent) WithOnTextChunk(f butler.OnTextChunkFunc) *Agent {
 	return l
 }
 
-func (l *Agent) WithOnStreamComplete(f butler.OnStreamCompleteFunc) *Agent {
-	l.OnStreamComplete = f
+func (l *Agent) WithOnTextComplete(f butler.OnTextCompleteFunc) *Agent {
+	l.OnTextComplete = f
 	return l
 }
 
 func (l *Agent) WithOnToolCall(f butler.OnToolCallFunc) *Agent {
 	l.OnToolCall = f
+	return l
+}
+
+func (l *Agent) WithOnTurnComplete(f butler.OnTurnCompleteFunc) *Agent {
+	l.OnTurnComplete = f
 	return l
 }
 
@@ -137,16 +142,16 @@ func (a *Agent) HandleToolCall(ctx context.Context, call tools.ToolCall) (string
 }
 
 func (a *Agent) Run(ctx context.Context, prompt string) error {
-	a.Responding = true
 	initMessage := memory.MemoryEntry{Message: prompt, Role: "user"}
 	a.AddMemoryEntry(initMessage)
 
 	hooks := butler.EventHooks{
 		OnTextChunk:        a.OnTextChunk,
-		OnStreamComplete:   a.OnStreamComplete,
+		OnTextComplete:     a.OnTextComplete,
 		OnThinkingChunk:    a.OnThinkingChunk,
 		OnThinkingComplete: a.OnThinkingComplete,
 		OnToolCall:         a.OnToolCall,
+		OnTurnComplete:     a.OnTurnComplete,
 	}
 
 	iterationCount := 0
@@ -204,7 +209,6 @@ func (a *Agent) Run(ctx context.Context, prompt string) error {
 	if iterationCount >= a.maxIterations {
 		color.Yellow("\nWarning: Maximum iterations (%d) reached. The agent loop was terminated.\n", a.maxIterations)
 	}
-	a.Responding = false
 
 	return nil
 }

@@ -4,11 +4,12 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/mightymoud/arlocode/internal/bridge"
 	"github.com/mightymoud/arlocode/internal/tui/app/conversation"
 	"github.com/mightymoud/arlocode/internal/tui/notifications"
 )
 
-func NewAppModel() AppModel {
+func NewAppModel(bridge bridge.AgentBridge) AppModel {
 	// Initialize welcome screen input
 	welcomeInput := textinput.New()
 	welcomeInput.Placeholder = "Enter your prompt"
@@ -32,6 +33,7 @@ func NewAppModel() AppModel {
 	return AppModel{
 		currentScreen: ScreenWelcome,
 		loadingFrame:  0,
+		Bridge:        bridge,
 		WelcomeScreen: WelcomeScreenModel{
 			Input: welcomeInput,
 		},

@@ -19,9 +19,8 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/mightymoud/arlocode/internal/butler/tools"
+	"github.com/mightymoud/arlocode/internal/bridge"
 	"github.com/mightymoud/arlocode/internal/coding_agent"
-	state "github.com/mightymoud/arlocode/internal/tui"
 	"github.com/mightymoud/arlocode/internal/tui/app"
 	"github.com/spf13/cobra"
 )
@@ -39,32 +38,34 @@ var rootCmd = &cobra.Command{
 	Short: "ArloCode a Coding Agent focused on long running tasks and local models",
 	Long:  `AlroCode is an AI coding agent designed to assist developers with complex coding tasks.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		appState := state.Get()
+		codingAgent := coding_agent.Agent.WithMaxIterations(30)
+		agentBridge := bridge.NewDirectBridge(codingAgent)
 
 		// Create the app model using the new constructor
-		m := app.NewAppModel()
-
-		codingAgent := coding_agent.Agent.WithMaxIterations(30).
-			WithOnThinkingChunk(func(s string) {
-				appState.Program().Send(app.AgentThinkingChunkMsg(s))
-			}).
-			WithOnThinkingComplete(func() {
-				appState.Program().Send(app.AgentThinkingCompleteMsg(""))
-			}).
-			WithOnTextChunk(func(s string) {
-				appState.Program().Send(app.AgentTextChunkMsg(s))
-			}).
-			WithOnStreamComplete(func() {
-				appState.Program().Send(app.AgentTextCompleteMsg(""))
-			}).
-			WithOnToolCall(func(tc tools.ToolCall) {
-				appState.Program().Send(app.ToolCallMsg(tc))
-			})
-
-		appState.SetAgent(codingAgent)
+		m := app.NewAppModel(agentBridge)
 
 		p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseCellMotion())
-		appState.SetProgram(p)
+
+		go func() {
+			for event := range agentBridge.Events() {
+				switch e := event.(type) {
+				case bridge.TextChunkEvent:
+					p.Send(app.AgentTextChunkMsg(e.Text))
+				case bridge.TextCompleteEvent:
+					p.Send(app.AgentTextCompleteMsg(""))
+				case bridge.ThinkingChunkEvent:
+					p.Send(app.AgentThinkingChunkMsg(e.Text))
+				case bridge.ThinkingCompleteEvent:
+					p.Send(app.AgentThinkingCompleteMsg(""))
+				case bridge.ToolCallEvent:
+					p.Send(app.ToolCallMsg(e.ToolCall))
+				case bridge.ErrorEvent:
+					// Handle error event if needed
+				case bridge.TurnCompleteEvent:
+					// Handle turn complete event if needed
+				}
+			}
+		}()
 		if _, err := p.Run(); err != nil {
 			fmt.Printf("Error: %v", err)
 			os.Exit(1)

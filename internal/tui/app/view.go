@@ -272,7 +272,7 @@ func (m AppModel) RenderChatScreen(canvas *layers.Canvas) {
 	// Get calculated heights for main content layout
 	contentAreaHeight := int(contentArea.LayoutGetHeight())
 	chatContentHeight := int(chatContent.LayoutGetHeight())
-	if !appState.Agent().Responding {
+	if !m.Bridge.IsResponding() {
 		chatContentHeight += 1
 	} else {
 		chatContentHeight = int(chatContent.LayoutGetHeight())
@@ -335,7 +335,7 @@ func (m AppModel) RenderChatScreen(canvas *layers.Canvas) {
 		inputDiv.Render(m.ChatScreen.Input.View()),
 		hintDiv.Render("Ctrl+O to open modal • Esc to quit"),
 	}
-	if appState.Agent().Responding {
+	if m.Bridge.IsResponding() {
 		contentSlice = append(contentSlice[:1], append([]string{loadingDiv.Render(m.renderLoading(mainAreaWidth))}, contentSlice[1:]...)...)
 	}
 	// Combine all content
