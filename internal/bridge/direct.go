@@ -119,10 +119,11 @@ type atifStep struct {
 	Extra            map[string]interface{} `json:"extra,omitempty"`
 }
 
-func (db *DirectBridge) ExportATIF(path string) error {
+func (db *DirectBridge) ExportATIF(path string) (string, error) {
 	steps := db.agent.GetMemory()
 	exportSteps := make([]atifStep, 0, len(steps))
 
+	sessionID := fmt.Sprintf("session-%d", time.Now().UnixNano())
 	final := atifFinalMetrics{
 		TotalSteps: len(steps),
 	}
@@ -159,7 +160,7 @@ func (db *DirectBridge) ExportATIF(path string) error {
 
 	traj := atifTrajectory{
 		SchemaVersion: "ATIF-v1.5",
-		SessionID:     fmt.Sprintf("session-%d", time.Now().UnixNano()),
+		SessionID:     sessionID,
 		Agent: atifAgent{
 			Name:    "arlocode",
 			Version: "unknown",
@@ -168,11 +169,18 @@ func (db *DirectBridge) ExportATIF(path string) error {
 		FinalMetrics: final,
 	}
 
+	if path == "" || path == "." {
+		path = fmt.Sprintf("atif_trajectory_%s.json", sessionID)
+	}
+
 	bytes, err := json.MarshalIndent(traj, "", "  ")
 	if err != nil {
-		return err
+		return "", err
 	}
-	return os.WriteFile(path, bytes, 0644)
+	if err := os.WriteFile(path, bytes, 0644); err != nil {
+		return "", err
+	}
+	return path, nil
 }
 
 func hasObservation(obs memory.Observation) bool {

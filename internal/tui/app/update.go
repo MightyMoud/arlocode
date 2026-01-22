@@ -299,7 +299,7 @@ func (m *AppModel) getCurrentScreenBlinkCmd() tea.Cmd {
 func (m *AppModel) cleanup() tea.Cmd {
 	return func() tea.Msg {
 		if db, ok := m.Bridge.(*bridge.DirectBridge); ok {
-			_ = db.ExportATIF(filepath.Join(".", "atif_trajectory.json"))
+			_, _ = db.ExportATIF("")
 		}
 		// Cancel any inflight API requests
 		if m.Bridge != nil {
