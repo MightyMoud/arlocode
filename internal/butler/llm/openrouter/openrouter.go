@@ -50,6 +50,7 @@ func (l OpenRouterLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, age
 
 	var currentResponseText strings.Builder
 	isThinking := false
+	var metrics *memory.Metrics
 
 	type streamToolCall struct {
 		Index int
@@ -115,11 +116,14 @@ func (l OpenRouterLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, age
 			}
 		}
 
-		// Accumulate usage stats -> for later
-		// if response.Usage != nil {
-		// 	fmt.Printf("\n[Usage]: Prompt: %d, Completion: %d, Total: %d, Cost: %f\n",
-		// 		response.Usage.PromptTokens, response.Usage.CompletionTokens, response.Usage.TotalTokens, response.Usage.Cost)
-		// }
+		if response.Usage != nil {
+			metrics = &memory.Metrics{
+				PromptTokens:     response.Usage.PromptTokens,
+				CompletionTokens: response.Usage.CompletionTokens,
+				CostUSD:          response.Usage.Cost,
+			}
+		}
+
 	}
 
 	var toolCalls []tools.ToolCall
@@ -153,6 +157,7 @@ func (l OpenRouterLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, age
 	return providers.ProviderResponse{
 		Text:      currentResponseText.String(),
 		ToolCalls: toolCalls,
+		Metrics:   metrics,
 	}, nil
 }
 

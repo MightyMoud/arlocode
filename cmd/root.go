@@ -53,7 +53,8 @@ var rootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		codingAgent := coding_agent.Agent.WithMaxIterations(30).WithMemory([]memory.MemoryEntry{
 			{
-				Role:    "system",
+				StepID:  1,
+				Source:  "system",
 				Message: systemPrompt,
 			},
 		})

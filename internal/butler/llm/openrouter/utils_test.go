@@ -62,7 +62,8 @@ func TestGenerateJSONSchema(t *testing.T) {
 			}
 		})
 	}
-}
+			{"agent", gopenrouter.RoleAssistant},
+			{"assistant", gopenrouter.RoleAssistant},
 
 func TestGenerateJSONSchema_Struct(t *testing.T) {
 	type TestStruct struct {
@@ -132,7 +133,7 @@ func TestGetRoleFromMemoryEntry(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
-			entry := memory.MemoryEntry{Role: tt.input}
+			entry := memory.MemoryEntry{Source: tt.input}
 			role := getRoleFromMemoryEntry(entry)
 			if role != tt.expected {
 				t.Errorf("expected role %v, got %v", tt.expected, role)
@@ -143,11 +144,12 @@ func TestGetRoleFromMemoryEntry(t *testing.T) {
 
 func TestConvertMemoryToOpenRouterMessages(t *testing.T) {
 	mem := []memory.MemoryEntry{
-		{Role: "user", Message: "hello"},
-		{Role: "assistant", Message: "hi", ToolCalls: []tools.ToolCall{
-			{ID: "1", FunctionName: "func", Arguments: map[string]any{"a": 1}},
-		}},
-		{Role: "tool", Message: "result", ToolCallID: "1"},
+		{Source: "user", Message: "hello"},
+		{Source: "agent", Message: "hi", ToolCalls: []memory.ToolCall{
+			{ToolCallID: "1", FunctionName: "func", Arguments: map[string]any{"a": 1}},
+		}, Observation: memory.Observation{Results: []memory.ObservationResult{
+			{SourceCallID: "1", Content: "result"},
+		}}},
 	}
 
 	messages := convertMemoryToOpenRouterMessages(mem)

@@ -9,6 +9,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/mightymoud/arlocode/internal/bridge"
 	"github.com/mightymoud/arlocode/internal/butler/tools"
 )
 
@@ -297,6 +298,9 @@ func (m *AppModel) getCurrentScreenBlinkCmd() tea.Cmd {
 // cleanup cancels any inflight requests and closes the bridge before quitting
 func (m *AppModel) cleanup() tea.Cmd {
 	return func() tea.Msg {
+		if db, ok := m.Bridge.(*bridge.DirectBridge); ok {
+			_ = db.ExportATIF(filepath.Join(".", "atif_trajectory.json"))
+		}
 		// Cancel any inflight API requests
 		if m.Bridge != nil {
 			m.Bridge.Cancel()

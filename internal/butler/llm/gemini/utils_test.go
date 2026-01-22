@@ -88,11 +88,12 @@ func TestMakeGeminiTools(t *testing.T) {
 
 func TestConvertMemoryToGeminiHistory(t *testing.T) {
 	mem := []memory.MemoryEntry{
-		{Role: "user", Message: "hello"},
-		{Role: "model", Message: "hi", ToolCalls: []tools.ToolCall{
-			{ID: "1", FunctionName: "func", Arguments: map[string]any{"a": 1}},
-		}},
-		{Role: "tool", Message: "result", ToolName: "func", ToolCallID: "1"},
+		{Source: "user", Message: "hello"},
+		{Source: "agent", Message: "hi", ToolCalls: []memory.ToolCall{
+			{ToolCallID: "1", FunctionName: "func", Arguments: map[string]any{"a": 1}},
+		}, Observation: memory.Observation{Results: []memory.ObservationResult{
+			{SourceCallID: "1", Content: "result"},
+		}}},
 	}
 
 	history := convertMemoryToGeminiHistory(mem)

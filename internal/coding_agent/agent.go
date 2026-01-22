@@ -15,6 +15,6 @@ var provider = openai_provider.New(ctx,
 	openai_provider.WithApiKey(os.Getenv("ZAI_API_KEY")),
 	openai_provider.WithBaseURL("https://api.z.ai/api/coding/paas/v4"),
 )
-var model = provider.Model(ctx, "glm-4.7")
+var model = provider.Model(ctx, "glm-4.7-flash")
 
 var Agent = agent.NewAgent(model)

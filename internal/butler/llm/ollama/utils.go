@@ -140,13 +140,22 @@ func generateJSONSchema(t reflect.Type) map[string]any {
 func convertMemoryToOllamaMessages(mem []memory.MemoryEntry) []api.Message {
 	var messages []api.Message
 	for _, entry := range mem {
+		role := entry.Source
+		switch role {
+		case "agent", "assistant", "model":
+			role = "assistant"
+		case "user", "system":
+			// keep
+		default:
+			role = "user"
+		}
+
 		msg := api.Message{
-			Role:    entry.Role,
+			Role:    role,
 			Content: entry.Message,
 		}
 
-		if entry.Role == "assistant" || entry.Role == "model" {
-			msg.Role = "assistant"
+		if role == "assistant" {
 			if len(entry.ToolCalls) > 0 {
 				var toolCalls []api.ToolCall
 				for _, tc := range entry.ToolCalls {
@@ -160,14 +169,26 @@ func convertMemoryToOllamaMessages(mem []memory.MemoryEntry) []api.Message {
 				msg.ToolCalls = toolCalls
 			}
 		}
-
-		if entry.Role == "tool" {
-			msg.Role = "tool"
-			msg.ToolName = entry.ToolName
-			msg.ToolCallID = entry.ToolCallID
-		}
-
 		messages = append(messages, msg)
+
+		if len(entry.Observation.Results) > 0 {
+			toolCallNameByID := map[string]string{}
+			for _, tc := range entry.ToolCalls {
+				toolCallNameByID[tc.ToolCallID] = tc.FunctionName
+			}
+			for _, result := range entry.Observation.Results {
+				name := toolCallNameByID[result.SourceCallID]
+				if name == "" && len(entry.ToolCalls) == 1 {
+					name = entry.ToolCalls[0].FunctionName
+				}
+				messages = append(messages, api.Message{
+					Role:       "tool",
+					Content:    result.Content,
+					ToolName:   name,
+					ToolCallID: result.SourceCallID,
+				})
+			}
+		}
 	}
 	return messages
 }

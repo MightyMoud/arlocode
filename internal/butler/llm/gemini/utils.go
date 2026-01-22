@@ -137,38 +137,56 @@ func convertMemoryToGeminiHistory(memory []memory.MemoryEntry) []*genai.Content 
 	history := []*genai.Content{}
 	for _, entry := range memory {
 		var genAIEntry genai.Content
-		if entry.Role == "tool" {
-			genAIEntry = genai.Content{
+		parts := []*genai.Part{}
+		if entry.Message != "" {
+			parts = append(parts, &genai.Part{Text: entry.Message})
+		}
+		toolCallNameByID := map[string]string{}
+		for _, tc := range entry.ToolCalls {
+			parts = append(parts, &genai.Part{
+				FunctionCall: &genai.FunctionCall{
+					Name: tc.FunctionName,
+					Args: tc.Arguments,
+					ID:   tc.ToolCallID,
+				},
+			})
+			toolCallNameByID[tc.ToolCallID] = tc.FunctionName
+		}
+		genAIEntry = genai.Content{
+			Role:  getGeminiRoleFromMemoryEntry(entry),
+			Parts: parts,
+		}
+		history = append(history, &genAIEntry)
+
+		for _, result := range entry.Observation.Results {
+			name := toolCallNameByID[result.SourceCallID]
+			if name == "" && len(entry.ToolCalls) == 1 {
+				name = entry.ToolCalls[0].FunctionName
+			}
+			history = append(history, &genai.Content{
 				Role: "tool",
 				Parts: []*genai.Part{{
 					FunctionResponse: &genai.FunctionResponse{
-						Name:     entry.ToolName,
-						Response: map[string]any{"content": entry.Message},
-						ID:       entry.ToolCallID,
+						Name:     name,
+						Response: map[string]any{"content": result.Content},
+						ID:       result.SourceCallID,
 					},
 				}},
-			}
-		} else {
-			parts := []*genai.Part{}
-			if entry.Message != "" {
-				parts = append(parts, &genai.Part{Text: entry.Message})
-			}
-			for _, tc := range entry.ToolCalls {
-				parts = append(parts, &genai.Part{
-					ThoughtSignature: tc.ThoughtSignature,
-					FunctionCall: &genai.FunctionCall{
-						Name: tc.FunctionName,
-						Args: tc.Arguments,
-						ID:   tc.ID,
-					},
-				})
-			}
-			genAIEntry = genai.Content{
-				Role:  entry.Role,
-				Parts: parts,
-			}
+			})
 		}
-		history = append(history, &genAIEntry)
 	}
 	return history
+}
+
+func getGeminiRoleFromMemoryEntry(entry memory.MemoryEntry) string {
+	switch entry.Source {
+	case "user":
+		return "user"
+	case "system":
+		return "system"
+	case "agent", "assistant", "model":
+		return "model"
+	default:
+		return "user"
+	}
 }

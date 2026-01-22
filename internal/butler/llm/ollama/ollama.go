@@ -32,8 +32,13 @@ func (l *OllamaLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, agentT
 	var currentResponseText strings.Builder
 	var toolCalls []tools.ToolCall
 	isThinking := false
+	var metrics *memory.Metrics
 
 	err := l.Client.Chat(ctx, req, func(resp api.ChatResponse) error {
+		metrics = &memory.Metrics{
+			PromptTokens:     resp.Metrics.PromptEvalCount,
+			CompletionTokens: resp.Metrics.EvalCount,
+		}
 		// Handle Thinking/Reasoning
 		if resp.Message.Thinking != "" {
 			isThinking = true
@@ -81,6 +86,7 @@ func (l *OllamaLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, agentT
 	return providers.ProviderResponse{
 		Text:      currentResponseText.String(),
 		ToolCalls: toolCalls,
+		Metrics:   metrics,
 	}, nil
 }
 

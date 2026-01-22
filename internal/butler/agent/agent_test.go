@@ -51,7 +51,7 @@ func TestNewAgent(t *testing.T) {
 func TestAgent_WithMemory(t *testing.T) {
 	mockLLM := &MockLLM{}
 	agent := NewAgent(mockLLM)
-	mem := []memory.MemoryEntry{{Message: "test", Role: "user"}}
+	mem := []memory.MemoryEntry{{StepID: 1, Message: "test", Source: "user"}}
 
 	agent.WithMemory(mem)
 	if len(agent.memory) != 1 || agent.memory[0].Message != "test" {
@@ -83,7 +83,7 @@ func TestAgent_WithNoTools(t *testing.T) {
 func TestAgent_AddMemoryEntry(t *testing.T) {
 	mockLLM := &MockLLM{}
 	agent := NewAgent(mockLLM)
-	entry := memory.MemoryEntry{Message: "test", Role: "user"}
+	entry := memory.MemoryEntry{StepID: 1, Message: "test", Source: "user"}
 
 	agent.AddMemoryEntry(entry)
 	if len(agent.memory) != 1 {
@@ -94,7 +94,7 @@ func TestAgent_AddMemoryEntry(t *testing.T) {
 func TestAgent_GetMemory(t *testing.T) {
 	mockLLM := &MockLLM{}
 	agent := NewAgent(mockLLM)
-	entry := memory.MemoryEntry{Message: "test", Role: "user"}
+	entry := memory.MemoryEntry{StepID: 1, Message: "test", Source: "user"}
 	agent.AddMemoryEntry(entry)
 
 	mem := agent.GetMemory()
@@ -202,16 +202,15 @@ func TestAgent_Run_WithToolCall(t *testing.T) {
 
 	mem := agent.GetMemory()
 	// 1. User prompt
-	// 2. Model response (tool call)
-	// 3. Tool output
-	// 4. Model response (final)
-	if len(mem) != 4 {
-		t.Fatalf("Expected 4 memory entries, got %d", len(mem))
+	// 2. Agent response with tool call + observation
+	// 3. Agent response (final)
+	if len(mem) != 3 {
+		t.Fatalf("Expected 3 memory entries, got %d", len(mem))
 	}
-	if mem[2].Role != "tool" {
-		t.Errorf("Expected 3rd message role 'tool', got '%s'", mem[2].Role)
+	if len(mem[1].Observation.Results) != 1 {
+		t.Fatalf("Expected 1 observation result, got %d", len(mem[1].Observation.Results))
 	}
-	if mem[2].Message != "processed: test" {
-		t.Errorf("Expected tool output 'processed: test', got '%s'", mem[2].Message)
+	if mem[1].Observation.Results[0].Content != "processed: test" {
+		t.Errorf("Expected tool output 'processed: test', got '%s'", mem[1].Observation.Results[0].Content)
 	}
 }

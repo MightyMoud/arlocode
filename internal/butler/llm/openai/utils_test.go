@@ -67,10 +67,10 @@ func TestGenerateOpenAISchema_Struct(t *testing.T) {
 
 func TestConvertMemoryToOpenAIMessages(t *testing.T) {
 	mem := []memory.MemoryEntry{
-		{Role: "user", Message: "hello"},
-		{Role: "assistant", Message: "hi"},
-		{Role: "system", Message: "system message"},
-		{Role: "unknown", Message: "default to user"},
+		{Source: "user", Message: "hello"},
+		{Source: "agent", Message: "hi"},
+		{Source: "system", Message: "system message"},
+		{Source: "unknown", Message: "default to user"},
 	}
 
 	messages := convertMemoryToOpenAIMessages(mem)

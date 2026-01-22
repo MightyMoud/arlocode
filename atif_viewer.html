@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ATIF Trajectory Viewer</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #0c0f14;
+      --panel: #111623;
+      --panel-2: #141a2a;
+      --text: #eef2f6;
+      --muted: #97a3b6;
+      --accent: #6aa9ff;
+      --border: #232a38;
+      --success: #2ecc71;
+      --warning: #f39c12;
+      --shadow: rgba(0, 0, 0, 0.35);
+    }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #121728 0%, #0f1115 100%);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(8px);
+    }
+    header h1 {
+      margin: 0 0 8px 0;
+      font-size: 20px;
+    }
+    header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      padding: 16px 24px 32px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 12px 30px var(--shadow);
+    }
+    .controls {
+      display: grid;
+      gap: 16px;
+    }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #1a2233;
+      color: var(--text);
+      cursor: pointer;
+      text-align: center;
+      font-weight: 600;
+    }
+    .button:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    input[type="file"] {
+      display: none;
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      font-size: 13px;
+    }
+    .summary .card {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: grid;
+      gap: 6px;
+    }
+    .summary .card .label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .summary .card .value {
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .turns {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      font-size: 13px;
+    }
+    .turn-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      background: #141b2a;
+    }
+    .turn-card h4 {
+      margin: 0 0 6px 0;
+      font-size: 14px;
+    }
+    .turn-card .meta {
+      color: var(--muted);
+      display: grid;
+      gap: 4px;
+    }
+    .steps {
+      display: grid;
+      gap: 12px;
+    }
+    .step {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      background: #141b2a;
+    }
+    .step-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .badge {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      border: 1px solid var(--border);
+    }
+    .badge.user { color: var(--accent); border-color: var(--accent); }
+    .badge.agent { color: var(--success); border-color: var(--success); }
+    .badge.system { color: var(--warning); border-color: var(--warning); }
+    .block {
+      margin-top: 8px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #101622;
+      border: 1px solid var(--border);
+      white-space: pre-wrap;
+      font-size: 13px;
+    }
+    .muted { color: var(--muted); }
+    .tool-call {
+      border-left: 3px solid var(--accent);
+      padding-left: 8px;
+      margin-top: 6px;
+      font-size: 12px;
+    }
+    .metrics {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ATIF Trajectory Viewer</h1>
+    <p>Load an ATIF JSON file to inspect steps, tools, and per-turn stats.</p>
+  </header>
+  <div class="container">
+    <section class="panel controls">
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+        <div>
+          <label class="button" for="fileInput">Load ATIF JSON</label>
+          <input id="fileInput" type="file" accept="application/json" />
+        </div>
+        <div class="muted" style="font-size: 12px;">Load a file to populate the dashboard</div>
+      </div>
+      <div class="summary" id="summary"></div>
+      <div>
+        <h3 style="margin: 0 0 8px 0; font-size: 14px;">Turn Stats</h3>
+        <div class="turns" id="turns"></div>
+      </div>
+    </section>
+    <main class="steps" id="steps"></main>
+  </div>
+
+  <script>
+    const summaryEl = document.getElementById('summary');
+    const stepsEl = document.getElementById('steps');
+    const turnsEl = document.getElementById('turns');
+
+    const toDate = (ts) => ts ? new Date(ts) : null;
+
+    const formatDuration = (ms) => {
+      if (ms == null || Number.isNaN(ms)) return 'N/A';
+      const sec = Math.max(0, Math.round(ms / 1000));
+      const mins = Math.floor(sec / 60);
+      const secs = sec % 60;
+      return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+    };
+
+    const formatNumber = (n) => (n == null ? 'N/A' : n.toLocaleString());
+
+    const countTools = (steps) =>
+      steps.reduce((acc, s) => acc + (s.tool_calls ? s.tool_calls.length : 0), 0);
+
+    const renderSummary = (data) => {
+      const final = data.final_metrics || {};
+      summaryEl.innerHTML = `
+        <div class="card">
+          <div class="label">Schema</div>
+          <div class="value">${data.schema_version || 'N/A'}</div>
+        </div>
+        <div class="card">
+          <div class="label">Session</div>
+          <div class="value">${data.session_id || 'N/A'}</div>
+        </div>
+        <div class="card">
+          <div class="label">Agent</div>
+          <div class="value">${(data.agent && data.agent.name) || 'N/A'} ${(data.agent && data.agent.version) || ''}</div>
+        </div>
+        <div class="card">
+          <div class="label">Total Steps</div>
+          <div class="value">${formatNumber(final.total_steps || (data.steps ? data.steps.length : 0))}</div>
+        </div>
+        <div class="card">
+          <div class="label">Prompt Tokens</div>
+          <div class="value">${formatNumber(final.total_prompt_tokens)}</div>
+        </div>
+        <div class="card">
+          <div class="label">Completion Tokens</div>
+          <div class="value">${formatNumber(final.total_completion_tokens)}</div>
+        </div>
+        <div class="card">
+          <div class="label">Total Cost (USD)</div>
+          <div class="value">${final.total_cost_usd != null ? final.total_cost_usd.toFixed(6) : 'N/A'}</div>
+        </div>
+      `;
+    };
+
+    const renderTurns = (steps) => {
+      turnsEl.innerHTML = '';
+      const userSteps = steps.filter(s => s.source === 'user');
+
+      userSteps.forEach((userStep, idx) => {
+        const nextUserStep = userSteps[idx + 1];
+        const startIndex = steps.indexOf(userStep);
+        const endIndex = nextUserStep ? steps.indexOf(nextUserStep) : steps.length;
+        const segment = steps.slice(startIndex, endIndex);
+        const toolCount = countTools(segment);
+
+        const userTime = toDate(userStep.timestamp);
+        const lastAgent = segment.filter(s => s.source === 'agent').at(-1);
+        const agentTime = lastAgent ? toDate(lastAgent.timestamp) : null;
+        const duration = userTime && agentTime ? agentTime - userTime : null;
+
+        const turnCard = document.createElement('div');
+        turnCard.className = 'turn-card';
+        turnCard.innerHTML = `
+          <h4>Turn ${idx + 1}</h4>
+          <div class="meta">
+            <div><span class="muted">User:</span> ${userStep.message || '(empty)'} </div>
+            <div><span class="muted">Duration:</span> ${formatDuration(duration)}</div>
+            <div><span class="muted">Tools Used:</span> ${toolCount}</div>
+          </div>
+        `;
+        turnsEl.appendChild(turnCard);
+      });
+    };
+
+    const renderSteps = (steps) => {
+      stepsEl.innerHTML = '';
+      steps.forEach((step) => {
+        const badgeClass = step.source || 'unknown';
+        const stepEl = document.createElement('div');
+        stepEl.className = 'step';
+
+        const metrics = step.metrics || {};
+        const metricsParts = [
+          metrics.prompt_tokens != null ? `prompt: ${metrics.prompt_tokens}` : null,
+          metrics.completion_tokens != null ? `completion: ${metrics.completion_tokens}` : null,
+          metrics.cached_tokens != null ? `cached: ${metrics.cached_tokens}` : null,
+          metrics.cost_usd != null ? `cost: $${metrics.cost_usd.toFixed(6)}` : null,
+        ].filter(Boolean);
+
+        const toolCalls = (step.tool_calls || []).map(tc => {
+          return `<div class="tool-call"><strong>${tc.function_name}</strong> — ${tc.tool_call_id}<div class="muted">${JSON.stringify(tc.arguments, null, 2)}</div></div>`;
+        }).join('');
+
+        const observation = step.observation && step.observation.results
+          ? step.observation.results.map(r => `• ${r.source_call_id || 'n/a'}: ${r.content || ''}`).join('\n')
+          : '';
+
+        stepEl.innerHTML = `
+          <div class="step-header">
+            <div>Step ${step.step_id} ${step.timestamp ? `• ${step.timestamp}` : ''}</div>
+            <span class="badge ${badgeClass}">${step.source || 'unknown'}</span>
+          </div>
+          <div class="block">${step.message || '(empty message)'}</div>
+          ${step.reasoning_content ? `<div class="block"><strong>Reasoning</strong>\n${step.reasoning_content}</div>` : ''}
+          ${toolCalls ? `<div class="block"><strong>Tool Calls</strong>${toolCalls}</div>` : ''}
+          ${observation ? `<div class="block"><strong>Observation</strong>\n${observation}</div>` : ''}
+          ${metricsParts.length ? `<div class="metrics">${metricsParts.map(m => `<span>${m}</span>`).join('')}</div>` : ''}
+        `;
+        stepsEl.appendChild(stepEl);
+      });
+    };
+
+    document.getElementById('fileInput').addEventListener('change', (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          const steps = Array.isArray(data.steps) ? data.steps : [];
+          renderSummary(data);
+          renderTurns(steps);
+          renderSteps(steps);
+        } catch (err) {
+          summaryEl.textContent = 'Failed to parse JSON.';
+          stepsEl.innerHTML = '';
+          turnsEl.innerHTML = '';
+        }
+      };
+      reader.readAsText(file);
+    });
+  </script>
+</body>
+</html>

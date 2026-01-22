@@ -124,10 +124,10 @@ func generateJSONSchema(t reflect.Type) map[string]any {
 }
 
 func getRoleFromMemoryEntry(entry memory.MemoryEntry) gopenrouter.ChatCompletionMessageRole {
-	switch entry.Role {
+	switch entry.Source {
 	case "user":
 		return gopenrouter.RoleUser
-	case "assistant", "model":
+	case "agent", "assistant", "model":
 		return gopenrouter.RoleAssistant
 	case "system":
 		return gopenrouter.RoleSystem
@@ -139,45 +139,49 @@ func getRoleFromMemoryEntry(entry memory.MemoryEntry) gopenrouter.ChatCompletion
 func convertMemoryToOpenRouterMessages(mem []memory.MemoryEntry) []gopenrouter.ChatCompletionMessage {
 	var messages []gopenrouter.ChatCompletionMessage
 	for _, entry := range mem {
-		if entry.Role == "tool" {
-			messages = append(messages, gopenrouter.ChatCompletionMessage{
-				Role:       gopenrouter.RoleTool,
-				Content:    entry.Message,
-				ToolCallID: entry.ToolCallID,
-				Name:       entry.ToolName,
+		var toolCalls []gopenrouter.ToolCall
+		toolCallNameByID := map[string]string{}
+		for _, tc := range entry.ToolCalls {
+			argsBytes, _ := json.Marshal(tc.Arguments)
+			toolCalls = append(toolCalls, gopenrouter.ToolCall{
+				ID:   tc.ToolCallID,
+				Type: "function",
+				Function: gopenrouter.Function{
+					Name:      tc.FunctionName,
+					Arguments: string(argsBytes),
+				},
 			})
-		} else {
-			var toolCalls []gopenrouter.ToolCall
-			for _, tc := range entry.ToolCalls {
-				argsBytes, _ := json.Marshal(tc.Arguments)
-				toolCalls = append(toolCalls, gopenrouter.ToolCall{
-					ID:   tc.ID,
-					Type: "function",
-					Function: gopenrouter.Function{
-						Name:      tc.FunctionName,
-						Arguments: string(argsBytes),
-					},
-				})
-			}
+			toolCallNameByID[tc.ToolCallID] = tc.FunctionName
+		}
 
-			msg := gopenrouter.ChatCompletionMessage{
-				Role: getRoleFromMemoryEntry(entry),
-			}
+		msg := gopenrouter.ChatCompletionMessage{
+			Role: getRoleFromMemoryEntry(entry),
+		}
 
-			// Per OpenRouter docs: when assistant makes tool calls, content should be null/empty
-			// Only set content if there are no tool calls or if content exists
-			if len(toolCalls) > 0 {
-				msg.ToolCalls = toolCalls
-				// Content is intentionally not set (null) when tool calls are present
-				// unless there's actual content (for interleaved thinking)
-				if entry.Message != "" {
-					msg.Content = entry.Message
-				}
-			} else {
+		// Per OpenRouter docs: when assistant makes tool calls, content should be null/empty
+		// Only set content if there are no tool calls or if content exists
+		if len(toolCalls) > 0 {
+			msg.ToolCalls = toolCalls
+			if entry.Message != "" {
 				msg.Content = entry.Message
 			}
+		} else {
+			msg.Content = entry.Message
+		}
 
-			messages = append(messages, msg)
+		messages = append(messages, msg)
+
+		for _, result := range entry.Observation.Results {
+			name := toolCallNameByID[result.SourceCallID]
+			if name == "" && len(entry.ToolCalls) == 1 {
+				name = entry.ToolCalls[0].FunctionName
+			}
+			messages = append(messages, gopenrouter.ChatCompletionMessage{
+				Role:       gopenrouter.RoleTool,
+				Content:    result.Content,
+				ToolCallID: result.SourceCallID,
+				Name:       name,
+			})
 		}
 	}
 	return messages

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"reflect"
+	"strings"
 
 	"github.com/fatih/color"
 	"github.com/mightymoud/arlocode/internal/butler"
@@ -142,67 +143,98 @@ func (a *Agent) HandleToolCall(ctx context.Context, call tools.ToolCall) (string
 }
 
 func (a *Agent) Run(ctx context.Context, prompt string) error {
-	initMessage := memory.MemoryEntry{Message: prompt, Role: "user"}
-	a.AddMemoryEntry(initMessage)
-
-	hooks := butler.EventHooks{
-		OnTextChunk:        a.OnTextChunk,
-		OnTextComplete:     a.OnTextComplete,
-		OnThinkingChunk:    a.OnThinkingChunk,
-		OnThinkingComplete: a.OnThinkingComplete,
-		OnToolCall:         a.OnToolCall,
-		OnTurnComplete:     a.OnTurnComplete,
+	initMessage := memory.MemoryEntry{
+		StepID:  a.nextStepID(),
+		Source:  "user",
+		Message: prompt,
 	}
+	a.AddMemoryEntry(initMessage)
 
 	iterationCount := 0
 	for iterationCount < a.maxIterations {
 		iterationCount++
+
+		var reasoning strings.Builder
+		hooks := butler.EventHooks{
+			OnTextChunk:    a.OnTextChunk,
+			OnTextComplete: a.OnTextComplete,
+			OnToolCall:     a.OnToolCall,
+			OnTurnComplete: a.OnTurnComplete,
+			OnThinkingChunk: func(chunk string) {
+				reasoning.WriteString(chunk)
+				if a.OnThinkingChunk != nil {
+					a.OnThinkingChunk(chunk)
+				}
+			},
+			OnThinkingComplete: func() {
+				if a.OnThinkingComplete != nil {
+					a.OnThinkingComplete()
+				}
+			},
+		}
 
 		result, err := a.llm.Stream(ctx, a.memory, a.tools, hooks)
 		if err != nil {
 			log.Fatal("Error calling LLM Stream: ", err)
 			return err
 		}
-		a.AddMemoryEntry(memory.MemoryEntry{Role: "model", Message: result.Text, ToolCalls: result.ToolCalls})
+
+		entry := memory.MemoryEntry{
+			StepID:  a.nextStepID(),
+			Source:  "agent",
+			Message: result.Text,
+		}
+		if reasoning.Len() > 0 {
+			entry.ReasoningContent = reasoning.String()
+		}
+		if result.Metrics != nil {
+			entry.Metrics = *result.Metrics
+		}
+		if len(result.ToolCalls) > 0 {
+			entry.ToolCalls = mapToolCalls(result.ToolCalls)
+		}
+
+		if len(result.ToolCalls) > 0 {
+			var results []memory.ObservationResult
+			for _, call := range result.ToolCalls {
+				// Ask user for confirmation before executing tool
+				// var confirm bool
+				// if err := huh.NewConfirm().
+				// 	Title("Execute tool?").
+				// 	Description(fmt.Sprintf("Do you want to execute %s?", call.FunctionName)).
+				// 	Affirmative("Yes").
+				// 	Negative("No").
+				// 	Value(&confirm).
+				// 	WithTheme(huh.ThemeCatppuccin()).
+				// 	Run(); err != nil {
+				// 	color.Red("Error getting confirmation: %v", err)
+				// 	continue
+				// }
+
+				// if !confirm {
+				// 	color.Red("Tool call %s was cancelled by the user.", call.FunctionName)
+				// 	a.AddMemoryEntry(memory.MemoryEntry{
+				// 		Role:       "tool",
+				// 		Message:    "Tool call cancelled by user",
+				// 		ToolName:   call.FunctionName,
+				// 		ToolCallID: call.ID,
+				// 	})
+				// 	continue
+				// }
+
+				output, _ := a.HandleToolCall(ctx, call)
+				results = append(results, memory.ObservationResult{
+					SourceCallID: call.ID,
+					Content:      output,
+				})
+			}
+			entry.Observation = memory.Observation{Results: results}
+		}
+
+		a.AddMemoryEntry(entry)
 
 		if len(result.ToolCalls) == 0 {
 			break
-		}
-
-		for _, call := range result.ToolCalls {
-			// Ask user for confirmation before executing tool
-			// var confirm bool
-			// if err := huh.NewConfirm().
-			// 	Title("Execute tool?").
-			// 	Description(fmt.Sprintf("Do you want to execute %s?", call.FunctionName)).
-			// 	Affirmative("Yes").
-			// 	Negative("No").
-			// 	Value(&confirm).
-			// 	WithTheme(huh.ThemeCatppuccin()).
-			// 	Run(); err != nil {
-			// 	color.Red("Error getting confirmation: %v", err)
-			// 	continue
-			// }
-
-			// if !confirm {
-			// 	color.Red("Tool call %s was cancelled by the user.", call.FunctionName)
-			// 	a.AddMemoryEntry(memory.MemoryEntry{
-			// 		Role:       "tool",
-			// 		Message:    "Tool call cancelled by user",
-			// 		ToolName:   call.FunctionName,
-			// 		ToolCallID: call.ID,
-			// 	})
-			// 	continue
-			// }
-
-			output, _ := a.HandleToolCall(ctx, call)
-
-			a.AddMemoryEntry(memory.MemoryEntry{
-				Role:       "tool",
-				Message:    output,
-				ToolName:   call.FunctionName,
-				ToolCallID: call.ID,
-			})
 		}
 	}
 
@@ -211,4 +243,23 @@ func (a *Agent) Run(ctx context.Context, prompt string) error {
 	}
 
 	return nil
+}
+
+func (a *Agent) nextStepID() int {
+	return len(a.memory) + 1
+}
+
+func mapToolCalls(calls []tools.ToolCall) []memory.ToolCall {
+	if len(calls) == 0 {
+		return nil
+	}
+	toolCalls := make([]memory.ToolCall, 0, len(calls))
+	for _, call := range calls {
+		toolCalls = append(toolCalls, memory.ToolCall{
+			ToolCallID:   call.ID,
+			FunctionName: call.FunctionName,
+			Arguments:    call.Arguments,
+		})
+	}
+	return toolCalls
 }

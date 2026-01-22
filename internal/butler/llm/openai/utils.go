@@ -1,6 +1,7 @@
 package openai_llm
 
 import (
+	"encoding/json"
 	"reflect"
 	"strings"
 
@@ -102,11 +103,36 @@ func generateOpenAISchema(t reflect.Type) shared.FunctionParameters {
 func convertMemoryToOpenAIMessages(mem []memory.MemoryEntry) []openai.ChatCompletionMessageParamUnion {
 	var messages []openai.ChatCompletionMessageParamUnion
 	for _, entry := range mem {
-		switch entry.Role {
+		switch entry.Source {
 		case "user":
 			messages = append(messages, openai.UserMessage(entry.Message))
-		case "assistant", "model":
-			messages = append(messages, openai.AssistantMessage(entry.Message))
+		case "agent", "assistant", "model":
+			var toolCalls []openai.ChatCompletionMessageToolCallUnionParam
+			for _, tc := range entry.ToolCalls {
+				argsBytes, _ := json.Marshal(tc.Arguments)
+				toolCalls = append(toolCalls, openai.ChatCompletionMessageToolCallUnionParam{
+					OfFunction: &openai.ChatCompletionMessageFunctionToolCallParam{
+						ID: tc.ToolCallID,
+						Function: openai.ChatCompletionMessageFunctionToolCallFunctionParam{
+							Name:      tc.FunctionName,
+							Arguments: string(argsBytes),
+						},
+					},
+				})
+			}
+
+			assistant := openai.ChatCompletionAssistantMessageParam{}
+			if entry.Message != "" || len(toolCalls) == 0 {
+				assistant.Content.OfString = openai.String(entry.Message)
+			}
+			if len(toolCalls) > 0 {
+				assistant.ToolCalls = toolCalls
+			}
+			messages = append(messages, openai.ChatCompletionMessageParamUnion{OfAssistant: &assistant})
+
+			for _, result := range entry.Observation.Results {
+				messages = append(messages, openai.ToolMessage(result.Content, result.SourceCallID))
+			}
 		case "system":
 			messages = append(messages, openai.SystemMessage(entry.Message))
 		default:

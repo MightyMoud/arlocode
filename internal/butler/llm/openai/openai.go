@@ -37,6 +37,7 @@ func (l OpenAILLM) Stream(ctx context.Context, mem []memory.MemoryEntry, agentTo
 	stream := l.Client.Chat.Completions.NewStreaming(ctx, params)
 
 	var fullText strings.Builder
+	var metrics *memory.Metrics
 
 	type partialToolCall struct {
 		ID   string
@@ -48,6 +49,12 @@ func (l OpenAILLM) Stream(ctx context.Context, mem []memory.MemoryEntry, agentTo
 
 	for stream.Next() {
 		chunk := stream.Current()
+		if chunk.Usage.PromptTokens > 0 || chunk.Usage.CompletionTokens > 0 {
+			metrics = &memory.Metrics{
+				PromptTokens:     int(chunk.Usage.PromptTokens),
+				CompletionTokens: int(chunk.Usage.CompletionTokens),
+			}
+		}
 		if len(chunk.Choices) > 0 {
 			delta := chunk.Choices[0].Delta
 
@@ -140,6 +147,7 @@ func (l OpenAILLM) Stream(ctx context.Context, mem []memory.MemoryEntry, agentTo
 	return providers.ProviderResponse{
 		Text:      fullText.String(),
 		ToolCalls: toolCalls,
+		Metrics:   metrics,
 	}, nil
 }
 

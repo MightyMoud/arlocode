@@ -33,10 +33,18 @@ func (l GeminiLLM) Stream(ctx context.Context, memory []memory.MemoryEntry, agen
 
 	var currentResponseText []string
 	var functionCalls []tools.ToolCall
+	var metrics *memory.Metrics
 
 	for chunk, err := range resp {
 		if err != nil {
 			log.Fatal(err)
+		}
+
+		if chunk.UsageMetadata != nil {
+			metrics = &memory.Metrics{
+				PromptTokens:     int(chunk.UsageMetadata.PromptTokenCount),
+				CompletionTokens: int(chunk.UsageMetadata.CandidatesTokenCount),
+			}
 		}
 
 		for _, part := range chunk.Candidates[0].Content.Parts {
@@ -76,20 +84,12 @@ func (l GeminiLLM) Stream(ctx context.Context, memory []memory.MemoryEntry, agen
 	return providers.ProviderResponse{
 		Text:      textResponse.String(),
 		ToolCalls: functionCalls,
+		Metrics:   metrics,
 	}, nil
 }
 
 func (l GeminiLLM) Generate(ctx context.Context, memory []memory.MemoryEntry, tools []tools.Tool, hooks butler.EventHooks) error {
-	history := []*genai.Content{}
-	for _, entry := range memory {
-		genAIEntry := genai.Content{
-			Role: entry.Role,
-			Parts: []*genai.Part{
-				{Text: entry.Message},
-			},
-		}
-		history = append(history, &genAIEntry)
-	}
+	history := convertMemoryToGeminiHistory(memory)
 	config := &genai.GenerateContentConfig{
 		ThinkingConfig: &genai.ThinkingConfig{
 			IncludeThoughts: true,
