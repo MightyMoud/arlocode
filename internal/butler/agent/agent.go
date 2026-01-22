@@ -20,6 +20,7 @@ type Agent struct {
 	memory             []memory.MemoryEntry
 	tools              []tools.Tool
 	maxIterations      int
+	ModelName          string
 	OnTextChunk        butler.OnTextChunkFunc
 	OnTextComplete     butler.OnTextCompleteFunc
 	OnThinkingChunk    butler.OnThinkingChunkFunc
@@ -34,12 +35,18 @@ func NewAgent(l llm.LLM) *Agent {
 		memory:        []memory.MemoryEntry{},
 		tools:         tools.StdToolset,
 		maxIterations: 10, // Default max iterations as recommended by OpenRouter docs
+		ModelName:     "unknown",
 	}
 }
 
 // Mods
 func (a *Agent) WithMemory(memory []memory.MemoryEntry) *Agent {
 	a.memory = memory
+	return a
+}
+
+func (a *Agent) WithModelName(modelName string) *Agent {
+	a.ModelName = modelName
 	return a
 }
 

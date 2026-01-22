@@ -84,8 +84,9 @@ func (db *DirectBridge) Close() error {
 }
 
 type atifAgent struct {
-	Name    string `json:"name"`
-	Version string `json:"version"`
+	Name       string  `json:"name"`
+	Version    string  `json:"version"`
+	ModelName  string  `json:"model_name,omitempty"`
 }
 
 type atifTrajectory struct {
@@ -162,8 +163,9 @@ func (db *DirectBridge) ExportATIF(path string) (string, error) {
 		SchemaVersion: "ATIF-v1.5",
 		SessionID:     sessionID,
 		Agent: atifAgent{
-			Name:    "arlocode",
-			Version: "unknown",
+			Name:      "arlocode",
+			Version:   "unknown",
+			ModelName: db.agent.ModelName,
 		},
 		Steps:        exportSteps,
 		FinalMetrics: final,
