@@ -26,6 +26,10 @@ func WithApiKey(key string) option.RequestOption {
 	return option.WithAPIKey(key)
 }
 
+func WithBaseURL(url string) option.RequestOption {
+	return option.WithBaseURL(url)
+}
+
 // Model returns an llm that can generate and stream
 func (p *OpenAIProvider) Model(ctx context.Context, modelID string) llm.LLM {
 	return &openai_llm.OpenAILLM{ModelID: modelID, Client: p.client}

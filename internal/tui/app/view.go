@@ -361,6 +361,41 @@ func (m AppModel) View() string {
 		return "Loading..."
 	}
 
+	// Headless mode - show simple loading indicator
+	// if m.HeadlessMode {
+	// 	t := themes.Current
+	// 	loadingStyle := lipgloss.NewStyle().
+	// 		Foreground(t.Blue()).
+	// 		Bold(true).
+	// 		PaddingTop(2).
+	// 		PaddingBottom(1)
+
+	// 	statusStyle := lipgloss.NewStyle().
+	// 		Foreground(t.Overlay1()).
+	// 		Italic(true)
+
+	// 	aniWidth := 40
+	// 	if m.width < 50 {
+	// 		aniWidth = m.width - 10
+	// 	}
+
+	// 	loading := loadingStyle.Render("⚡ ArloCode - Headless Mode")
+	// 	progressBar := m.renderLoading(aniWidth)
+	// 	status := statusStyle.Render("Processing instruction...")
+
+	// 	content := lipgloss.JoinVertical(lipgloss.Left,
+	// 		loading,
+	// 		progressBar,
+	// 		status,
+	// 	)
+
+	// 	// Center the content
+	// 	// x := (m.width - lipgloss.Width(content)) / 2
+	// 	// y := (m.height - lipgloss.Height(content)) / 2
+
+	// 	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, content, lipgloss.WithWhitespaceChars(" "))
+	// }
+
 	// Create canvas for layer composition
 	canvas := layers.NewCanvas(m.width, m.height)
 

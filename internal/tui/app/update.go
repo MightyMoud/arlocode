@@ -128,7 +128,7 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Handle global key bindings first
 		switch msg.String() {
 		case "ctrl+c":
-			return m, tea.Quit
+			return m, m.cleanup()
 
 		// useful for debugging
 		case "ctrl+s":
@@ -292,4 +292,16 @@ func (m *AppModel) getCurrentScreenBlinkCmd() tea.Cmd {
 		return m.ChatScreen.Input.Cursor.BlinkCmd()
 	}
 	return nil
+}
+
+// cleanup cancels any inflight requests and closes the bridge before quitting
+func (m *AppModel) cleanup() tea.Cmd {
+	return func() tea.Msg {
+		// Cancel any inflight API requests
+		if m.Bridge != nil {
+			m.Bridge.Cancel()
+			m.Bridge.Close()
+		}
+		return tea.Quit()
+	}
 }

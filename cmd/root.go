@@ -20,6 +20,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/mightymoud/arlocode/internal/bridge"
+	"github.com/mightymoud/arlocode/internal/butler/memory"
 	"github.com/mightymoud/arlocode/internal/coding_agent"
 	"github.com/mightymoud/arlocode/internal/tui/app"
 	"github.com/spf13/cobra"
@@ -32,13 +33,30 @@ var (
 	date    = "unknown"
 )
 
+var systemPrompt = `You are ArloCode, an AI coding agent designed to assist developers with complex coding tasks.
+You have access to various tools to help you accomplish your goals.
+You should think carefully about which tools to use and when to use them.
+You should also provide reasoning for your actions to help the user understand your thought process.
+
+When you need to use a tool, you must specify the tool name and provide the necessary arguments in JSON format.
+After executing a tool, you should analyze the results and decide on the next steps.
+
+Always aim to provide clear and concise explanations for your actions and decisions.
+Your ultimate goal is to assist the user in completing their coding tasks effectively and efficiently.
+`
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "arlocode",
 	Short: "ArloCode a Coding Agent focused on long running tasks and local models",
 	Long:  `AlroCode is an AI coding agent designed to assist developers with complex coding tasks.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		codingAgent := coding_agent.Agent.WithMaxIterations(30)
+		codingAgent := coding_agent.Agent.WithMaxIterations(30).WithMemory([]memory.MemoryEntry{
+			{
+				Role:    "system",
+				Message: systemPrompt,
+			},
+		})
 		agentBridge := bridge.NewDirectBridge(codingAgent)
 
 		// Create the app model using the new constructor

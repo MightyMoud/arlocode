@@ -44,16 +44,49 @@ func (l OpenAILLM) Stream(ctx context.Context, mem []memory.MemoryEntry, agentTo
 		Args strings.Builder
 	}
 	pendingToolCalls := make(map[int64]*partialToolCall)
+	var isThinking bool
 
 	for stream.Next() {
 		chunk := stream.Current()
 		if len(chunk.Choices) > 0 {
 			delta := chunk.Choices[0].Delta
+
+			if delta.JSON.ExtraFields != nil {
+				for _, key := range []string{"reasoning_content", "reasoning"} {
+					if field, ok := delta.JSON.ExtraFields[key]; ok {
+						raw := field.Raw()
+						if raw != "" && raw != "null" {
+							var reasoning string
+							if err := json.Unmarshal([]byte(raw), &reasoning); err == nil && reasoning != "" {
+								if hooks.OnThinkingChunk != nil {
+									hooks.OnThinkingChunk(reasoning)
+								}
+								isThinking = true
+								break
+							}
+						}
+					}
+				}
+			}
+
 			if delta.Content != "" {
+				if isThinking {
+					if hooks.OnThinkingComplete != nil {
+						hooks.OnThinkingComplete()
+					}
+					isThinking = false
+				}
 				if hooks.OnTextChunk != nil {
 					hooks.OnTextChunk(delta.Content)
 				}
 				fullText.WriteString(delta.Content)
+			}
+
+			if len(delta.ToolCalls) > 0 && isThinking {
+				if hooks.OnThinkingComplete != nil {
+					hooks.OnThinkingComplete()
+				}
+				isThinking = false
 			}
 
 			for _, tc := range delta.ToolCalls {
