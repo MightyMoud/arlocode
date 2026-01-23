@@ -7,6 +7,7 @@ import (
 	"log"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/fatih/color"
 	"github.com/mightymoud/arlocode/internal/butler"
@@ -151,9 +152,10 @@ func (a *Agent) HandleToolCall(ctx context.Context, call tools.ToolCall) (string
 
 func (a *Agent) Run(ctx context.Context, prompt string) error {
 	initMessage := memory.MemoryEntry{
-		StepID:  a.nextStepID(),
-		Source:  "user",
-		Message: prompt,
+		StepID:    a.nextStepID(),
+		Timestamp: time.Now().UTC().Format(time.RFC3339),
+		Source:    "user",
+		Message:   prompt,
 	}
 	a.AddMemoryEntry(initMessage)
 
@@ -187,9 +189,10 @@ func (a *Agent) Run(ctx context.Context, prompt string) error {
 		}
 
 		entry := memory.MemoryEntry{
-			StepID:  a.nextStepID(),
-			Source:  "agent",
-			Message: result.Text,
+			StepID:    a.nextStepID(),
+			Timestamp: time.Now().UTC().Format(time.RFC3339),
+			Source:    "agent",
+			Message:   result.Text,
 		}
 		if reasoning.Len() > 0 {
 			entry.ReasoningContent = reasoning.String()

@@ -180,6 +180,87 @@
       color: var(--muted);
       margin-top: 8px;
     }
+    .conversation {
+      display: grid;
+      gap: 14px;
+    }
+    .conversation-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .conversation-header h3 {
+      margin: 0;
+      font-size: 14px;
+    }
+    .toggle {
+      border: 1px solid var(--border);
+      background: #141b2a;
+      color: var(--text);
+      border-radius: 999px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .toggle:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .conversation-body[hidden] {
+      display: none;
+    }
+    .turn {
+      display: grid;
+      gap: 8px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      background: #121827;
+    }
+    .turn-title {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .chat {
+      display: grid;
+      gap: 10px;
+    }
+    .chat-bubble {
+      max-width: 85%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #101622;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .chat-bubble.user {
+      justify-self: end;
+      border-color: rgba(106, 169, 255, 0.35);
+      background: rgba(106, 169, 255, 0.12);
+    }
+    .chat-bubble.agent {
+      justify-self: start;
+      border-color: rgba(46, 204, 113, 0.35);
+      background: rgba(46, 204, 113, 0.12);
+    }
+    .chat-bubble.system {
+      justify-self: start;
+      border-color: rgba(243, 156, 18, 0.35);
+      background: rgba(243, 156, 18, 0.12);
+    }
+    .chat-meta {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
     @media (max-width: 900px) {
       .container {
         grid-template-columns: 1fr;
@@ -207,6 +288,13 @@
         <div class="turns" id="turns"></div>
       </div>
     </section>
+    <section class="panel conversation">
+      <div class="conversation-header">
+        <h3>Conversation</h3>
+        <button class="toggle" id="conversationToggle" type="button">Hide</button>
+      </div>
+      <div class="conversation-body" id="conversation"></div>
+    </section>
     <main class="steps" id="steps"></main>
   </div>
 
@@ -214,6 +302,8 @@
     const summaryEl = document.getElementById('summary');
     const stepsEl = document.getElementById('steps');
     const turnsEl = document.getElementById('turns');
+    const conversationEl = document.getElementById('conversation');
+    const conversationToggle = document.getElementById('conversationToggle');
 
     const toDate = (ts) => ts ? new Date(ts) : null;
 
@@ -304,6 +394,51 @@
       });
     };
 
+    const renderConversation = (steps) => {
+      conversationEl.innerHTML = '';
+      const userSteps = steps.filter(s => s.source === 'user');
+
+      userSteps.forEach((userStep, idx) => {
+        const nextUserStep = userSteps[idx + 1];
+        const startIndex = steps.indexOf(userStep);
+        const endIndex = nextUserStep ? steps.indexOf(nextUserStep) : steps.length;
+        const segment = steps.slice(startIndex, endIndex);
+
+        const turnEl = document.createElement('div');
+        turnEl.className = 'turn';
+        turnEl.innerHTML = `<div class="turn-title">Turn ${idx + 1}</div>`;
+
+        const chatEl = document.createElement('div');
+        chatEl.className = 'chat';
+
+        segment.forEach((step) => {
+          if (!['user', 'agent', 'system'].includes(step.source)) return;
+          const bubble = document.createElement('div');
+          bubble.className = `chat-bubble ${step.source}`;
+          const message = step.message || '(empty message)';
+
+          const reasoning = step.reasoning_content ? `\n\n[Reasoning]\n${step.reasoning_content}` : '';
+          const toolCalls = step.tool_calls && step.tool_calls.length
+            ? `\n\n[Tool Calls]\n${step.tool_calls.map(tc => `${tc.function_name}: ${JSON.stringify(tc.arguments)}`).join('\n')}`
+            : '';
+
+          bubble.textContent = `${message}${reasoning}${toolCalls}`;
+
+          if (step.timestamp) {
+            const meta = document.createElement('div');
+            meta.className = 'chat-meta';
+            meta.textContent = step.timestamp;
+            bubble.appendChild(meta);
+          }
+
+          chatEl.appendChild(bubble);
+        });
+
+        turnEl.appendChild(chatEl);
+        conversationEl.appendChild(turnEl);
+      });
+    };
+
     const renderSteps = (steps) => {
       stepsEl.innerHTML = '';
       steps.forEach((step) => {
@@ -352,14 +487,27 @@
           const steps = Array.isArray(data.steps) ? data.steps : [];
           renderSummary(data);
           renderTurns(steps);
+          renderConversation(steps);
           renderSteps(steps);
         } catch (err) {
           summaryEl.textContent = 'Failed to parse JSON.';
           stepsEl.innerHTML = '';
           turnsEl.innerHTML = '';
+          conversationEl.innerHTML = '';
         }
       };
       reader.readAsText(file);
+    });
+
+    conversationToggle.addEventListener('click', () => {
+      const isHidden = conversationEl.hasAttribute('hidden');
+      if (isHidden) {
+        conversationEl.removeAttribute('hidden');
+        conversationToggle.textContent = 'Hide';
+      } else {
+        conversationEl.setAttribute('hidden', '');
+        conversationToggle.textContent = 'Show';
+      }
     });
   </script>
 </body>
