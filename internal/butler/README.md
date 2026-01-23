@@ -162,7 +162,7 @@ customTool := tools.NewButlerTool(
 
 // Create an agent with custom tools
 customTools := []tools.Tool{customTool}
-agent := agent.NewAgent(model).WitTools(customTools)
+agent := agent.NewAgent(model).WithTools(customTools)
 ```
 
 #### Using No Tools (Chat-Only Mode)
@@ -293,7 +293,7 @@ func main() {
     )
     
     // Use the tool with an agent
-    agent := agent.NewAgent(model).WitTools([]tools.Tool{dirTool})
+    agent := agent.NewAgent(model).WithTools([]tools.Tool{dirTool})
 }
 ```
 

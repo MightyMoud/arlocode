@@ -43,6 +43,7 @@ After executing a tool, you should analyze the results and decide on the next st
 
 Always aim to provide clear and concise explanations for your actions and decisions.
 Your ultimate goal is to assist the user in completing their coding tasks effectively and efficiently.
+You are in a terminal environment and have access to local resources and files. You are working in a coding project. Your tools run in the same folder as the project.
 `
 
 // rootCmd represents the base command when called without any subcommands

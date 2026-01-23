@@ -59,14 +59,14 @@ func TestAgent_WithMemory(t *testing.T) {
 	}
 }
 
-func TestAgent_WitTools(t *testing.T) {
+func TestAgent_WithTools(t *testing.T) {
 	mockLLM := &MockLLM{}
 	agent := NewAgent(mockLLM)
 	newTools := []tools.Tool{}
 
-	agent.WitTools(newTools)
+	agent.WithTools(newTools)
 	if len(agent.tools) != 0 {
-		t.Errorf("WitTools failed")
+		t.Errorf("WithTools failed")
 	}
 }
 
@@ -116,7 +116,7 @@ func TestAgent_HandleToolCall(t *testing.T) {
 	agent := NewAgent(mockLLM)
 
 	mockTool := tools.NewButlerTool("mock_tool", "mock description", MockToolHandler)
-	agent.WitTools([]tools.Tool{mockTool})
+	agent.WithTools([]tools.Tool{mockTool})
 
 	call := tools.ToolCall{
 		ID:           "call_1",
@@ -190,7 +190,7 @@ func TestAgent_Run_WithToolCall(t *testing.T) {
 	}
 
 	agent := NewAgent(mockLLM)
-	agent.WitTools([]tools.Tool{mockTool})
+	agent.WithTools([]tools.Tool{mockTool})
 
 	ctx := context.Background()
 	prompt := "do something"

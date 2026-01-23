@@ -11,6 +11,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/mightymoud/arlocode/internal/bridge"
 	"github.com/mightymoud/arlocode/internal/butler/tools"
+	"github.com/mightymoud/arlocode/internal/tui/app/conversation"
 )
 
 // Update handles all messages and routes them to the appropriate screen
@@ -44,17 +45,11 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	// Handle mouse events first before textinput can process them
 	if mouseMsg, ok := msg.(tea.MouseMsg); ok {
-		// Forward mouse wheel events to viewport for scrolling
-		if m.currentScreen == ScreenChat && !m.showModal {
-			// Check if it's a scroll event using IsWheel()
-			mouseEvent := tea.MouseEvent(mouseMsg)
-			if mouseEvent.IsWheel() {
-				m.ChatScreen.Viewport, cmd = m.ChatScreen.Viewport.Update(msg)
-				// fmt.Print(m.ChatScreen.Viewport.Height, "vueport height\n")
-				// fmt.Print(m.ChatScreen.Viewport.Width)
-				cmds = append(cmds, cmd)
-				return m, tea.Batch(cmds...)
-			}
+		mouseEvent := tea.MouseEvent(mouseMsg)
+		if mouseEvent.IsWheel() {
+			// Mouse wheel events should only affect the viewport.
+			// The viewport update already happened above; prevent inputs from seeing this.
+			return m, tea.Batch(cmds...)
 		}
 	}
 
@@ -118,6 +113,13 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, tea.Batch(cmds...)
 
 	case ToolCallMsg:
+		// Ensure thinking message is closed before showing tool call
+		if m.ChatScreen.Conversation.AgentThinking {
+			last := m.ChatScreen.Conversation.GetLastMessage()
+			if last != nil && last.IsType("thinking") && last.Status == conversation.StatusInProgress {
+				m.ChatScreen.Conversation.CompleteAgentThinkingMessage()
+			}
+		}
 		tc := tools.ToolCall(msg)
 		m.ChatScreen.Conversation.AddToolCallMessage(tc)
 		time.Sleep(100 * time.Millisecond)

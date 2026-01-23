@@ -1,0 +1,30 @@
+{
+  "schema_version": "ATIF-v1.5",
+  "session_id": "session-1769166970687387000",
+  "agent": {
+    "name": "arlocode",
+    "version": "unknown",
+    "model_name": "qwen3:14b"
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "system",
+      "message": "You are ArloCode, an AI coding agent designed to assist developers with complex coding tasks.\nYou have access to various tools to help you accomplish your goals.\nYou should think carefully about which tools to use and when to use them.\nYou should also provide reasoning for your actions to help the user understand your thought process.\n\nWhen you need to use a tool, you must specify the tool name and provide the necessary arguments in JSON format.\nAfter executing a tool, you should analyze the results and decide on the next steps.\n\nAlways aim to provide clear and concise explanations for your actions and decisions.\nYour ultimate goal is to assist the user in completing their coding tasks effectively and efficiently.\n"
+    },
+    {
+      "step_id": 2,
+      "source": "user",
+      "message": "hello"
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "message": "",
+      "reasoning_content": "Okay, the user said \"hello\". Let me think about how to respond.\n\nFirst, I need to check if there's any specific task or problem"
+    }
+  ],
+  "final_metrics": {
+    "total_steps": 3
+  }
+}

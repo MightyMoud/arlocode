@@ -50,7 +50,7 @@ func (a *Agent) WithModelName(modelName string) *Agent {
 	return a
 }
 
-func (a *Agent) WitTools(tools []tools.Tool) *Agent {
+func (a *Agent) WithTools(tools []tools.Tool) *Agent {
 	a.tools = tools
 	return a
 }
@@ -65,34 +65,34 @@ func (a *Agent) WithMaxIterations(max int) *Agent {
 	return a
 }
 
-func (l *Agent) WithOnThinkingChunk(f butler.OnThinkingChunkFunc) *Agent {
-	l.OnThinkingChunk = f
-	return l
+func (a *Agent) WithOnThinkingChunk(f butler.OnThinkingChunkFunc) *Agent {
+	a.OnThinkingChunk = f
+	return a
 }
 
-func (l *Agent) WithOnThinkingComplete(f butler.OnThinkingCompleteFunc) *Agent {
-	l.OnThinkingComplete = f
-	return l
+func (a *Agent) WithOnThinkingComplete(f butler.OnThinkingCompleteFunc) *Agent {
+	a.OnThinkingComplete = f
+	return a
 }
 
-func (l *Agent) WithOnTextChunk(f butler.OnTextChunkFunc) *Agent {
-	l.OnTextChunk = f
-	return l
+func (a *Agent) WithOnTextChunk(f butler.OnTextChunkFunc) *Agent {
+	a.OnTextChunk = f
+	return a
 }
 
-func (l *Agent) WithOnTextComplete(f butler.OnTextCompleteFunc) *Agent {
-	l.OnTextComplete = f
-	return l
+func (a *Agent) WithOnTextComplete(f butler.OnTextCompleteFunc) *Agent {
+	a.OnTextComplete = f
+	return a
 }
 
-func (l *Agent) WithOnToolCall(f butler.OnToolCallFunc) *Agent {
-	l.OnToolCall = f
-	return l
+func (a *Agent) WithOnToolCall(f butler.OnToolCallFunc) *Agent {
+	a.OnToolCall = f
+	return a
 }
 
-func (l *Agent) WithOnTurnComplete(f butler.OnTurnCompleteFunc) *Agent {
-	l.OnTurnComplete = f
-	return l
+func (a *Agent) WithOnTurnComplete(f butler.OnTurnCompleteFunc) *Agent {
+	a.OnTurnComplete = f
+	return a
 }
 
 // Mock for Memory stuff later this is where Agent will use it

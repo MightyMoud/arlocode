@@ -1,0 +1,348 @@
+{
+  "schema_version": "ATIF-v1.5",
+  "session_id": "session-1769166831408187000",
+  "agent": {
+    "name": "arlocode",
+    "version": "unknown",
+    "model_name": "glm-4.7"
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "system",
+      "message": "You are ArloCode, an AI coding agent designed to assist developers with complex coding tasks.\nYou have access to various tools to help you accomplish your goals.\nYou should think carefully about which tools to use and when to use them.\nYou should also provide reasoning for your actions to help the user understand your thought process.\n\nWhen you need to use a tool, you must specify the tool name and provide the necessary arguments in JSON format.\nAfter executing a tool, you should analyze the results and decide on the next steps.\n\nAlways aim to provide clear and concise explanations for your actions and decisions.\nYour ultimate goal is to assist the user in completing their coding tasks effectively and efficiently.\n"
+    },
+    {
+      "step_id": 2,
+      "source": "user",
+      "message": "hello"
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "message": "Hello! I'm ArloCode, an AI coding agent here to help you with your development tasks. I can assist with:\n\n- Reading and writing code files\n- Searching through codebases\n- Running commands and scripts\n- Fetching documentation from URLs\n- Making edits to your code\n\nWhat would you like to work on today? Feel free to ask me anything coding-related!",
+      "reasoning_content": "The user just said \"hello\", which is a simple greeting. I should respond in a friendly and helpful way, introducing myself and asking how I can help them with their coding tasks.",
+      "metrics": {
+        "prompt_tokens": 800,
+        "completion_tokens": 116
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "user",
+      "message": "Explore this repo and tell me something funny about it"
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "message": "I'll explore the repository to see what we're working with and find something amusing! Let me start by checking what's in the current directory.",
+      "reasoning_content": "The user wants me to explore the repository and find something funny about it. First, I need to see what's in the current directory to understand what repository we're working with.\n\nLet me start by listing the contents of the current folder.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_0cc4cfb72fa74546bdd0c281",
+          "function_name": "list_folder_contents",
+          "arguments": {
+            "folder_path": "."
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call_0cc4cfb72fa74546bdd0c281",
+            "content": "Directory: .\nDirectory: .github\nDirectory: .github/workflows\nFile: .github/workflows/release.yml\nFile: .github/workflows/test.yml\nFile: .gitignore\nFile: .goreleaser.yaml\nFile: LICENSE\nFile: README.md\nFile: atif_viewer.html\nDirectory: cmd\nFile: cmd/root.go\nDirectory: examples\nFile: examples/layers_demo.go\nFile: examples/notifications_demo.go\nFile: go.mod\nFile: go.sum\nDirectory: internal\nDirectory: internal/bridge\nFile: internal/bridge/bridge.go\nFile: internal/bridge/direct.go\nDirectory: internal/butler\nFile: internal/butler/README.md\nDirectory: internal/butler/agent\nFile: internal/butler/agent/agent.go\nFile: internal/butler/agent/agent_test.go\nDirectory: internal/butler/llm\nDirectory: internal/butler/llm/gemini\nFile: internal/butler/llm/gemini/gemini.go\nFile: internal/butler/llm/gemini/utils.go\nFile: internal/butler/llm/gemini/utils_test.go\nFile: internal/butler/llm/llm.go\nDirectory: internal/butler/llm/ollama\nFile: internal/butler/llm/ollama/ollama.go\nFile: internal/butler/llm/ollama/utils.go\nDirectory: internal/butler/llm/openai\nFile: internal/butler/llm/openai/openai.go\nFile: internal/butler/llm/openai/utils.go\nFile: internal/butler/llm/openai/utils_test.go\nDirectory: internal/butler/llm/openrouter\nFile: internal/butler/llm/openrouter/openrouter.go\nFile: internal/butler/llm/openrouter/utils.go\nFile: internal/butler/llm/openrouter/utils_test.go\nDirectory: internal/butler/memory\nFile: internal/butler/memory/memory.go\nDirectory: internal/butler/providers\nDirectory: internal/butler/providers/gemini\nFile: internal/butler/providers/gemini/gemini.go\nDirectory: internal/butler/providers/ollama\nFile: internal/butler/providers/ollama/ollama.go\nDirectory: internal/butler/providers/openai\nFile: internal/butler/providers/openai/openai.go\nDirectory: internal/butler/providers/openrouter\nFile: internal/butler/providers/openrouter/openrouter.go\nFile: internal/butler/providers/providers.go\nDirectory: internal/butler/tools\nFile: internal/butler/tools/tools.go\nFile: internal/butler/tools/tools_test.go\nFile: internal/butler/tools/toolset.go\nFile: internal/butler/types.go\nDirectory: internal/coding_agent\nFile: internal/coding_agent/agent.go\nDirectory: internal/tui\nDirectory: internal/tui/app\nFile: internal/tui/app/content.go\nDirectory: internal/tui/app/conversation\nFile: internal/tui/app/conversation/conversation.go\nFile: internal/tui/app/conversation/conversation_test.go\nFile: internal/tui/app/init.go\nFile: internal/tui/app/model.go\nFile: internal/tui/app/msg.go\nDirectory: internal/tui/app/screens\nFile: internal/tui/app/update.go\nFile: internal/tui/app/view.go\nDirectory: internal/tui/layers\nFile: internal/tui/layers/README.md\nFile: internal/tui/layers/layers.go\nFile: internal/tui/layers/layers_test.go\nDirectory: internal/tui/notifications\nFile: internal/tui/notifications/README.md\nFile: internal/tui/notifications/notifications.go\nDirectory: internal/tui/themes\nFile: internal/tui/themes/themes.go\nFile: internal/tui/tui.go\nFile: main.bak\nFile: main.go\n"
+          }
+        ]
+      },
+      "metrics": {
+        "prompt_tokens": 890,
+        "completion_tokens": 91
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "message": "",
+      "reasoning_content": "Interesting! This looks like a Go project. The directories include:\n- `.github` - GitHub workflows\n- `cmd` - command-line interface\n- `examples` - demo files\n- `internal` - internal packages including `butler` (with LLM integrations), `bridge`, `coding_agent`, and `tui` (terminal UI)\n\nLet me check the README first to understand what this project is about.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_b5d371bc3df94b988c0ccbcb",
+          "function_name": "read_file",
+          "arguments": {
+            "path": "README.md"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call_b5d371bc3df94b988c0ccbcb",
+            "content": "# Arlo code Project - WIP\n\nThis is an ambitious project aiming to make a coding agent that is:\n- Long running capable in one command -\u003e full with infra integration\n- Cheaper to run same models vs other agents -\u003e I think there is waste in how models are used\n- Performs better on large codebases -\u003e better code semantic understanding\n- Support the vision of an agent companion and live team coding sessions\n- Support hats for different types of work including teach, plan, long running, test, design and write\n\n## Butler Package\n\n**Butler** is a flexible, provider-agnostic AI agent framework that enables LLM-powered automation with tool calling capabilities. It supports multiple providers (OpenAI, Gemini, OpenRouter), maintains conversation memory, and executes iterative tasks until completion.\n\n**Key Features:**\n- 🔌 Swap between LLM providers without changing code\n- 🛠️ Execute custom tools and file operations\n- 🧠 Track and maintain conversation history\n- 📡 Stream responses in real-time\n\n**Simple Example:**\n```go\npackage main\n\nimport (\n    \"context\"\n    \"github.com/mightymoud/arlocode/internal/butler/agent\"\n    \"github.com/mightymoud/arlocode/internal/butler/providers/openrouter\"\n)\n\nfunc main() {\n    ctx := context.Background()\n    provider := openrouter.New(ctx)\n    model := provider.Model(ctx, \"anthropic/claude-sonnet-4.5\")\n    \n    agent := agent.NewAgent(model)\n    agent.Run(ctx, \"Read the main.go file and explain what it does\")\n}\n```\n\n# But why?\n\u003e When the stars are within reach it's foolish to not aim for the moon."
+          }
+        ]
+      },
+      "metrics": {
+        "prompt_tokens": 1778,
+        "completion_tokens": 100
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "message": "",
+      "reasoning_content": "Interesting! So this is the \"Arlo Code\" project - a coding agent project. It looks like an ambitious project to make a coding agent. Let me look at some more files to find something funny. Let me check the main.go and some of the code files to see if there are any funny comments or unusual things.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_3b6f15d4de28446c86ee1308",
+          "function_name": "read_file",
+          "arguments": {
+            "path": "main.go"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call_3b6f15d4de28446c86ee1308",
+            "content": "/*\nCopyright © 2026 Mahmoud Mousa \u003cm.mousa@hey.com\u003e\n\nLicensed under the GNU GPL License, Version 3.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\nhttps://www.gnu.org/licenses/gpl-3.0.en.html\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.\n*/\npackage main\n\nimport \"github.com/mightymoud/arlocode/cmd\"\n\nfunc main() {\n\tcmd.Execute()\n}\n"
+          }
+        ]
+      },
+      "metrics": {
+        "prompt_tokens": 2147,
+        "completion_tokens": 79
+      }
+    },
+    {
+      "step_id": 8,
+      "source": "agent",
+      "message": "",
+      "reasoning_content": "Let me check some more files, particularly the internal files to find something interesting or funny.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_7c69c44018774eb2a341eae8",
+          "function_name": "read_file",
+          "arguments": {
+            "path": "cmd/root.go"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call_7c69c44018774eb2a341eae8",
+            "content": "/*\nCopyright © 2026 Mahmoud Mousa \u003cm.mousa@hey.com\u003e\n\nLicensed under the GNU GPL License, Version 3.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\nhttps://www.gnu.org/licenses/gpl-3.0.en.html\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.\n*/\npackage cmd\n\nimport (\n\t\"fmt\"\n\t\"os\"\n\n\ttea \"github.com/charmbracelet/bubbletea\"\n\t\"github.com/mightymoud/arlocode/internal/bridge\"\n\t\"github.com/mightymoud/arlocode/internal/butler/memory\"\n\t\"github.com/mightymoud/arlocode/internal/coding_agent\"\n\t\"github.com/mightymoud/arlocode/internal/tui/app\"\n\t\"github.com/spf13/cobra\"\n)\n\n// Version information - set via ldflags at build time\nvar (\n\tversion = \"dev\"\n\tcommit  = \"none\"\n\tdate    = \"unknown\"\n)\n\nvar systemPrompt = `You are ArloCode, an AI coding agent designed to assist developers with complex coding tasks.\nYou have access to various tools to help you accomplish your goals.\nYou should think carefully about which tools to use and when to use them.\nYou should also provide reasoning for your actions to help the user understand your thought process.\n\nWhen you need to use a tool, you must specify the tool name and provide the necessary arguments in JSON format.\nAfter executing a tool, you should analyze the results and decide on the next steps.\n\nAlways aim to provide clear and concise explanations for your actions and decisions.\nYour ultimate goal is to assist the user in completing their coding tasks effectively and efficiently.\n`\n\n// rootCmd represents the base command when called without any subcommands\nvar rootCmd = \u0026cobra.Command{\n\tUse:   \"arlocode\",\n\tShort: \"ArloCode a Coding Agent focused on long running tasks and local models\",\n\tLong:  `AlroCode is an AI coding agent designed to assist developers with complex coding tasks.`,\n\tRun: func(cmd *cobra.Command, args []string) {\n\t\tcodingAgent := coding_agent.Agent.WithMaxIterations(30).WithMemory([]memory.MemoryEntry{\n\t\t\t{\n\t\t\t\tStepID:  1,\n\t\t\t\tSource:  \"system\",\n\t\t\t\tMessage: systemPrompt,\n\t\t\t},\n\t\t})\n\t\tagentBridge := bridge.NewDirectBridge(codingAgent)\n\n\t\t// Create the app model using the new constructor\n\t\tm := app.NewAppModel(agentBridge)\n\n\t\tp := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseCellMotion())\n\n\t\tgo func() {\n\t\t\tfor event := range agentBridge.Events() {\n\t\t\t\tswitch e := event.(type) {\n\t\t\t\tcase bridge.TextChunkEvent:\n\t\t\t\t\tp.Send(app.AgentTextChunkMsg(e.Text))\n\t\t\t\tcase bridge.TextCompleteEvent:\n\t\t\t\t\tp.Send(app.AgentTextCompleteMsg(\"\"))\n\t\t\t\tcase bridge.ThinkingChunkEvent:\n\t\t\t\t\tp.Send(app.AgentThinkingChunkMsg(e.Text))\n\t\t\t\tcase bridge.ThinkingCompleteEvent:\n\t\t\t\t\tp.Send(app.AgentThinkingCompleteMsg(\"\"))\n\t\t\t\tcase bridge.ToolCallEvent:\n\t\t\t\t\tp.Send(app.ToolCallMsg(e.ToolCall))\n\t\t\t\tcase bridge.ErrorEvent:\n\t\t\t\t\t// Handle error event if needed\n\t\t\t\tcase bridge.TurnCompleteEvent:\n\t\t\t\t\t// Handle turn complete event if needed\n\t\t\t\t}\n\t\t\t}\n\t\t}()\n\t\tif _, err := p.Run(); err != nil {\n\t\t\tfmt.Printf(\"Error: %v\", err)\n\t\t\tos.Exit(1)\n\t\t}\n\t},\n}\n\n// Execute adds all child commands to the root command and sets flags appropriately.\n// This is called by main.main(). It only needs to happen once to the rootCmd.\nfunc Execute() {\n\terr := rootCmd.Execute()\n\tif err != nil {\n\t\tos.Exit(1)\n\t}\n}\n\nfunc init() {\n\t// Here you will define your flags and configuration settings.\n\t// Cobra supports persistent flags, which, if defined here,\n\t// will be global for your application.\n\n\t// Set version template for --version flag\n\trootCmd.Version = version\n\trootCmd.SetVersionTemplate(fmt.Sprintf(\"arlocode %s (commit: %s, built: %s)\\n\", version, commit, date))\n}\n"
+          }
+        ]
+      },
+      "metrics": {
+        "prompt_tokens": 2317,
+        "completion_tokens": 32
+      }
+    },
+    {
+      "step_id": 9,
+      "source": "agent",
+      "message": "",
+      "reasoning_content": "I notice the system prompt in the root.go file is almost identical to the one I was given when I was initialized as ArloCode! This is a funny meta moment - the repo contains the actual system prompt that defines my personality and behavior as an AI coding agent.\n\nLet me look for more funny things - maybe check the test files or look for any comments or Easter eggs.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_681a8bdbd4354cd48bda474b",
+          "function_name": "read_file",
+          "arguments": {
+            "path": "internal/butler/agent/agent_test.go"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call_681a8bdbd4354cd48bda474b",
+            "content": "package agent\n\nimport (\n\t\"context\"\n\t\"testing\"\n\n\t\"github.com/mightymoud/arlocode/internal/butler\"\n\t\"github.com/mightymoud/arlocode/internal/butler/memory\"\n\t\"github.com/mightymoud/arlocode/internal/butler/providers\"\n\t\"github.com/mightymoud/arlocode/internal/butler/tools\"\n)\n\n// MockLLM is a mock implementation of the LLM interface\ntype MockLLM struct {\n\tStreamFunc   func(ctx context.Context, mem []memory.MemoryEntry, t []tools.Tool, hooks butler.EventHooks) (providers.ProviderResponse, error)\n\tGenerateFunc func(ctx context.Context, mem []memory.MemoryEntry, t []tools.Tool, hooks butler.EventHooks) error\n}\n\nfunc (m *MockLLM) Stream(ctx context.Context, mem []memory.MemoryEntry, t []tools.Tool, hooks butler.EventHooks) (providers.ProviderResponse, error) {\n\tif m.StreamFunc != nil {\n\t\treturn m.StreamFunc(ctx, mem, t, hooks)\n\t}\n\treturn providers.ProviderResponse{}, nil\n}\n\nfunc (m *MockLLM) Generate(ctx context.Context, mem []memory.MemoryEntry, t []tools.Tool, hooks butler.EventHooks) error {\n\tif m.GenerateFunc != nil {\n\t\treturn m.GenerateFunc(ctx, mem, t, hooks)\n\t}\n\treturn nil\n}\n\nfunc TestNewAgent(t *testing.T) {\n\tmockLLM := \u0026MockLLM{}\n\tagent := NewAgent(mockLLM)\n\n\tif agent == nil {\n\t\tt.Fatal(\"NewAgent returned nil\")\n\t}\n\tif agent.llm != mockLLM {\n\t\tt.Errorf(\"Expected llm to be %v, got %v\", mockLLM, agent.llm)\n\t}\n\tif len(agent.memory) != 0 {\n\t\tt.Errorf(\"Expected empty memory, got %v\", agent.memory)\n\t}\n\tif len(agent.tools) == 0 {\n\t\tt.Error(\"Expected default tools, got empty\")\n\t}\n}\n\nfunc TestAgent_WithMemory(t *testing.T) {\n\tmockLLM := \u0026MockLLM{}\n\tagent := NewAgent(mockLLM)\n\tmem := []memory.MemoryEntry{{StepID: 1, Message: \"test\", Source: \"user\"}}\n\n\tagent.WithMemory(mem)\n\tif len(agent.memory) != 1 || agent.memory[0].Message != \"test\" {\n\t\tt.Errorf(\"WithMemory failed\")\n\t}\n}\n\nfunc TestAgent_WitTools(t *testing.T) {\n\tmockLLM := \u0026MockLLM{}\n\tagent := NewAgent(mockLLM)\n\tnewTools := []tools.Tool{}\n\n\tagent.WitTools(newTools)\n\tif len(agent.tools) != 0 {\n\t\tt.Errorf(\"WitTools failed\")\n\t}\n}\n\nfunc TestAgent_WithNoTools(t *testing.T) {\n\tmockLLM := \u0026MockLLM{}\n\tagent := NewAgent(mockLLM)\n\n\tagent.WithNoTools()\n\tif len(agent.tools) != 0 {\n\t\tt.Errorf(\"WithNoTools failed\")\n\t}\n}\n\nfunc TestAgent_AddMemoryEntry(t *testing.T) {\n\tmockLLM := \u0026MockLLM{}\n\tagent := NewAgent(mockLLM)\n\tentry := memory.MemoryEntry{StepID: 1, Message: \"test\", Source: \"user\"}\n\n\tagent.AddMemoryEntry(entry)\n\tif len(agent.memory) != 1 {\n\t\tt.Errorf(\"AddMemoryEntry failed\")\n\t}\n}\n\nfunc TestAgent_GetMemory(t *testing.T) {\n\tmockLLM := \u0026MockLLM{}\n\tagent := NewAgent(mockLLM)\n\tentry := memory.MemoryEntry{StepID: 1, Message: \"test\", Source: \"user\"}\n\tagent.AddMemoryEntry(entry)\n\n\tmem := agent.GetMemory()\n\tif len(mem) != 1 {\n\t\tt.Errorf(\"GetMemory failed\")\n\t}\n}\n\ntype MockToolArgs struct {\n\tInput string `json:\"input\"`\n}\n\nfunc MockToolHandler(args MockToolArgs) (string, error) {\n\treturn \"processed: \" + args.Input, nil\n}\n\nfunc TestAgent_HandleToolCall(t *testing.T) {\n\tmockLLM := \u0026MockLLM{}\n\tagent := NewAgent(mockLLM)\n\n\tmockTool := tools.NewButlerTool(\"mock_tool\", \"mock description\", MockToolHandler)\n\tagent.WitTools([]tools.Tool{mockTool})\n\n\tcall := tools.ToolCall{\n\t\tID:           \"call_1\",\n\t\tFunctionName: \"mock_tool\",\n\t\tArguments:    map[string]any{\"input\": \"test\"},\n\t}\n\n\tresult, err := agent.HandleToolCall(context.Background(), call)\n\tif err != nil {\n\t\tt.Fatalf(\"HandleToolCall failed: %v\", err)\n\t}\n\tif result != \"processed: test\" {\n\t\tt.Errorf(\"Expected 'processed: test', got '%s'\", result)\n\t}\n}\n\nfunc TestAgent_Run(t *testing.T) {\n\tmockLLM := \u0026MockLLM{\n\t\tStreamFunc: func(ctx context.Context, mem []memory.MemoryEntry, t []tools.Tool, hooks butler.EventHooks) (providers.ProviderResponse, error) {\n\t\t\treturn providers.ProviderResponse{\n\t\t\t\tText: \"world\",\n\t\t\t}, nil\n\t\t},\n\t}\n\tagent := NewAgent(mockLLM)\n\tagent.WithNoTools()\n\n\tctx := context.Background()\n\tprompt := \"hello\"\n\n\terr := agent.Run(ctx, prompt)\n\tif err != nil {\n\t\tt.Fatalf(\"Run failed: %v\", err)\n\t}\n\n\tmem := agent.GetMemory()\n\tif len(mem) != 2 {\n\t\tt.Fatalf(\"Expected 2 memory entries, got %d\", len(mem))\n\t}\n\tif mem[0].Message != \"hello\" {\n\t\tt.Errorf(\"Expected first message 'hello', got '%s'\", mem[0].Message)\n\t}\n\tif mem[1].Message != \"world\" {\n\t\tt.Errorf(\"Expected second message 'world', got '%s'\", mem[1].Message)\n\t}\n}\n\nfunc TestAgent_Run_WithToolCall(t *testing.T) {\n\tmockTool := tools.NewButlerTool(\"mock_tool\", \"mock description\", MockToolHandler)\n\n\tcallCount := 0\n\tmockLLM := \u0026MockLLM{\n\t\tStreamFunc: func(ctx context.Context, mem []memory.MemoryEntry, t []tools.Tool, hooks butler.EventHooks) (providers.ProviderResponse, error) {\n\t\t\tcallCount++\n\t\t\tif callCount == 1 {\n\t\t\t\treturn providers.ProviderResponse{\n\t\t\t\t\tText: \"I will use the tool\",\n\t\t\t\t\tToolCalls: []tools.ToolCall{\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\tID:           \"call_1\",\n\t\t\t\t\t\t\tFunctionName: \"mock_tool\",\n\t\t\t\t\t\t\tArguments:    map[string]any{\"input\": \"test\"},\n\t\t\t\t\t\t},\n\t\t\t\t\t},\n\t\t\t\t}, nil\n\t\t\t}\n\t\t\treturn providers.ProviderResponse{\n\t\t\t\tText: \"Final answer\",\n\t\t\t}, nil\n\t\t},\n\t}\n\n\tagent := NewAgent(mockLLM)\n\tagent.WitTools([]tools.Tool{mockTool})\n\n\tctx := context.Background()\n\tprompt := \"do something\"\n\n\terr := agent.Run(ctx, prompt)\n\tif err != nil {\n\t\tt.Fatalf(\"Run failed: %v\", err)\n\t}\n\n\tmem := agent.GetMemory()\n\t// 1. User prompt\n\t// 2. Agent response with tool call + observation\n\t// 3. Agent response (final)\n\tif len(mem) != 3 {\n\t\tt.Fatalf(\"Expected 3 memory entries, got %d\", len(mem))\n\t}\n\tif len(mem[1].Observation.Results) != 1 {\n\t\tt.Fatalf(\"Expected 1 observation result, got %d\", len(mem[1].Observation.Results))\n\t}\n\tif mem[1].Observation.Results[0].Content != \"processed: test\" {\n\t\tt.Errorf(\"Expected tool output 'processed: test', got '%s'\", mem[1].Observation.Results[0].Content)\n\t}\n}\n"
+          }
+        ]
+      },
+      "metrics": {
+        "prompt_tokens": 3256,
+        "completion_tokens": 97
+      }
+    },
+    {
+      "step_id": 10,
+      "source": "agent",
+      "message": "",
+      "reasoning_content": "I found something funny! Look at this function in the test file:\n\n```go\nfunc TestAgent_WitTools(t *testing.T) {\n\tmockLLM := \u0026MockLLM{}\n\tagent := NewAgent(mockLLM)\n\tnewTools := []tools.Tool{}\n\n\tagent.WitTools(newTools)\n\tif len(agent.tools) != 0 {\n\t\tt.Errorf(\"WitTools failed\")\n\t}\n}\n```\n\nThe function is called `WitTools` instead of `WithTools`! That's a typo. Let me check if this is an actual method in the agent package or if it's just a typo in the test.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_bd0743359dc34122bccf94ae",
+          "function_name": "read_file",
+          "arguments": {
+            "path": "internal/butler/agent/agent.go"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call_bd0743359dc34122bccf94ae",
+            "content": "package agent\n\nimport (\n\t\"context\"\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"log\"\n\t\"reflect\"\n\t\"strings\"\n\n\t\"github.com/fatih/color\"\n\t\"github.com/mightymoud/arlocode/internal/butler\"\n\t\"github.com/mightymoud/arlocode/internal/butler/llm\"\n\t\"github.com/mightymoud/arlocode/internal/butler/memory\"\n\t\"github.com/mightymoud/arlocode/internal/butler/tools\"\n)\n\ntype Agent struct {\n\tllm                llm.LLM\n\tmemory             []memory.MemoryEntry\n\ttools              []tools.Tool\n\tmaxIterations      int\n\tModelName          string\n\tOnTextChunk        butler.OnTextChunkFunc\n\tOnTextComplete     butler.OnTextCompleteFunc\n\tOnThinkingChunk    butler.OnThinkingChunkFunc\n\tOnThinkingComplete butler.OnThinkingCompleteFunc\n\tOnToolCall         butler.OnToolCallFunc\n\tOnTurnComplete     butler.OnTurnCompleteFunc\n}\n\nfunc NewAgent(l llm.LLM) *Agent {\n\treturn \u0026Agent{\n\t\tllm:           l,\n\t\tmemory:        []memory.MemoryEntry{},\n\t\ttools:         tools.StdToolset,\n\t\tmaxIterations: 10, // Default max iterations as recommended by OpenRouter docs\n\t\tModelName:     \"unknown\",\n\t}\n}\n\n// Mods\nfunc (a *Agent) WithMemory(memory []memory.MemoryEntry) *Agent {\n\ta.memory = memory\n\treturn a\n}\n\nfunc (a *Agent) WithModelName(modelName string) *Agent {\n\ta.ModelName = modelName\n\treturn a\n}\n\nfunc (a *Agent) WitTools(tools []tools.Tool) *Agent {\n\ta.tools = tools\n\treturn a\n}\n\nfunc (a *Agent) WithNoTools() *Agent {\n\ta.tools = []tools.Tool{}\n\treturn a\n}\n\nfunc (a *Agent) WithMaxIterations(max int) *Agent {\n\ta.maxIterations = max\n\treturn a\n}\n\nfunc (l *Agent) WithOnThinkingChunk(f butler.OnThinkingChunkFunc) *Agent {\n\tl.OnThinkingChunk = f\n\treturn l\n}\n\nfunc (l *Agent) WithOnThinkingComplete(f butler.OnThinkingCompleteFunc) *Agent {\n\tl.OnThinkingComplete = f\n\treturn l\n}\n\nfunc (l *Agent) WithOnTextChunk(f butler.OnTextChunkFunc) *Agent {\n\tl.OnTextChunk = f\n\treturn l\n}\n\nfunc (l *Agent) WithOnTextComplete(f butler.OnTextCompleteFunc) *Agent {\n\tl.OnTextComplete = f\n\treturn l\n}\n\nfunc (l *Agent) WithOnToolCall(f butler.OnToolCallFunc) *Agent {\n\tl.OnToolCall = f\n\treturn l\n}\n\nfunc (l *Agent) WithOnTurnComplete(f butler.OnTurnCompleteFunc) *Agent {\n\tl.OnTurnComplete = f\n\treturn l\n}\n\n// Mock for Memory stuff later this is where Agent will use it\nfunc (a *Agent) AddMemoryEntry(entry memory.MemoryEntry) {\n\ta.memory = append(a.memory, entry)\n}\n\n// Memory stuff later\nfunc (a *Agent) GetMemory() []memory.MemoryEntry {\n\treturn a.memory\n}\n\nfunc (a *Agent) HandleToolCall(ctx context.Context, call tools.ToolCall) (string, error) {\n\tvar tool tools.Tool\n\tfor _, t := range a.tools {\n\t\tif t.Name == call.FunctionName {\n\t\t\ttool = t\n\t\t\tbreak\n\t\t}\n\t}\n\n\targsPtr := reflect.New(tool.ArgType).Interface()\n\n\t// Convert the map[string]any into the concrete struct.\n\t// This works for ANY provider because we go through JSON bytes first.\n\tbytes, _ := json.Marshal(call.Arguments)\n\tif err := json.Unmarshal(bytes, argsPtr); err != nil {\n\t\treturn \"\", fmt.Errorf(\"failed to unmarshal tool args: %w\", err)\n\t}\n\n\tresults := tool.Handler.Call([]reflect.Value{\n\t\treflect.ValueOf(argsPtr).Elem(),\n\t})\n\n\tif len(results) \u003e 1 \u0026\u0026 !results[1].IsNil() {\n\t\treturn \"\", results[1].Interface().(error)\n\t}\n\tresultStr := results[0].String()\n\n\tif a.OnToolCall != nil {\n\t\ta.OnToolCall(tools.ToolCall{\n\t\t\tID:           \"toolID\", // TODO: generate unique ID for tool call\n\t\t\tFunctionName: tool.Name,\n\t\t\tArguments:    call.Arguments,\n\t\t})\n\t}\n\t// Maybe useful to debug later\n\t// if len(resultStr) \u003e 100 {\n\t// \tcolor.Blue(\"Tool %s returned: %s\", call.FunctionName, resultStr[:100])\n\t// } else {\n\t// \tcolor.Blue(\"Tool %s returned: %s\", call.FunctionName, resultStr)\n\t// }\n\n\treturn resultStr, nil\n}\n\nfunc (a *Agent) Run(ctx context.Context, prompt string) error {\n\tinitMessage := memory.MemoryEntry{\n\t\tStepID:  a.nextStepID(),\n\t\tSource:  \"user\",\n\t\tMessage: prompt,\n\t}\n\ta.AddMemoryEntry(initMessage)\n\n\titerationCount := 0\n\tfor iterationCount \u003c a.maxIterations {\n\t\titerationCount++\n\n\t\tvar reasoning strings.Builder\n\t\thooks := butler.EventHooks{\n\t\t\tOnTextChunk:    a.OnTextChunk,\n\t\t\tOnTextComplete: a.OnTextComplete,\n\t\t\tOnToolCall:     a.OnToolCall,\n\t\t\tOnTurnComplete: a.OnTurnComplete,\n\t\t\tOnThinkingChunk: func(chunk string) {\n\t\t\t\treasoning.WriteString(chunk)\n\t\t\t\tif a.OnThinkingChunk != nil {\n\t\t\t\t\ta.OnThinkingChunk(chunk)\n\t\t\t\t}\n\t\t\t},\n\t\t\tOnThinkingComplete: func() {\n\t\t\t\tif a.OnThinkingComplete != nil {\n\t\t\t\t\ta.OnThinkingComplete()\n\t\t\t\t}\n\t\t\t},\n\t\t}\n\n\t\tresult, err := a.llm.Stream(ctx, a.memory, a.tools, hooks)\n\t\tif err != nil {\n\t\t\tlog.Fatal(\"Error calling LLM Stream: \", err)\n\t\t\treturn err\n\t\t}\n\n\t\tentry := memory.MemoryEntry{\n\t\t\tStepID:  a.nextStepID(),\n\t\t\tSource:  \"agent\",\n\t\t\tMessage: result.Text,\n\t\t}\n\t\tif reasoning.Len() \u003e 0 {\n\t\t\tentry.ReasoningContent = reasoning.String()\n\t\t}\n\t\tif result.Metrics != nil {\n\t\t\tentry.Metrics = *result.Metrics\n\t\t}\n\t\tif len(result.ToolCalls) \u003e 0 {\n\t\t\tentry.ToolCalls = mapToolCalls(result.ToolCalls)\n\t\t}\n\n\t\tif len(result.ToolCalls) \u003e 0 {\n\t\t\tvar results []memory.ObservationResult\n\t\t\tfor _, call := range result.ToolCalls {\n\t\t\t\t// Ask user for confirmation before executing tool\n\t\t\t\t// var confirm bool\n\t\t\t\t// if err := huh.NewConfirm().\n\t\t\t\t// \tTitle(\"Execute tool?\").\n\t\t\t\t// \tDescription(fmt.Sprintf(\"Do you want to execute %s?\", call.FunctionName)).\n\t\t\t\t// \tAffirmative(\"Yes\").\n\t\t\t\t// \tNegative(\"No\").\n\t\t\t\t// \tValue(\u0026confirm).\n\t\t\t\t// \tWithTheme(huh.ThemeCatppuccin()).\n\t\t\t\t// \tRun(); err != nil {\n\t\t\t\t// \tcolor.Red(\"Error getting confirmation: %v\", err)\n\t\t\t\t// \tcontinue\n\t\t\t\t// }\n\n\t\t\t\t// if !confirm {\n\t\t\t\t// \tcolor.Red(\"Tool call %s was cancelled by the user.\", call.FunctionName)\n\t\t\t\t// \ta.AddMemoryEntry(memory.MemoryEntry{\n\t\t\t\t// \t\tRole:       \"tool\",\n\t\t\t\t// \t\tMessage:    \"Tool call cancelled by user\",\n\t\t\t\t// \t\tToolName:   call.FunctionName,\n\t\t\t\t// \t\tToolCallID: call.ID,\n\t\t\t\t// \t})\n\t\t\t\t// \tcontinue\n\t\t\t\t// }\n\n\t\t\t\toutput, _ := a.HandleToolCall(ctx, call)\n\t\t\t\tresults = append(results, memory.ObservationResult{\n\t\t\t\t\tSourceCallID: call.ID,\n\t\t\t\t\tContent:      output,\n\t\t\t\t})\n\t\t\t}\n\t\t\tentry.Observation = memory.Observation{Results: results}\n\t\t}\n\n\t\ta.AddMemoryEntry(entry)\n\n\t\tif len(result.ToolCalls) == 0 {\n\t\t\tbreak\n\t\t}\n\t}\n\n\tif iterationCount \u003e= a.maxIterations {\n\t\tcolor.Yellow(\"\\nWarning: Maximum iterations (%d) reached. The agent loop was terminated.\\n\", a.maxIterations)\n\t}\n\n\treturn nil\n}\n\nfunc (a *Agent) nextStepID() int {\n\treturn len(a.memory) + 1\n}\n\nfunc mapToolCalls(calls []tools.ToolCall) []memory.ToolCall {\n\tif len(calls) == 0 {\n\t\treturn nil\n\t}\n\ttoolCalls := make([]memory.ToolCall, 0, len(calls))\n\tfor _, call := range calls {\n\t\ttoolCalls = append(toolCalls, memory.ToolCall{\n\t\t\tToolCallID:   call.ID,\n\t\t\tFunctionName: call.FunctionName,\n\t\t\tArguments:    call.Arguments,\n\t\t})\n\t}\n\treturn toolCalls\n}\n"
+          }
+        ]
+      },
+      "metrics": {
+        "prompt_tokens": 4909,
+        "completion_tokens": 150
+      }
+    },
+    {
+      "step_id": 11,
+      "source": "agent",
+      "message": "",
+      "reasoning_content": "Perfect! I found something funny. There's a typo in the agent.go file that's been copied into the test file as well. The method `WitTools` is missing an 'h' - it should be `WithTools` but it's `WitTools`. \n\nThis is a classic typo that slipped through and is now part of the API! What makes it even funnier is that it's in the test too (`TestAgent_WitTools`), so the typo is well-tested and working. This is the kind of bug that becomes a feature because changing it would be a breaking change to the API.\n\nLet me also check if there's anything else amusing in the codebase.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_8ca82b4dd5cc4bcd95b9da84",
+          "function_name": "read_file",
+          "arguments": {
+            "path": "examples/layers_demo.go"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call_8ca82b4dd5cc4bcd95b9da84",
+            "content": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\n\t\"github.com/charmbracelet/lipgloss\"\n\t\"github.com/mightymoud/arlocode/internal/tui/layers\"\n)\n\nfunc layersDemo() {\n\tfmt.Println(\"=== Layer Rendering Examples ===\")\n\n\t// Example 1: Basic Overlay\n\texample1BasicOverlay()\n\n\t// Example 2: Z-Order Priority\n\texample2ZOrderPriority()\n\n\t// Example 3: Positioned Layers\n\texample3PositionedLayers()\n\n\t// Example 4: Modal Dialog Over Content\n\texample4ModalDialog()\n\n\t// Example 5: Using Compose API\n\texample5ComposeAPI()\n\n\t// Example 6: Transparency vs Opaque\n\texample6TransparencyVsOpaque()\n}\n\n// Example 1: Basic overlay of foreground on background\nfunc example1BasicOverlay() {\n\tfmt.Println(\"--- Example 1: Basic Overlay ---\")\n\n\twidth, height := 20, 5\n\n\t// Background: filled with dots\n\tbackground := strings.Repeat(strings.Repeat(\".\", width)+\"\\n\", height-1) +\n\t\tstrings.Repeat(\".\", width)\n\n\t// Foreground: A simple box\n\tforeground := \"┌────────┐\\n│ HELLO! │\\n└────────┘\"\n\n\tresult := layers.OverlaySimple(background, foreground, width, height)\n\tfmt.Println(result)\n\tfmt.Println()\n}\n\n// Example 2: Demonstrating Z-order priority\nfunc example2ZOrderPriority() {\n\tfmt.Println(\"--- Example 2: Z-Order Priority ---\")\n\tfmt.Println(\"Three layers at same position with Z=0, Z=1, Z=2\")\n\tfmt.Println(\"Highest Z wins:\")\n\n\tcanvas := layers.NewCanvas(15, 3)\n\n\t// Layer at Z=0\n\tcanvas.AddLayer(layers.NewLayer(\"AAAAAAAAAA\", 0))\n\n\t// Layer at Z=1 (partially overlaps)\n\tcanvas.AddLayer(layers.NewLayer(\"  BBBBBB\", 1))\n\n\t// Layer at Z=2 (overlaps B)\n\tcanvas.AddLayer(layers.NewLayer(\"    CCCC\", 2))\n\n\tfmt.Println(canvas.Render())\n\tfmt.Println(\"Result: A shows where nothing covers it, B shows where C doesn't cover, C on top\")\n\tfmt.Println()\n}\n\n// Example 3: Layers at different positions\nfunc example3PositionedLayers() {\n\tfmt.Println(\"--- Example 3: Positioned Layers ---\")\n\n\tcanvas := layers.NewCanvas(30, 10)\n\n\t// Fill background\n\tbg := \"\"\n\tfor i := 0; i \u003c 10; i++ {\n\t\tbg += strings.Repeat(\"░\", 30)\n\t\tif i \u003c 9 {\n\t\t\tbg += \"\\n\"\n\t\t}\n\t}\n\tcanvas.AddLayer(layers.NewLayer(bg, 0))\n\n\t// Top-left box at Z=1\n\tbox1 := \"┌───┐\\n│ 1 │\\n└───┘\"\n\tcanvas.AddLayer(layers.NewLayer(box1, 1).WithOffset(2, 1))\n\n\t// Overlapping box at Z=2\n\tbox2 := \"┌───┐\\n│ 2 │\\n└───┘\"\n\tcanvas.AddLayer(layers.NewLayer(box2, 2).WithOffset(4, 2))\n\n\t// Bottom-right box at Z=1\n\tbox3 := \"┌───┐\\n│ 3 │\\n└───┘\"\n\tcanvas.AddLayer(layers.NewLayer(box3, 1).WithOffset(22, 6))\n\n\tfmt.Println(canvas.Render())\n\tfmt.Println()\n}\n\n// Example 4: Modal dialog overlaying content\nfunc example4ModalDialog() {\n\tfmt.Println(\"--- Example 4: Modal Dialog Over Content ---\")\n\n\twidth, height := 40, 12\n\n\tcanvas := layers.NewCanvas(width, height)\n\n\t// Main content (Z=0)\n\tcontentStyle := lipgloss.NewStyle().\n\t\tWidth(width - 4).\n\t\tBorder(lipgloss.RoundedBorder())\n\n\tmainContent := contentStyle.Render(\n\t\t\"This is the main application content.\\n\" +\n\t\t\t\"It contains important information.\\n\" +\n\t\t\t\"A modal will appear on top of this.\")\n\n\tcanvas.AddLayer(layers.NewLayer(mainContent, 0).WithOffset(2, 1))\n\n\t// Modal dialog (Z=1)\n\tmodalStyle := lipgloss.NewStyle().\n\t\tWidth(24).\n\t\tBorder(lipgloss.DoubleBorder()).\n\t\tBorderForeground(lipgloss.Color(\"9\")).\n\t\tPadding(0, 1)\n\n\tmodal := modalStyle.Render(\n\t\t\"⚠ Confirm Action?\\n\" +\n\t\t\t\"[Yes]  [No]\")\n\n\t// Center the modal\n\tmodalLayer := layers.CenterLayer(modal, 1, width, height)\n\tcanvas.AddLayer(modalLayer)\n\n\tfmt.Println(canvas.Render())\n\tfmt.Println()\n}\n\n// Example 5: Using the Compose API for fluent layer building\nfunc example5ComposeAPI() {\n\tfmt.Println(\"--- Example 5: Using Compose API ---\")\n\n\tresult := layers.NewCompose(25, 7).\n\t\tLayer(strings.Repeat(strings.Repeat(\"▒\", 25)+\"\\n\", 6)+strings.Repeat(\"▒\", 25), 0, 0, 0).\n\t\tCenteredLayer(\"═══════════\\n  CENTER  \\n═══════════\", 1).\n\t\tRender()\n\n\tfmt.Println(result)\n\tfmt.Println()\n}\n\n// Example 6: Difference between Render (transparent) and RenderOpaque\nfunc example6TransparencyVsOpaque() {\n\tfmt.Println(\"--- Example 6: Transparency vs Opaque ---\")\n\n\twidth, height := 20, 5\n\n\t// Background\n\tbg := \"\"\n\tfor i := 0; i \u003c height; i++ {\n\t\tbg += strings.Repeat(\"X\", width)\n\t\tif i \u003c height-1 {\n\t\t\tbg += \"\\n\"\n\t\t}\n\t}\n\n\t// Foreground with spaces (which act as transparent or opaque)\n\tfg := \"  HELLO  \"\n\n\t// Transparent render - spaces show background through\n\tcanvas1 := layers.NewCanvas(width, height)\n\tcanvas1.AddLayer(layers.NewLayer(bg, 0))\n\tcanvas1.AddLayer(layers.NewLayer(fg, 1).WithOffset(5, 2))\n\n\tfmt.Println(\"Transparent render (spaces show background):\")\n\tfmt.Println(canvas1.Render())\n\n\t// Opaque render - spaces overwrite background\n\tcanvas2 := layers.NewCanvas(width, height)\n\tcanvas2.AddLayer(layers.NewLayer(bg, 0))\n\tcanvas2.AddLayer(layers.NewLayer(fg, 1).WithOffset(5, 2))\n\n\tfmt.Println(\"\\nOpaque render (spaces cover background):\")\n\tfmt.Println()\n}\n"
+          }
+        ]
+      },
+      "metrics": {
+        "prompt_tokens": 6813,
+        "completion_tokens": 157
+      }
+    },
+    {
+      "step_id": 12,
+      "source": "agent",
+      "message": "",
+      "reasoning_content": "Now let me check the notifications demo as well for more funny content:",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_65dab7e1d49948e88f68456a",
+          "function_name": "read_file",
+          "arguments": {
+            "path": "examples/notifications_demo.go"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call_65dab7e1d49948e88f68456a",
+            "content": "package main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n\t\"time\"\n\n\ttea \"github.com/charmbracelet/bubbletea\"\n\t\"github.com/charmbracelet/lipgloss\"\n\t\"github.com/mightymoud/arlocode/internal/tui/layers\"\n\t\"github.com/mightymoud/arlocode/internal/tui/notifications\"\n)\n\n// tickMsg is sent on each animation frame\ntype tickMsg time.Time\n\n// Model holds the application state\ntype model struct {\n\twidth         int\n\theight        int\n\tnotifications *notifications.NotificationManager\n\tcanvas        *layers.Canvas\n}\n\nfunc initialModel() model {\n\treturn model{\n\t\twidth:         80,\n\t\theight:        24,\n\t\tnotifications: notifications.NewNotificationManager(80, 24),\n\t}\n}\n\nfunc (m model) Init() tea.Cmd {\n\t// Start with a welcome notification\n\tm.notifications.PushInfo(\"Welcome!\", \"Press keys to trigger different notifications\")\n\treturn tick()\n}\n\n// tick returns a command that sends a tickMsg after a short delay\nfunc tick() tea.Cmd {\n\treturn tea.Tick(time.Second/60, func(t time.Time) tea.Msg {\n\t\treturn tickMsg(t)\n\t})\n}\n\nfunc (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {\n\tswitch msg := msg.(type) {\n\tcase tea.KeyMsg:\n\t\tswitch msg.String() {\n\t\tcase \"q\", \"ctrl+c\", \"esc\":\n\t\t\treturn m, tea.Quit\n\n\t\tcase \"i\":\n\t\t\tm.notifications.PushInfo(\"Info\", \"This is an informational message\")\n\t\t\treturn m, nil\n\n\t\tcase \"s\":\n\t\t\tm.notifications.PushSuccess(\"Success!\", \"The operation completed successfully\")\n\t\t\treturn m, nil\n\n\t\tcase \"w\":\n\t\t\tm.notifications.PushWarning(\"Warning\", \"Something might need your attention\")\n\t\t\treturn m, nil\n\n\t\tcase \"e\":\n\t\t\tm.notifications.PushError(\"Error\", \"Something went wrong! Please check the logs.\")\n\t\t\treturn m, nil\n\n\t\tcase \"d\":\n\t\t\tm.notifications.DismissAll()\n\t\t\treturn m, nil\n\n\t\tcase \"m\":\n\t\t\t// Push multiple notifications rapidly\n\t\t\tm.notifications.PushInfo(\"First\", \"This is the first notification\")\n\t\t\tm.notifications.PushSuccess(\"Second\", \"This is the second one\")\n\t\t\tm.notifications.PushWarning(\"Third\", \"And here's a third!\")\n\t\t\treturn m, nil\n\t\t}\n\n\tcase tea.WindowSizeMsg:\n\t\tm.width = msg.Width\n\t\tm.height = msg.Height\n\t\tm.notifications.UpdateScreenSize(msg.Width, msg.Height)\n\t\treturn m, nil\n\n\tcase tickMsg:\n\t\t// Update notification animations\n\t\tm.notifications.Update()\n\t\t// Continue ticking if there are active notifications\n\t\tif m.notifications.HasActiveNotifications() {\n\t\t\treturn m, tick()\n\t\t}\n\t\t// Even with no notifications, keep ticking to catch new ones\n\t\treturn m, tick()\n\t}\n\n\treturn m, nil\n}\n\nfunc (m model) View() string {\n\t// Create the main content (background)\n\tmainContent := m.renderMainContent()\n\n\t// Create canvas for layering\n\tcanvas := layers.NewCanvas(m.width, m.height)\n\n\t// Add main content as base layer\n\tcanvas.AddLayer(layers.NewLayer(mainContent, 0))\n\n\t// Add notifications as overlay layer\n\tnotifContent, x, y := m.notifications.RenderWithPosition()\n\tif notifContent != \"\" {\n\t\tcanvas.AddLayer(layers.NewLayer(notifContent, 100).WithOffset(x, y))\n\t}\n\n\treturn canvas.Render()\n}\n\nfunc (m model) renderMainContent() string {\n\ttitleStyle := lipgloss.NewStyle().\n\t\tBold(true).\n\t\tForeground(lipgloss.Color(\"205\")).\n\t\tMarginBottom(1)\n\n\thelpStyle := lipgloss.NewStyle().\n\t\tForeground(lipgloss.Color(\"241\"))\n\n\tkeyStyle := lipgloss.NewStyle().\n\t\tForeground(lipgloss.Color(\"39\")).\n\t\tBold(true)\n\n\ttitle := titleStyle.Render(\"🔔 Notification System Demo\")\n\n\thelp := lipgloss.JoinVertical(lipgloss.Left,\n\t\t\"\",\n\t\thelpStyle.Render(\"Press keys to trigger notifications:\"),\n\t\t\"\",\n\t\tfmt.Sprintf(\"  %s  Info notification\", keyStyle.Render(\"i\")),\n\t\tfmt.Sprintf(\"  %s  Success notification\", keyStyle.Render(\"s\")),\n\t\tfmt.Sprintf(\"  %s  Warning notification\", keyStyle.Render(\"w\")),\n\t\tfmt.Sprintf(\"  %s  Error notification\", keyStyle.Render(\"e\")),\n\t\tfmt.Sprintf(\"  %s  Multiple notifications\", keyStyle.Render(\"m\")),\n\t\tfmt.Sprintf(\"  %s  Dismiss all\", keyStyle.Render(\"d\")),\n\t\t\"\",\n\t\tfmt.Sprintf(\"  %s  Quit\", keyStyle.Render(\"q\")),\n\t\t\"\",\n\t\thelpStyle.Render(fmt.Sprintf(\"Active notifications: %d\", m.notifications.Count())),\n\t)\n\n\tcontent := lipgloss.JoinVertical(lipgloss.Left, title, help)\n\n\t// Center the content\n\treturn lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, content)\n}\n\nfunc main() {\n\tp := tea.NewProgram(initialModel(), tea.WithAltScreen())\n\tif _, err := p.Run(); err != nil {\n\t\tfmt.Printf(\"Error running program: %v\\n\", err)\n\t\tos.Exit(1)\n\t}\n}\n"
+          }
+        ]
+      },
+      "metrics": {
+        "prompt_tokens": 8234,
+        "completion_tokens": 30
+      }
+    },
+    {
+      "step_id": 13,
+      "source": "agent",
+      "message": "",
+      "reasoning_content": "Let me check the gitignore to see if there are any funny entries there.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_c3ae9f52d8a74b5189a8b149",
+          "function_name": "read_file",
+          "arguments": {
+            "path": ".gitignore"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call_c3ae9f52d8a74b5189a8b149",
+            "content": "tmp"
+          }
+        ]
+      },
+      "metrics": {
+        "prompt_tokens": 9355,
+        "completion_tokens": 29
+      }
+    },
+    {
+      "step_id": 14,
+      "source": "agent",
+      "message": "",
+      "reasoning_content": "Let me check the go.mod file for some more interesting details.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_f6d950cd7f124feda7cd2eee",
+          "function_name": "read_file",
+          "arguments": {
+            "path": "go.mod"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call_f6d950cd7f124feda7cd2eee",
+            "content": "module github.com/mightymoud/arlocode\n\ngo 1.25.5\n\nrequire (\n\tcodeberg.org/readeck/go-readability/v2 v2.1.0\n\tgithub.com/JohannesKaufmann/html-to-markdown v1.6.0\n\tgithub.com/catppuccin/go v0.3.0\n\tgithub.com/charmbracelet/bubbles v0.21.0\n\tgithub.com/charmbracelet/bubbletea v1.3.10\n\tgithub.com/charmbracelet/glamour v0.10.0\n\tgithub.com/charmbracelet/harmonica v0.2.0\n\tgithub.com/charmbracelet/lipgloss v1.1.1-0.20250404203927-76690c660834\n\tgithub.com/fatih/color v1.18.0\n\tgithub.com/iamwavecut/gopenrouter v0.0.0-20250819194515-3428c8a33343\n\tgithub.com/kjk/flex v0.0.0-20171203210503-ed34d6b6a425\n\tgithub.com/ollama/ollama v0.14.2\n\tgithub.com/openai/openai-go/v3 v3.16.0\n\tgithub.com/spf13/cobra v1.10.2\n\tgoogle.golang.org/genai v1.40.0\n)\n\nrequire (\n\tcloud.google.com/go v0.116.0 // indirect\n\tcloud.google.com/go/auth v0.17.0 // indirect\n\tcloud.google.com/go/compute/metadata v0.8.0 // indirect\n\tgithub.com/PuerkitoBio/goquery v1.11.0 // indirect\n\tgithub.com/alecthomas/chroma/v2 v2.14.0 // indirect\n\tgithub.com/andybalholm/cascadia v1.3.3 // indirect\n\tgithub.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de // indirect\n\tgithub.com/atotto/clipboard v0.1.4 // indirect\n\tgithub.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect\n\tgithub.com/aymerick/douceur v0.2.0 // indirect\n\tgithub.com/bahlo/generic-list-go v0.2.0 // indirect\n\tgithub.com/buger/jsonparser v1.1.1 // indirect\n\tgithub.com/charmbracelet/colorprofile v0.3.2 // indirect\n\tgithub.com/charmbracelet/x/ansi v0.10.2 // indirect\n\tgithub.com/charmbracelet/x/cellbuf v0.0.13 // indirect\n\tgithub.com/charmbracelet/x/exp/slice v0.0.0-20250327172914-2fdc97757edf // indirect\n\tgithub.com/charmbracelet/x/term v0.2.2 // indirect\n\tgithub.com/clipperhouse/stringish v0.1.1 // indirect\n\tgithub.com/clipperhouse/uax29/v2 v2.3.0 // indirect\n\tgithub.com/dlclark/regexp2 v1.11.4 // indirect\n\tgithub.com/erikgeiser/coninput v0.0.0-20211004153227-1c3628e74d0f // indirect\n\tgithub.com/felixge/httpsnoop v1.0.4 // indirect\n\tgithub.com/go-logr/logr v1.4.3 // indirect\n\tgithub.com/go-logr/stdr v1.2.2 // indirect\n\tgithub.com/go-shiori/dom v0.0.0-20230515143342-73569d674e1c // indirect\n\tgithub.com/gogs/chardet v0.0.0-20211120154057-b7413eaefb8f // indirect\n\tgithub.com/google/go-cmp v0.7.0 // indirect\n\tgithub.com/google/s2a-go v0.1.9 // indirect\n\tgithub.com/google/uuid v1.6.0 // indirect\n\tgithub.com/googleapis/enterprise-certificate-proxy v0.3.6 // indirect\n\tgithub.com/googleapis/gax-go/v2 v2.15.0 // indirect\n\tgithub.com/gorilla/css v1.0.1 // indirect\n\tgithub.com/gorilla/websocket v1.5.3 // indirect\n\tgithub.com/inconshreveable/mousetrap v1.1.0 // indirect\n\tgithub.com/lucasb-eyer/go-colorful v1.3.0 // indirect\n\tgithub.com/mailru/easyjson v0.7.7 // indirect\n\tgithub.com/mattn/go-colorable v0.1.13 // indirect\n\tgithub.com/mattn/go-isatty v0.0.20 // indirect\n\tgithub.com/mattn/go-localereader v0.0.1 // indirect\n\tgithub.com/mattn/go-runewidth v0.0.19 // indirect\n\tgithub.com/microcosm-cc/bluemonday v1.0.27 // indirect\n\tgithub.com/muesli/ansi v0.0.0-20230316100256-276c6243b2f6 // indirect\n\tgithub.com/muesli/cancelreader v0.2.2 // indirect\n\tgithub.com/muesli/reflow v0.3.0 // indirect\n\tgithub.com/muesli/termenv v0.16.0 // indirect\n\tgithub.com/rivo/uniseg v0.4.7 // indirect\n\tgithub.com/spf13/pflag v1.0.10 // indirect\n\tgithub.com/stretchr/testify v1.11.1 // indirect\n\tgithub.com/tidwall/gjson v1.18.0 // indirect\n\tgithub.com/tidwall/match v1.1.1 // indirect\n\tgithub.com/tidwall/pretty v1.2.1 // indirect\n\tgithub.com/tidwall/sjson v1.2.5 // indirect\n\tgithub.com/wk8/go-ordered-map/v2 v2.1.8 // indirect\n\tgithub.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect\n\tgithub.com/yuin/goldmark v1.7.8 // indirect\n\tgithub.com/yuin/goldmark-emoji v1.0.5 // indirect\n\tgo.opentelemetry.io/auto/sdk v1.1.0 // indirect\n\tgo.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.61.0 // indirect\n\tgo.opentelemetry.io/otel v1.37.0 // indirect\n\tgo.opentelemetry.io/otel/metric v1.37.0 // indirect\n\tgo.opentelemetry.io/otel/trace v1.37.0 // indirect\n\tgolang.org/x/crypto v0.46.0 // indirect\n\tgolang.org/x/exp v0.0.0-20250620022241-b7579e27df2b // indirect\n\tgolang.org/x/net v0.48.0 // indirect\n\tgolang.org/x/sys v0.39.0 // indirect\n\tgolang.org/x/term v0.38.0 // indirect\n\tgolang.org/x/text v0.32.0 // indirect\n\tgoogle.golang.org/genproto/googleapis/rpc v0.0.0-20250603155806-513f23925822 // indirect\n\tgoogle.golang.org/grpc v1.74.2 // indirect\n\tgoogle.golang.org/protobuf v1.36.8 // indirect\n\tgopkg.in/yaml.v3 v3.0.1 // indirect\n)\n"
+          }
+        ]
+      },
+      "metrics": {
+        "prompt_tokens": 9372,
+        "completion_tokens": 26
+      }
+    },
+    {
+      "step_id": 15,
+      "source": "agent",
+      "message": "",
+      "reasoning_content": "Now this is interesting! The go.mod says `go 1.25.5` but Go's current stable version is around 1.23, with 1.24 in development. Version 1.25.5 doesn't exist yet! That's pretty funny - either they're from the future or made a typo.\n\nLet me also check the main.bak file to see what's backed up.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_0847f207cade4e05b9ac8c99",
+          "function_name": "read_file",
+          "arguments": {
+            "path": "main.bak"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call_0847f207cade4e05b9ac8c99",
+            "content": "package main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n\t\"time\"\n\n\t\"github.com/charmbracelet/bubbles/textinput\"\n\ttea \"github.com/charmbracelet/bubbletea\"\n\t\"github.com/charmbracelet/lipgloss\"\n\t\"github.com/kjk/flex\"\n\n\t\"github.com/mightymoud/arlocode/internal/tui/layers\"\n\t\"github.com/mightymoud/arlocode/internal/tui/notifications\"\n)\n\ntype model struct {\n\twidth         int\n\theight        int\n\tshowModal     bool\n\tactiveLayer   int // 0 = background focused, 1 = modal focused\n\tnotifications *notifications.NotificationManager\n\tmodalInput    textinput.Model\n}\n\n// tickMsg is sent on each animation frame for notifications\ntype tickMsg time.Time\n\nfunc (m model) Init() tea.Cmd {\n\treturn tea.Batch(tea.EnterAltScreen, tick())\n}\n\n// tick returns a command that sends a tickMsg after a short delay\nfunc tick() tea.Cmd {\n\treturn tea.Tick(time.Second/60, func(t time.Time) tea.Msg {\n\t\treturn tickMsg(t)\n\t})\n}\n\nfunc (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {\n\tvar cmd tea.Cmd\n\tvar cmds []tea.Cmd\n\n\tswitch msg := msg.(type) {\n\tcase tea.WindowSizeMsg:\n\t\tm.width = msg.Width\n\t\tm.height = msg.Height\n\t\tif m.notifications != nil {\n\t\t\tm.notifications.UpdateScreenSize(msg.Width, msg.Height)\n\t\t}\n\tcase tickMsg:\n\t\t// Update notification animations\n\t\tif m.notifications != nil {\n\t\t\tm.notifications.Update()\n\t\t}\n\t\treturn m, tick()\n\tcase tea.KeyMsg:\n\t\t// If modal is open, handle modal-specific keys first\n\t\tif m.showModal {\n\t\t\tswitch msg.String() {\n\t\t\tcase \"esc\":\n\t\t\t\t// Close modal and blur input\n\t\t\t\tm.showModal = false\n\t\t\t\tm.modalInput.Blur()\n\t\t\t\treturn m, nil\n\t\t\tcase \"enter\":\n\t\t\t\t// Submit the input value (you can do something with it here)\n\t\t\t\tif m.notifications != nil \u0026\u0026 m.modalInput.Value() != \"\" {\n\t\t\t\t\tm.notifications.PushSuccess(\"Submitted!\", m.modalInput.Value())\n\t\t\t\t\tm.modalInput.SetValue(\"\")\n\t\t\t\t}\n\t\t\t\tm.showModal = false\n\t\t\t\tm.modalInput.Blur()\n\t\t\t\treturn m, nil\n\t\t\tdefault:\n\t\t\t\t// Route all other keys to the textinput\n\t\t\t\tm.modalInput, cmd = m.modalInput.Update(msg)\n\t\t\t\tcmds = append(cmds, cmd)\n\t\t\t\treturn m, tea.Batch(cmds...)\n\t\t\t}\n\t\t}\n\n\t\t// Handle keys when modal is NOT open\n\t\tswitch msg.String() {\n\t\tcase \" \":\n\t\t\tm.showModal = !m.showModal\n\t\t\tif m.showModal {\n\t\t\t\t// Focus the input when modal opens\n\t\t\t\tm.modalInput.Focus()\n\t\t\t\tcmds = append(cmds, textinput.Blink)\n\t\t\t} else {\n\t\t\t\tm.modalInput.Blur()\n\t\t\t}\n\t\tcase \"tab\":\n\t\t\tm.activeLayer = (m.activeLayer + 1) % 2\n\t\tcase \"i\":\n\t\t\tif m.notifications != nil {\n\t\t\t\tm.notifications.PushInfo(\"Info\", \"This is an informational message\")\n\t\t\t}\n\t\tcase \"s\":\n\t\t\tif m.notifications != nil {\n\t\t\t\tm.notifications.PushSuccess(\"Success!\", \"The operation completed successfully\")\n\t\t\t}\n\t\tcase \"w\":\n\t\t\tif m.notifications != nil {\n\t\t\t\tm.notifications.PushWarning(\"Warning\", \"Something might need your attention\")\n\t\t\t}\n\t\tcase \"e\":\n\t\t\tif m.notifications != nil {\n\t\t\t\tm.notifications.PushError(\"Error\", \"Something went wrong!\")\n\t\t\t}\n\t\tcase \"d\":\n\t\t\tif m.notifications != nil {\n\t\t\t\tm.notifications.DismissAll()\n\t\t\t}\n\t\tcase \"q\", \"ctrl+c\":\n\t\t\treturn m, tea.Quit\n\t\t}\n\t}\n\treturn m, tea.Batch(cmds...)\n}\n\nfunc (m model) View() string {\n\tif m.width == 0 || m.height == 0 {\n\t\treturn \"Loading...\"\n\t}\n\n\t// =========================================================================\n\t// FLEXBOX LAYOUT SETUP\n\t// =========================================================================\n\n\t// 1. Create the Root Node\n\troot := flex.NewNode()\n\troot.StyleSetWidth(float32(m.width))\n\troot.StyleSetHeight(float32(m.height))\n\troot.StyleSetFlexDirection(flex.FlexDirectionColumn)\n\n\t// 2. Define Children Nodes\n\theader := flex.NewNode()\n\theader.StyleSetHeight(3) // 3 rows high for header\n\theader.StyleSetFlexShrink(0)\n\n\tmainContent := flex.NewNode()\n\tmainContent.StyleSetFlexGrow(1) // Fills remaining space\n\n\tfooter := flex.NewNode()\n\tfooter.StyleSetHeight(1) // 1 row for footer/status bar\n\tfooter.StyleSetFlexShrink(0)\n\n\t// Insert children into root\n\troot.InsertChild(header, 0)\n\troot.InsertChild(mainContent, 1)\n\troot.InsertChild(footer, 2)\n\n\t// 3. Calculate Layout\n\tflex.CalculateLayout(root, float32(m.width), float32(m.height), flex.DirectionLTR)\n\n\t// =========================================================================\n\t// RENDER EACH PANEL USING CALCULATED FLEX DIMENSIONS\n\t// =========================================================================\n\n\t// Create a canvas for layer composition\n\tcanvas := layers.NewCanvas(m.width, m.height)\n\n\t// --- HEADER PANEL ---\n\theaderWidth := int(header.LayoutGetWidth())\n\theaderHeight := int(header.LayoutGetHeight())\n\theaderY := int(header.LayoutGetTop())\n\n\theaderStyle := lipgloss.NewStyle().\n\t\tWidth(headerWidth).\n\t\tHeight(headerHeight).\n\t\tBackground(lipgloss.Color(\"#0f3460\")).\n\t\tForeground(lipgloss.Color(\"#e0e0e0\")).\n\t\tPadding(0, 2).\n\t\tAlign(lipgloss.Left, lipgloss.Center)\n\n\theaderContent := headerStyle.Render(\n\t\tlipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color(\"#e94560\")).Render(\"⚡ ArloCode\") +\n\t\t\t\"  │  Flexbox Layout Demo  │  SPACE toggle modal, i/s/w/e notifications, Q quit\",\n\t)\n\tcanvas.AddLayer(layers.NewLayer(headerContent, 0).WithOffset(0, headerY))\n\n\t// --- MAIN CONTENT PANEL ---\n\tmainWidth := int(mainContent.LayoutGetWidth())\n\tmainHeight := int(mainContent.LayoutGetHeight())\n\tmainY := int(mainContent.LayoutGetTop())\n\n\t// Background pattern for main area\n\tbgStyle := lipgloss.NewStyle().\n\t\tWidth(mainWidth).\n\t\tHeight(mainHeight).\n\t\tBackground(lipgloss.Color(\"#1a1a2e\")).\n\t\tForeground(lipgloss.Color(\"#4a4a6a\"))\n\n\tpattern := \"\"\n\tfor y := 0; y \u003c mainHeight; y++ {\n\t\trow := \"\"\n\t\tfor x := 0; x \u003c mainWidth; x++ {\n\t\t\tif (x+y)%4 == 0 {\n\t\t\t\trow += \"·\"\n\t\t\t} else {\n\t\t\t\trow += \" \"\n\t\t\t}\n\t\t}\n\t\tpattern += row\n\t\tif y \u003c mainHeight-1 {\n\t\t\tpattern += \"\\n\"\n\t\t}\n\t}\n\tbackgroundContent := bgStyle.Render(pattern)\n\tcanvas.AddLayer(layers.NewLayer(backgroundContent, 1).WithOffset(0, mainY))\n\n\t// --- CENTERED CONTENT PANEL (inside main) ---\n\tcontentPanelWidth := min(60, mainWidth-10)\n\tcontentPanelHeight := min(15, mainHeight-4)\n\n\tcontentPanelStyle := lipgloss.NewStyle().\n\t\tWidth(contentPanelWidth).\n\t\tHeight(contentPanelHeight).\n\t\tBackground(lipgloss.Color(\"#16213e\")).\n\t\tForeground(lipgloss.Color(\"#e0e0e0\")).\n\t\tBorder(lipgloss.RoundedBorder()).\n\t\tBorderForeground(lipgloss.Color(\"#0f3460\")).\n\t\tPadding(1, 2).\n\t\tAlign(lipgloss.Center, lipgloss.Center)\n\n\tcontentPanel := contentPanelStyle.Render(\n\t\tlipgloss.JoinVertical(lipgloss.Center,\n\t\t\tlipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color(\"#e94560\")).Render(\"[Flexbox Layout Demo]\"),\n\t\t\t\"\",\n\t\t\t\"This panel uses github.com/kjk/flex\",\n\t\t\t\"for flexbox-based terminal layout!\",\n\t\t\t\"\",\n\t\t\tfmt.Sprintf(\"Header: %dw × %dh\", headerWidth, headerHeight),\n\t\t\tfmt.Sprintf(\"Main:   %dw × %dh\", mainWidth, mainHeight),\n\t\t\tfmt.Sprintf(\"Footer: %dw × %dh\", int(footer.LayoutGetWidth()), int(footer.LayoutGetHeight())),\n\t\t\t\"\",\n\t\t\tlipgloss.NewStyle().Faint(true).Render(\"Press SPACE to toggle modal\"),\n\t\t),\n\t)\n\n\t// Center the content panel within main area\n\tcontentPanelX := (mainWidth - lipgloss.Width(contentPanel)) / 2\n\tcontentPanelY := mainY + (mainHeight-lipgloss.Height(contentPanel))/2\n\tcanvas.AddLayer(layers.NewLayer(contentPanel, 2).WithOffset(contentPanelX, contentPanelY))\n\n\t// --- MODAL OVERLAY (conditionally shown) ---\n\tif m.showModal {\n\t\tmodalWidth := 50\n\t\t// modalHeight := 12\n\n\t\tmodalStyle := lipgloss.NewStyle().\n\t\t\tWidth(modalWidth).\n\t\t\tBackground(lipgloss.Color(\"#2d132c\")).\n\t\t\tForeground(lipgloss.Color(\"#ffffff\")).\n\t\t\tBorder(lipgloss.RoundedBorder()).\n\t\t\tBorderForeground(lipgloss.Color(\"#ee4540\")).\n\t\t\tPadding(1, 2)\n\n\t\t// Style for the input label\n\t\tlabelStyle := lipgloss.NewStyle().\n\t\t\tForeground(lipgloss.Color(\"#aaaaaa\"))\n\n\t\tmodalContent := modalStyle.Render(\n\t\t\tlipgloss.JoinVertical(lipgloss.Left,\n\t\t\t\tlipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color(\"#ffd460\")).Render(\"Modal with Input\"),\n\t\t\t\t\"\",\n\t\t\t\tlabelStyle.Render(\"Enter something:\"),\n\t\t\t\tm.modalInput.View(),\n\t\t\t\t\"\",\n\t\t\t\tlipgloss.NewStyle().Faint(true).Render(\"Enter to submit • Esc to close\"),\n\t\t\t),\n\t\t)\n\n\t\t// Center the modal on screen\n\t\tmodalX := (m.width - lipgloss.Width(modalContent)) / 2\n\t\tmodalY := (m.height - lipgloss.Height(modalContent)) / 2\n\t\tcanvas.AddLayer(layers.NewLayer(modalContent, 5).WithOffset(modalX, modalY))\n\t}\n\n\t// --- FOOTER/STATUS BAR ---\n\tfooterWidth := int(footer.LayoutGetWidth())\n\tfooterHeight := int(footer.LayoutGetHeight())\n\tfooterY := int(footer.LayoutGetTop())\n\n\tfooterStyle := lipgloss.NewStyle().\n\t\tWidth(footerWidth).\n\t\tHeight(footerHeight).\n\t\tBackground(lipgloss.Color(\"#0f3460\")).\n\t\tForeground(lipgloss.Color(\"#e0e0e0\")).\n\t\tPadding(0, 1)\n\n\tmodalStatus := \"Modal: OFF\"\n\tif m.showModal {\n\t\tmodalStatus = lipgloss.NewStyle().Foreground(lipgloss.Color(\"#00ff00\")).Render(\"Modal: ON\")\n\t}\n\n\tfooterContent := footerStyle.Render(\n\t\tfmt.Sprintf(\"Size: %dx%d │ %s │ Flexbox: Header→Main→Footer\",\n\t\t\tm.width, m.height, modalStatus),\n\t)\n\tcanvas.AddLayer(layers.NewLayer(footerContent, 10).WithOffset(0, footerY))\n\n\t// --- NOTIFICATION OVERLAY ---\n\tif m.notifications != nil {\n\t\tnotifContent, notifX, notifY := m.notifications.RenderWithPosition()\n\t\tif notifContent != \"\" {\n\t\t\tcanvas.AddLayer(layers.NewLayer(notifContent, 100).WithOffset(notifX, notifY))\n\t\t}\n\t}\n\n\treturn canvas.RenderWithLipgloss()\n}\n\nfunc main() {\n\t// Create and configure the text input for the modal\n\tti := textinput.New()\n\tti.Placeholder = \"Type here...\"\n\tti.Width = 40\n\tti.CharLimit = 100\n\n\t// Style the text input\n\tti.PromptStyle = lipgloss.NewStyle().Foreground(lipgloss.Color(\"#ee4540\"))\n\tti.TextStyle = lipgloss.NewStyle().Foreground(lipgloss.Color(\"#ffffff\"))\n\tti.PlaceholderStyle = lipgloss.NewStyle().Foreground(lipgloss.Color(\"#666666\"))\n\tti.Cursor.Style = lipgloss.NewStyle().Foreground(lipgloss.Color(\"#ffd460\"))\n\n\t// Initialize the model with notification manager and text input\n\tm := model{\n\t\tnotifications: notifications.NewNotificationManager(80, 24),\n\t\tmodalInput:    ti,\n\t}\n\n\tp := tea.NewProgram(m)\n\tif _, err := p.Run(); err != nil {\n\t\tfmt.Printf(\"Alas, there's been an error: %v\", err)\n\t\tos.Exit(1)\n\t}\n\n}\n"
+          }
+        ]
+      },
+      "metrics": {
+        "prompt_tokens": 11111,
+        "completion_tokens": 97
+      }
+    },
+    {
+      "step_id": 16,
+      "source": "agent",
+      "message": "I found several amusing things about this repository! Here's the funniest one:\n\n## 🎭 The \"Wit\" Typo That's Everywhere\n\nIn the `internal/butler/agent/agent.go` file, there's a method that's supposed to add tools to the agent:\n\n```go\nfunc (a *Agent) WitTools(tools []tools.Tool) *Agent {\n    a.tools = tools\n    return a\n}\n```\n\nNotice it's called **`WitTools`** instead of `WithTools`! \n\nBut the best part is that this typo has become **institutionalized**:\n- It's used in the main code\n- There's a test function called `TestAgent_WitTools` in the test file\n- It's called throughout the codebase\n\nSo either:\n1. It's a really clever pun about the agent being \"witty\" with tools\n2. Someone made a typo and was too embarrassed to fix it, so they just leaned into it\n3. It's actually an abbreviation for \"With It Tools\" for the cool kids\n\n## 📅 Bonus: Future Visionaries\n\nThe copyright notices throughout the code say `Copyright © 2026` - apparently this project is from the future! Maybe that's why the code is so ambitious - they've already seen what's coming in 2026.\n\n## 🤖 Meta Humor\n\nAlso, I find it hilarious that I (ArloCode) am currently exploring and explaining the ArloCode project to you. It's like inception!\n\nWould you like me to dive deeper into any specific part of this witty, time-traveling codebase?",
+      "reasoning_content": "Okay, now I have a good overview of the repository. This is the ArloCode project - an AI coding agent written in Go. Let me find something funny about it.\n\nLooking at what I've found:\n\n1. The project is called \"ArloCode\" - which is funny because I'm \"ArloCode\" the AI assistant talking to you about ArloCode the project!\n\n2. There's a typo in the comment in cmd/root.go: \"AlroCode is an AI coding agent...\" (should be \"ArloCode\")\n\n3. The method name \"WitTools\" in agent.go instead of \"WithTools\" - looks like a typo\n\n4. In agent_test.go, there's a test called \"TestAgent_WitTools\" which also uses this typo\n\n5. The .gitignore file only contains \"tmp\" - very minimal!\n\n6. The license says \"Copyright © 2026\" - it's 2025, so they're getting ahead of themselves\n\n7. There's a main.bak file - a backup of the main file, which is kind of funny in a production repo\n\n8. The motivational quote at the end of README.md: \"When the stars are within reach it's foolish to not aim for the moon.\"\n\nThe funniest thing is probably the method name typo \"WitTools\" appearing multiple times (including in test), or the copyright date being in the future (2026). Also the fact that I'm literally ArloCode talking to the user about ArloCode!",
+      "metrics": {
+        "prompt_tokens": 13869,
+        "completion_tokens": 658
+      }
+    }
+  ],
+  "final_metrics": {
+    "total_prompt_tokens": 74851,
+    "total_completion_tokens": 1662,
+    "total_steps": 16
+  }
+}
