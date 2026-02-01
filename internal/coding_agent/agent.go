@@ -24,8 +24,6 @@ You are in a terminal environment and have access to local resources and files. 
 
 var ctx = context.Background()
 
-// var provider = ollama.New(ctx)
-
 var provider = openai_provider.New(ctx,
 	openai_provider.WithApiKey(os.Getenv("ZAI_API_KEY")),
 	openai_provider.WithBaseURL("https://api.z.ai/api/coding/paas/v4"),

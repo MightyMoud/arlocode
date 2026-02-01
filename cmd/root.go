@@ -15,6 +15,7 @@ limitations under the License.
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -32,12 +33,24 @@ var (
 	date    = "unknown"
 )
 
+var (
+	instructions string
+	outputPath   string
+)
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "arlocode",
 	Short: "ArloCode a Coding Agent focused on long running tasks and local models",
-	Long:  `AlroCode is an AI coding agent designed to assist developers with complex coding tasks.`,
+	Long:  `ArloCode is an AI coding agent designed to assist developers with complex coding tasks.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if instructions != "" {
+			if err := runHeadless(instructions, outputPath); err != nil {
+				os.Exit(1)
+			}
+			return
+		}
+
 		codingAgent := coding_agent.Agent
 		agentBridge := bridge.NewDirectBridge(codingAgent)
 
@@ -87,7 +100,45 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
+	rootCmd.Flags().StringVarP(&instructions, "instructions", "i", "", "Run in headless mode with the provided instruction text")
+	rootCmd.Flags().StringVarP(&outputPath, "output", "o", "", "Path to write the ATIF trajectory JSON")
+
 	// Set version template for --version flag
 	rootCmd.Version = version
 	rootCmd.SetVersionTemplate(fmt.Sprintf("arlocode %s (commit: %s, built: %s)\n", version, commit, date))
+}
+
+func runHeadless(prompt string, path string) error {
+	codingAgent := coding_agent.Agent.WithMaxIterations(500)
+	agentBridge := bridge.NewDirectBridge(codingAgent)
+	defer agentBridge.Close()
+
+	if err := agentBridge.Run(context.Background(), prompt); err != nil {
+		return err
+	}
+
+	var runErr error
+	for {
+		event, ok := <-agentBridge.Events()
+		if !ok {
+			break
+		}
+		switch e := event.(type) {
+		case bridge.ErrorEvent:
+			if e.Err != nil {
+				runErr = e.Err
+			}
+		case bridge.TurnCompleteEvent:
+			_, err := agentBridge.ExportATIF(path)
+			if err != nil {
+				return err
+			}
+			if runErr != nil {
+				return runErr
+			}
+			return nil
+		}
+	}
+
+	return runErr
 }
